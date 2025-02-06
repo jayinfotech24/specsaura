@@ -42,3 +42,22 @@ a {
     color-scheme: dark;
   }
 }
+
+[data-coreui-theme='dark']
+  .carousel
+  .carousel-indicators
+  [data-coreui-target],
+[data-coreui-theme='dark'].carousel
+  .carousel-indicators
+  [data-coreui-target] {
+  background-color: #adadad !important;
+  border-radius: 50%;
+  width: 10px;
+  height: 10px;
+}
+[data-coreui-theme='dark'].carousel
+  .carousel-control-prev-icon {
+  filter: invert(1)
+    grayscale(100);
+  display: none;
+}
