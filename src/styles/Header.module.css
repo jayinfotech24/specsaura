@@ -1,0 +1,103 @@
+.main {
+  width: 100%;
+  padding: 20px 0px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-direction: row;
+  background-color: transparent;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 100;
+}
+@keyframes slideInFromTop {
+  0% {
+    transform: translateY(
+      -100%
+    ); /* Starts off-screen from the top */
+  }
+  100% {
+    transform: translateY(
+      0
+    ); /* Ends at its normal position */
+  }
+}
+
+.visible {
+  width: 100%;
+  padding: 20px 0px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-direction: row;
+  background-color: #fff;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 100;
+  animation: slideInFromTop
+    0.7s ease-out; /* Applying the animation */
+}
+.inner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-direction: row;
+  padding: 0px 20px;
+  width: 100%;
+}
+
+.inner .logo {
+  width: 10%;
+  justify-content: center;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+.logo img {
+  object-fit: contain;
+  width: 100%;
+}
+
+.inner .menuitems {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 78%;
+}
+.menuitems ul {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  justify-content: space-between;
+  gap: 40px;
+  list-style: none;
+}
+
+.menuitems ul li {
+  font-size: 17px;
+  font-weight: 600;
+
+  color: #000000;
+  cursor: pointer;
+}
+
+.icons {
+  width: 12%;
+  justify-content: center;
+  align-items: center;
+  flex-direction: row;
+}
+.icons ul {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  list-style: none;
+  flex-direction: row;
+  gap: 10px;
+}
+.icons ul li {
+  cursor: pointer;
+}
