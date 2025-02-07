@@ -61,3 +61,7 @@ a {
     grayscale(100);
   display: none;
 }
+[data-coreui-theme='dark'].carousel
+  .carousel-control-next-icon {
+  display: none !important;
+}

@@ -84,6 +84,61 @@ export default function index() {
                         </div>
                     </div>
                 </div>
+                <div className={styles.collection}>
+                    <h3>Our Collection</h3>
+
+                    <div className={styles.collectionContent}>
+                        <div className={styles.collectionCards}>
+                            <div className={styles.imageContainer}>
+                                <img src="/Images/glass.avif" />
+                            </div>
+                            <h2>Aviator glasses</h2>
+                        </div>
+                        <div className={styles.collectionCards}>
+                            <div className={styles.imageContainer}>
+                                <img src="/Images/glass2.avif" />
+                            </div>
+                            <h2>
+                                Round Glasses
+                            </h2>
+                        </div>
+                        <div className={styles.collectionCards}>
+                            <div className={styles.imageContainer}>
+                                <img src="/Images/glass3.avif" />
+                            </div>
+                            <h2>
+                                Model Glasses
+                            </h2>
+                        </div>
+                        <div className={styles.collectionCards}>
+                            <div className={styles.imageContainer}>
+                                <img src="/Images/glass4.avif" />
+                            </div>
+                            <h2>
+                                Cat-Eyes Glasses
+                            </h2>
+                        </div>
+                        <div className={styles.collectionCards}>
+                            <div className={styles.imageContainer}>
+                                <img src="/Images/glass5.avif" />
+                            </div>
+                            <h2>
+                                Classic Glasses
+                            </h2>
+                        </div>
+                        <div className={styles.collectionCards}>
+                            <div className={styles.imageContainer}>
+                                <img src="/Images/glass6.avif" />
+                            </div>
+                            <h2>
+                                Panda Glassess
+                            </h2>
+                        </div>
+
+
+                    </div>
+
+                </div>
             </div>
         </div>
     )
