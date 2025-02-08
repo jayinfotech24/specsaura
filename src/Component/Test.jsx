@@ -2,13 +2,13 @@ import React from 'react'
 import { CCarousel, CCarouselCaption, CCarouselItem, CImage } from '@coreui/react'
 import '@coreui/coreui/dist/css/coreui.min.css'
 
-export const CarouselDarkVariantExample = ({ handleSlideChange }) => {
+export const CarouselDarkVariantExample = ({ handleSlideChange, activeSlide }) => {
 
-
+    console.log("Ac", activeSlide)
     return (
-        <CCarousel controls indicators dark interval={3000} onSlid={(eventKey, direction) => handleSlideChange(eventKey, direction)}>
+        <CCarousel key={activeSlide} controls indicators dark activeIndex={activeSlide} onSlid={(eventKey, direction) => handleSlideChange(eventKey, direction)} interval={1000}>
             {/* Auto-play every 3 seconds (3000ms) */}
-            <CCarouselItem>
+            <CCarouselItem >
                 <CImage className="d-block w-100" src="/Images/poster.webp" alt="slide 1" />
                 {/* <CCarouselCaption className="d-none d-md-block">
                     <h5>First slide label</h5>
@@ -16,7 +16,7 @@ export const CarouselDarkVariantExample = ({ handleSlideChange }) => {
                 </CCarouselCaption> */}
             </CCarouselItem>
 
-            <CCarouselItem>
+            <CCarouselItem >
                 <CImage className="d-block w-100" src="/Images/poster2.webp" alt="slide 2" />
                 {/* <CCarouselCaption className="d-none d-md-block">
                     <h5>Second slide label</h5>

@@ -1,11 +1,12 @@
 import "@/styles/globals.css";
 import type { AppProps } from "next/app";
 import Head from "next/head";
-
+import "primereact/resources/themes/lara-light-cyan/theme.css";
+import { PrimeReactProvider } from 'primereact/api';
 export default function App({ Component, pageProps }: AppProps) {
   return (
     <>
-      <Head>
+         <Head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link 
@@ -16,7 +17,9 @@ export default function App({ Component, pageProps }: AppProps) {
 <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
 <link href="https://fonts.googleapis.com/css2?family=Marcellus&display=swap" rel="stylesheet"></link>
       </Head>
-      <Component {...pageProps} />
+        <Component {...pageProps} />
+       
+ 
     </>
   );
 }

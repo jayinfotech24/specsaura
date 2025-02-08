@@ -4,6 +4,10 @@ import styles from "../styles/landingpage.module.css"
 import { useState, useEffect } from 'react';
 import { CarouselDarkVariantExample } from '../Component/Test';
 import { motion } from 'framer-motion';
+import VideoCarousle from '../Component/VideoCarousle';
+
+
+
 export default function index() {
     const [isHeaderVisible, setIsHeaderVisible] = useState(false);
     const [lastScrollY, setLastScrollY] = useState(0);
@@ -37,6 +41,13 @@ export default function index() {
         setActiveSlide(eventKey)
     };
 
+    useEffect(() => {
+        const interval = setTimeout(() => {
+            setActiveSlide(prevIndex => (prevIndex === 0 ? 1 : 0)); // Toggle between 0 and 1
+        }, 5000);
+        return () => clearTimeout(interval);
+    }, [activeSlide])
+
     return (
         <div className={styles.main}>
             {<Header isHeaderVisible={isHeaderVisible} />}
@@ -44,7 +55,7 @@ export default function index() {
 
                 <div>
                     <div className={styles.carousleComponent} >
-                        <CarouselDarkVariantExample handleSlideChange={handleSlideChange} />
+                        <CarouselDarkVariantExample handleSlideChange={handleSlideChange} activeSlide={activeSlide} />
                         {activeSlide == 0 && <motion.div initial="hidden"
 
                             animate="visible"
@@ -138,6 +149,9 @@ export default function index() {
 
                     </div>
 
+                </div>
+                <div className={styles.VideoSlider}>
+                    <VideoCarousle />
                 </div>
             </div>
         </div>

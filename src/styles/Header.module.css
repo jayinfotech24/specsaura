@@ -101,3 +101,16 @@
 .icons ul li {
   cursor: pointer;
 }
+.icons ul li:last-child {
+  position: relative;
+}
+.dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background-color: #ed0e0e;
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(40%);
+}
