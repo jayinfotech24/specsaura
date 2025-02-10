@@ -11,76 +11,71 @@ export default function VideoCarousle() {
         <div className={styles.main}>
             <div className={styles.scroller}>
                 <div className={styles.inner}>
-                    {[...Array(2)].map((_, index) => (
-                        <React.Fragment key={index}>
-                            <div className={styles.cards}>
-                                <ReactPlayer
-                                    url="/video/add1.mp4"
-                                    playing={true}
-                                    muted={true}
-                                    loop={true}
-                                    controls={false}
-                                    height="320px"
-                                    width="200px"
-                                />
-                            </div>
-                            <div className={styles.cards}>
-                                <ReactPlayer
-                                    url="/video/add2.mp4"
-                                    playing={true}
-                                    muted={true}
-                                    loop={true}
-                                    controls={false}
-                                    height="320px"
-                                    width="200px"
-                                />
-                            </div>
-                            <div className={styles.cards}>
-                                <ReactPlayer
-                                    url="/video/add1.mp4"
-                                    playing={true}
-                                    muted={true}
-                                    loop={true}
-                                    controls={false}
-                                    height="320px"
-                                    width="200px"
-                                />
-                            </div>
-                            <div className={styles.cards}>
-                                <ReactPlayer
-                                    url="/video/add2.mp4"
-                                    playing={true}
-                                    muted={true}
-                                    loop={true}
-                                    controls={false}
-                                    height="320px"
-                                    width="200px"
-                                />
-                            </div>
-                            <div className={styles.cards}>
-                                <ReactPlayer
-                                    url="/video/add1.mp4"
-                                    playing={true}
-                                    muted={true}
-                                    loop={true}
-                                    controls={false}
-                                    height="320px"
-                                    width="200px"
-                                />
-                            </div>
-                            <div className={styles.cards}>
-                                <ReactPlayer
-                                    url="/video/add2.mp4"
-                                    playing={true}
-                                    muted={true}
-                                    loop={true}
-                                    controls={false}
-                                    height="320px"
-                                    width="200px"
-                                />
-                            </div>
-                        </React.Fragment>
-                    ))}
+
+
+                    <div className={styles.cards}>
+                        <ReactPlayer
+                            url="/video/add1.mp4"
+                            playing={true}
+                            muted={true}
+                            loop={true}
+                            controls={false}
+                            height="100%"
+                            width="100%"
+                        />
+                    </div>
+                    <div className={styles.cards}>
+                        <ReactPlayer
+                            url="/video/add2.mp4"
+                            playing={true}
+                            muted={true}
+                            loop={true}
+                            controls={false}
+                            height="100%"
+                            width="100%"
+
+                        />
+                    </div>
+                    <div className={styles.cards}>
+                        <ReactPlayer
+                            url="/video/add1.mp4"
+                            playing={true}
+                            muted={true}
+                            loop={true}
+                            controls={false}
+                            height="100%"
+                            width="100%"
+
+                        />
+                    </div>
+                    <div className={styles.cards}>
+                        <ReactPlayer
+                            url="/video/add2.mp4"
+                            playing={true}
+                            muted={true}
+                            loop={true}
+                            controls={false}
+                            height="100%"
+                            width="100%"
+
+
+                        />
+                    </div>
+                    <div className={styles.cards}>
+                        <ReactPlayer
+                            url="/video/add1.mp4"
+                            playing={true}
+                            muted={true}
+                            loop={true}
+                            controls={false}
+                            height="100%"
+                            width="100%"
+
+                        />
+                    </div>
+
+
+
                 </div>
             </div>
         </div>

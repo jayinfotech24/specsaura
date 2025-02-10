@@ -1,5 +1,5 @@
 .main {
-  width: 100%;
+  width: 95%;
   overflow: hidden;
   position: relative;
 
@@ -16,14 +16,16 @@
 .inner {
   display: flex;
   gap: 20px;
-  animation: scroll 20s linear
-    infinite;
+  /* animation: scroll 20s linear
+    infinite; */
   width: max-content; /* Ensures it spans beyond container */
+  justify-content: center;
+  align-items: center;
 }
 
 .cards {
-  min-width: 200px; /* Adjust width as needed */
-  height: 300px;
+  width: 20%; /* Adjust width as needed */
+  height: 400px;
   overflow: hidden;
   border-radius: 10px;
 }
@@ -34,7 +36,7 @@
   object-fit: cover;
 }
 
-@keyframes scroll {
+/* @keyframes scroll {
   from {
     transform: translateX(0);
   }
@@ -43,4 +45,4 @@
       -50%
     );
   }
-}
+} */
