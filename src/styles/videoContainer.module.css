@@ -25,7 +25,7 @@
 
 .cards {
   width: 20%; /* Adjust width as needed */
-  height: 400px;
+  height: 550px;
   overflow: hidden;
   border-radius: 10px;
 }
@@ -46,3 +46,8 @@
     );
   }
 } */
+@media (max-width: 1400px) {
+  .cards {
+    height: 400px;
+  }
+}

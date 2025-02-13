@@ -1,0 +1,103 @@
+.main {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  width: 24%;
+}
+
+.inner {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  justify-content: start;
+  position: relative;
+}
+
+.inner .imageContainer {
+  background-color: #f5f5f5;
+  border-radius: 3px;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+}
+.inner .imageContainer img {
+  width: 100%;
+  object-fit: contain;
+}
+.inner .content {
+  display: flex;
+  width: 100%;
+  justify-content: start;
+  align-items: start;
+  gap: 10px;
+  flex-direction: column;
+}
+.inner .content h3 {
+  font-family: Lato;
+  font-size: 16px;
+  font-weight: 500;
+  color: #000;
+  line-height: 28px;
+  margin: 0px;
+  cursor: pointer;
+}
+.inner .content h2 {
+  font-family: Lato;
+  font-size: 15px;
+  font-weight: 700;
+  color: #ed0f0f;
+  margin: 0px;
+  cursor: pointer;
+}
+.inner .content h3:hover {
+  color: #fd5b25 !important;
+  cursor: pointer;
+  transform: all 0.6s ease;
+}
+.inner
+  .imageContainer:hover
+  + .sidebar,
+.inner .sidebar:hover {
+  opacity: 1;
+  visibility: visible;
+}
+
+.inner .sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  position: absolute;
+  top: 40%;
+  right: 0;
+  border-radius: 5px;
+  padding: 5px;
+  background-color: transparent;
+  transform: translateY(-50%);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s
+      ease,
+    visibility 0.3s ease;
+}
+.inner .icon {
+  width: 100%;
+  border-radius: 50%;
+  background-color: #fff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 10px;
+  cursor: pointer;
+  opacity: 0;
+}
+.inner .icon:hover {
+  background-color: #ed0f0f;
+  transition: all 0.3 ease;
+}
+.inner .icon:hover svg {
+  stroke: #fff;
+}
