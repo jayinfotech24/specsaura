@@ -58,13 +58,13 @@
   cursor: pointer;
   transform: all 0.6s ease;
 }
-.inner
+/* .inner
   .imageContainer:hover
   + .sidebar,
 .inner .sidebar:hover {
   opacity: 1;
   visibility: visible;
-}
+} */
 
 .inner .sidebar {
   display: flex;
@@ -83,8 +83,14 @@
       ease,
     visibility 0.3s ease;
 }
+.inner:hover .sidebar {
+  opacity: 1;
+  visibility: visible;
+  right: 0; /* Slide into view */
+}
 .inner .icon {
-  width: 100%;
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
   background-color: #fff;
   display: flex;
@@ -92,7 +98,8 @@
   align-items: center;
   padding: 10px;
   cursor: pointer;
-  opacity: 0;
+  opacity: 0; /* Initially hidden */
+  transform: translateX(50px);
 }
 .inner .icon:hover {
   background-color: #ed0f0f;
@@ -100,4 +107,50 @@
 }
 .inner .icon:hover svg {
   stroke: #fff;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateX(
+      50px
+    );
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.inner:hover
+  .icon:nth-child(1) {
+  animation: fadeIn 0.5s
+    ease-out forwards;
+  animation-delay: 0.3s;
+}
+
+.inner:hover
+  .icon:nth-child(2) {
+  animation: fadeIn 0.5s
+    ease-out forwards;
+  animation-delay: 0.5s;
+}
+
+.inner:hover
+  .icon:nth-child(3) {
+  animation: fadeIn 0.5s
+    ease-out forwards;
+  animation-delay: 0.7s;
+}
+@media (max-width: 992px) {
+  .inner .content h3 {
+    font-size: 14px;
+  }
+  .inner .content h2 {
+    font-size: 13px;
+  }
+  .inner .sidebar {
+    top: 38%;
+    gap: 10px;
+  }
 }

@@ -287,7 +287,7 @@
   justify-content: center;
   align-items: center;
   padding: 50px 0 40px;
-  background-color: #f2f2f2;
+  background-color: #d1d1d1;
   margin-top: 30px;
 }
 .footer .footerInner {
@@ -469,5 +469,96 @@
   gap: 10px;
   flex-direction: row;
 }
+
+/* Desktop responsive */
 @media (max-width: 1400px) {
+}
+
+/* Tablet responsive */
+@media (max-width: 992px) {
+  .collection
+    .collectionCards
+    h2 {
+    text-align: center;
+    font-size: 12px;
+  }
+  .collectionContent
+    .collectionCards {
+    width: 12%;
+  }
+  .collection h3 {
+    font-size: 22px;
+  }
+  .carousleComponent
+    .componentContent {
+    width: 30%;
+    top: 30%;
+  }
+  .carousleComponent {
+    height: auto;
+  }
+  .carousleComponent
+    .componentContent
+    h1 {
+    font-size: 45px;
+  }
+  .carousleComponent
+    .componentContent
+    p {
+    font-size: 15px;
+  }
+  .cardComponent .heading h1 {
+    font-size: 35px;
+  }
+  .footerInner
+    .left
+    .leftContent {
+    width: 90%;
+  }
+  .footerInner
+    .left
+    .leftContent
+    .logo {
+    width: 40%;
+  }
+  .footerInner
+    .left
+    .leftContent
+    p {
+    font-size: 14px;
+  }
+  .footerInner
+    .right
+    .container1
+    h3 {
+    font-size: 16px;
+  }
+  .footerInner
+    .right
+    .container1
+    h3::before {
+    top: 35px;
+  }
+  .footerInner
+    .right
+    .container1
+    ul {
+    gap: 10px;
+  }
+  .footerInner
+    .right
+    .container1
+    ul
+    li {
+    font-size: 14px;
+  }
+  .footerInner
+    .right
+    .container1 {
+    gap: 15px;
+  }
+}
+
+/* Mobile responsive */
+@media (max-width: 768px) {
 }
