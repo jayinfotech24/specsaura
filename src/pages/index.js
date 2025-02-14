@@ -45,12 +45,12 @@ export default function index() {
         setActiveSlide(eventKey)
     };
 
-    useEffect(() => {
-        const interval = setTimeout(() => {
-            setActiveSlide(prevIndex => (prevIndex === 0 ? 1 : 0)); // Toggle between 0 and 1
-        }, 5000);
-        return () => clearTimeout(interval);
-    }, [activeSlide])
+    // useEffect(() => {
+    //     const interval = setTimeout(() => {
+    //         setActiveSlide(prevIndex => (prevIndex === 0 ? 1 : 0)); // Toggle between 0 and 1
+    //     }, 5000);
+    //     return () => clearTimeout(interval);
+    // }, [activeSlide])
 
     return (
         <div className={styles.main}>
