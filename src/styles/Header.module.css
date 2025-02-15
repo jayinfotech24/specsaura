@@ -38,6 +38,13 @@
   z-index: 100;
   animation: slideInFromTop
     0.7s ease-out; /* Applying the animation */
+  box-shadow: rgba(
+      0,
+      0,
+      0,
+      0.24
+    )
+    0px 3px 8px;
 }
 .inner {
   display: flex;
@@ -187,6 +194,7 @@
     width: 80px;
     height: 40px;
     margin-left: 50px;
+    display: none;
   }
   .buttonContainer {
     display: flex;
@@ -241,11 +249,21 @@
   .icons {
     width: 40%;
     margin: 0px;
+    justify-content: end;
+    display: flex;
   }
   .icons ul {
     margin: 0px;
   }
   .inner .menuitems {
+    display: none;
+  }
+  .icons ul li:nth-last-child(1) /* Last item */ {
+    /* Second last item */
+    display: none;
+  }
+  .icons ul li:nth-last-child(2) /* Last item */ {
+    /* Second last item */
     display: none;
   }
 }

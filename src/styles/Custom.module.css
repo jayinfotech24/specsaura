@@ -1,0 +1,114 @@
+.main {
+  width: 100%;
+  overflow: hidden;
+  position: relative;
+}
+
+.inner {
+  display: flex;
+  transition: transform 0.5s
+    ease-in-out; /* Smooth transition */
+  width: 100%;
+}
+
+.imageContainer {
+  min-width: 100%;
+}
+
+.imageContainer img {
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+}
+
+.componentContent {
+  position: absolute;
+  bottom: 5%;
+  left: 35%;
+
+  transform: translateX(-50%);
+  padding: 10px;
+  border-radius: 4px;
+  background: rgba(
+    255,
+    255,
+    255,
+    0.2
+  ); /* Semi-transparent white */
+  backdrop-filter: blur(
+    10px
+  ); /* Blurs the background behind */
+  -webkit-backdrop-filter: blur(
+    10px
+  ); /* For Safari support */
+  border: none;
+  outline: none;
+  box-shadow: none;
+  border-radius: 0px;
+  overflow: hidden;
+}
+
+.componentContent h1 {
+  font-size: 60px;
+  line-height: normal;
+  margin: 0px;
+  font-weight: 400;
+  color: #000;
+  font-family: 'Marcellus',
+    serif !important;
+  margin-bottom: 10px;
+}
+
+.componentContent p {
+  font-size: 20px;
+  line-height: normal;
+  margin: 0px;
+  font-weight: 500;
+  color: #000;
+  font-family: 'Marcellus',
+    serif !important;
+}
+
+.componentContent button {
+  display: flex;
+  padding: 12px 30px;
+  justify-content: center;
+  align-items: center;
+  font-size: 15px;
+  color: #000;
+  font-family: 'Marcellus',
+    serif !important;
+  background-color: transparent;
+  border: 1px solid #000;
+  border-radius: 2px;
+  margin-top: 10px;
+  cursor: pointer;
+  margin-top: 20px;
+}
+
+.componentContent
+  button:hover {
+  background-color: #7d7b7b;
+  border: 1px solid #7d7b7b;
+  color: #fff;
+}
+@media (max-width: 768px) {
+  .componentContent {
+    width: 45%;
+    left: 30%;
+    bottom: -2%;
+    padding: 5px;
+  }
+  .componentContent h1 {
+    font-size: 18px;
+  }
+  .componentContent p {
+    font-size: 10px;
+    font-weight: 400;
+  }
+  .componentContent button {
+    margin-top: 10;
+    font-size: 8px;
+    padding: 2px;
+  }
+}

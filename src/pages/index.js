@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useRef } from 'react'
 import Header from '../Component/Header'
 import styles from "../styles/landingpage.module.css"
 import { useState, useEffect } from 'react';
@@ -11,31 +11,41 @@ import { FaXTwitter } from "react-icons/fa6";
 import { FaInstagram } from "react-icons/fa";
 import { FaThreads } from "react-icons/fa6";
 import { FaFacebookF } from "react-icons/fa";
+import CustomCarousle from '../Component/CustomCarousle';
 
 export default function index() {
     const [isHeaderVisible, setIsHeaderVisible] = useState(false);
     const [lastScrollY, setLastScrollY] = useState(0);
+    const carouselRef = useRef(null);
 
-    const [activeSlide, setActiveSlide] = useState(0);
-    const captionVariants = {
-        hidden: { opacity: 0, y: 80 },
-        visible: { opacity: 1, y: 0, transition: { duration: 0.9, ease: "easeOut" } },
-    }
+
+    // useEffect(() => {
+    //     console.log("Scroll", window.scrollY, carouselRef.current.offsetHeight)
+    // }, [lastScrollY])
     useEffect(() => {
         const handleScroll = () => {
+            if (!carouselRef.current) return; // Ensure ref is assigned
 
-            if (window.scrollY > lastScrollY) {
-                setIsHeaderVisible(true);
-            } else {
+            const carouselHeight = carouselRef.current.offsetHeight - 100; // Get carousel height
 
+            if (window.scrollY > carouselHeight) {
+
+                if (window.scrollY < carouselHeight) {
+                    setIsHeaderVisible(false); // Hide on scroll down
+                } else {
+                    setIsHeaderVisible(true); // Show on scroll up
+                }
+            }
+            else {
                 setIsHeaderVisible(false);
             }
+
             setLastScrollY(window.scrollY);
         };
 
-        window.addEventListener('scroll', handleScroll);
+        window.addEventListener("scroll", handleScroll);
         return () => {
-            window.removeEventListener('scroll', handleScroll);
+            window.removeEventListener("scroll", handleScroll);
         };
     }, [lastScrollY]);
 
@@ -57,27 +67,14 @@ export default function index() {
             {<Header isHeaderVisible={isHeaderVisible} />}
             <div className={styles.inner}>
 
-                <div>
+                <div ref={carouselRef}>
                     <div className={styles.carousleComponent} >
-                        <CarouselDarkVariantExample handleSlideChange={handleSlideChange} activeSlide={activeSlide} />
-                        {activeSlide == 0 && <motion.div initial="hidden"
 
-                            animate="visible"
-                            exit="hidden"
-                            variants={captionVariants} className={styles.componentContent}>
-                            <h1>New Trend</h1>
-                            <p>Sunglasses fashion translucent sunglasses star</p>
-                            <button>Shop Now</button>
-                        </motion.div>}
-                        {activeSlide == 1 && <motion.div initial="hidden"
 
-                            animate="visible"
-                            exit="hidden"
-                            variants={captionVariants} className={styles.componentContent}>
-                            <h1>New Collection</h1>
-                            <p>Best glasses for women's heart shaped faces</p>
-                            <button>Shop Now</button>
-                        </motion.div>}
+                        <CustomCarousle />
+
+
+
                     </div>
                 </div>
                 <div className={styles.secondComponent}>

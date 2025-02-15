@@ -69,3 +69,19 @@
     display: none; /* For Chrome, Safari, Edge */
   }
 }
+@media (max-width: 768px) {
+  .main {
+    overflow-x: auto;
+    padding: 5px;
+  }
+  .scroller {
+    overflow-x: auto;
+  }
+  .inner {
+    gap: 16px;
+  }
+  .cards {
+    width: 180px;
+    height: 300px;
+  }
+}

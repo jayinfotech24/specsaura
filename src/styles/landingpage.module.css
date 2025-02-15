@@ -463,11 +463,14 @@
   transform: translateX(-50%);
 }
 .cardComponent .cardInner {
-  display: flex;
+  display: grid;
+  grid-template-columns: repeat(
+    4,
+    1fr
+  ); /* 4 cards per row */
+  gap: 10px;
   justify-content: center;
   align-items: center;
-  gap: 10px;
-  flex-direction: row;
 }
 
 /* Desktop responsive */
@@ -561,4 +564,107 @@
 
 /* Mobile responsive */
 @media (max-width: 768px) {
+  .collection {
+    padding: 20px;
+    gap: 30px;
+  }
+  .collection h3 {
+    font-size: 18px;
+  }
+  .collection
+    .collectionContent {
+    overflow-x: auto;
+    gap: 20px;
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE and Edge */
+  }
+  .collectionContent
+    .collectionCards {
+    width: 160px;
+    /* height: 100px; */
+    gap: 10px;
+  }
+  .collectionContent
+    .collectionCards
+    .imageContainer {
+    width: 160px;
+  }
+  .collection
+    .collectionCards
+    h2 {
+    text-align: center;
+    font-size: 12px;
+    font-weight: 600;
+  }
+  .cardComponent .cardInner {
+    grid-template-columns: repeat(
+      2,
+      1fr
+    );
+  }
+  .cardComponent .heading h1 {
+    font-size: 25px;
+  }
+  .cardComponent
+    .heading
+    h1::before {
+    top: 40px;
+  }
+  .footer {
+    justify-content: start;
+    align-items: start;
+    padding: 20px;
+    flex-direction: column;
+  }
+  .footer .footerInner {
+    justify-content: start;
+    align-items: start;
+    padding: 20px;
+    gap: 30px;
+    flex-direction: column;
+  }
+  .footerInner .left {
+    justify-content: start;
+    align-items: start;
+
+    gap: 20px;
+    width: 100%;
+  }
+  .footerInner .right {
+    width: 100%;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .footerInner
+    .right
+    .container1 {
+    width: 100%;
+  }
+  .footerInner
+    .right
+    .container1
+    h3::before {
+    width: 40%;
+    position: absolute;
+    top: 30px;
+    left: 0;
+  }
+  .footerInner
+    .left
+    .leftContent {
+    gap: 10px;
+  }
+  .footerInner
+    .left
+    .leftContent
+    p {
+    width: 70%;
+  }
+  .footerInner
+    .right
+    .container1
+    ul {
+    margin-top: 10px;
+    gap: 5px;
+  }
 }
