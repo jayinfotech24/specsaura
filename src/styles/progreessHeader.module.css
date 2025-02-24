@@ -1,0 +1,76 @@
+.main {
+  width: 100%;
+  display: flex;
+  justify-content: start;
+  align-items: center;
+
+  height: 70px;
+  flex-direction: column;
+  position: fixed;
+  top: 0;
+  left: 0;
+}
+.inner {
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+  align-items: center;
+  flex-direction: row;
+  background-color: #fff;
+  height: 80px;
+  box-shadow: rgba(
+      0,
+      0,
+      0,
+      0.1
+    )
+    0px 4px 12px;
+}
+.inner .headerNumber {
+  width: 33%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0px 10px;
+  cursor: pointer;
+}
+.headerNumber .step {
+  background-color: gray;
+  border-radius: 50%;
+  height: 25px;
+  width: 25px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 2px;
+}
+.step p {
+  font-size: 12px;
+  color: #fff;
+  line-height: normal;
+}
+.progressBar {
+  width: 100%;
+  height: 6px;
+  background-color: #e0e0e0;
+
+  overflow: hidden;
+}
+.headerNumber .complete {
+  background-color: black;
+  border-radius: 50%;
+  height: 20px;
+  width: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 2px;
+}
+
+.progress {
+  height: 100%;
+  width: 0;
+  background-color: #4caf50; /* Green color for progress */
+  transition: width 0.4s
+    ease-in-out;
+}

@@ -202,7 +202,7 @@
 .collectionContent
   .collectionCards {
   flex-direction: column;
-  width: 14%;
+  width: 12%;
   gap: 30px;
   display: flex;
   justify-content: center;
@@ -565,7 +565,7 @@
 /* Mobile responsive */
 @media (max-width: 768px) {
   .collection {
-    padding: 20px;
+    padding: 20px 50px;
     gap: 30px;
   }
   .collection h3 {
@@ -574,20 +574,20 @@
   .collection
     .collectionContent {
     overflow-x: auto;
-    gap: 20px;
+    gap: 35px;
     scrollbar-width: none; /* Firefox */
     -ms-overflow-style: none; /* IE and Edge */
   }
   .collectionContent
     .collectionCards {
-    width: 160px;
+    width: 30vw;
     /* height: 100px; */
     gap: 10px;
   }
   .collectionContent
     .collectionCards
     .imageContainer {
-    width: 160px;
+    width: 120px;
   }
   .collection
     .collectionCards
