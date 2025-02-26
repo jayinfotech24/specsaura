@@ -101,6 +101,9 @@
   opacity: 0; /* Initially hidden */
   transform: translateX(50px);
 }
+.inner .icon svg {
+  stroke: #000;
+}
 .inner .icon:hover {
   background-color: #ed0f0f;
   transition: all 0.3 ease;

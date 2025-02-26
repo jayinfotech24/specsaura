@@ -207,7 +207,9 @@ export default function index() {
     const ThiredPage = () => {
         return (
             <div className={styles.thiredMain}>
-                <button onClick={() => Changepage(3)}>Submit3</button>
+                <div className={styles.thiredInner}>
+
+                </div>
             </div>
         )
     }

@@ -1,0 +1,260 @@
+.footer {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 50px 0 40px;
+  background-color: #d1d1d1;
+  margin-top: 30px;
+}
+.footer .footerInner {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: row;
+  padding: 0px 20px;
+}
+.footerInner .left {
+  width: 25%;
+  display: flex;
+  justify-content: center;
+  align-items: start;
+  flex-direction: column;
+  gap: 20px;
+}
+.footerInner
+  .left
+  .leftContent {
+  width: 80%;
+  display: flex;
+  justify-content: start;
+  align-items: start;
+  flex-direction: column;
+  gap: 20px;
+  margin: 0px 10px;
+}
+.footerInner
+  .left
+  .leftContent
+  .logo {
+  display: flex;
+  width: 50%;
+  justify-content: center;
+  align-items: center;
+}
+
+.footerInner .left .logo img {
+  width: 100%;
+  object-fit: cover;
+}
+.footerInner
+  .left
+  .leftContent
+  p {
+  font-weight: 400;
+  margin-top: 23px;
+  font-size: 16px;
+  color: #000000;
+  font-family: 'Lato', serif;
+}
+.footerInner
+  .left
+  .leftContent
+  .icons {
+  display: flex;
+  justify-content: start;
+  width: 100%;
+  gap: 20px;
+  align-items: center;
+  flex-direction: row;
+  cursor: pointer;
+}
+.footerInner
+  .left
+  .leftContent
+  .icons
+  svg {
+  fill: #000;
+}
+.footerInner .right {
+  display: flex;
+  justify-content: center;
+  width: 75%;
+  flex-direction: row;
+  justify-content: space-between;
+}
+.footerInner
+  .right
+  .container1 {
+  width: 30%;
+  display: flex;
+  justify-content: start;
+  align-items: start;
+  gap: 20px;
+  flex-direction: column;
+  margin: 0px 10px;
+}
+.footerInner
+  .right
+  .container1
+  h3 {
+  font-size: 18px;
+  font-weight: 600;
+  color: #000;
+  position: relative;
+}
+.footerInner
+  .right
+  .container1
+  h3::before {
+  content: '';
+  width: 40%;
+  position: absolute;
+  top: 40px;
+  left: 0;
+  background-color: #000;
+  height: 1px;
+}
+.footerInner
+  .right
+  .container1
+  ul {
+  display: flex;
+  justify-content: start;
+  align-items: start;
+  gap: 20px;
+  width: 100%;
+  flex-direction: column;
+  margin-top: 20px;
+}
+.footerInner
+  .right
+  .container1
+  ul
+  li {
+  font-size: 16px;
+  font-weight: 400;
+  width: 100%;
+  text-align: start;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  color: #000;
+}
+
+.footerInner
+  .right
+  .container1
+  ul
+  li:hover {
+  color: #fd5b25;
+}
+
+@media (max-width: 992px) {
+  .footerInner
+    .left
+    .leftContent {
+    width: 90%;
+  }
+  .footerInner
+    .left
+    .leftContent
+    .logo {
+    width: 40%;
+  }
+  .footerInner
+    .left
+    .leftContent
+    p {
+    font-size: 14px;
+  }
+  .footerInner
+    .right
+    .container1
+    h3 {
+    font-size: 16px;
+  }
+  .footerInner
+    .right
+    .container1
+    h3::before {
+    top: 35px;
+  }
+  .footerInner
+    .right
+    .container1
+    ul {
+    gap: 10px;
+  }
+  .footerInner
+    .right
+    .container1
+    ul
+    li {
+    font-size: 14px;
+  }
+  .footerInner
+    .right
+    .container1 {
+    gap: 15px;
+  }
+}
+@media (max-width: 768px) {
+  .footer {
+    justify-content: start;
+    align-items: start;
+    padding: 20px;
+    flex-direction: column;
+  }
+  .footer .footerInner {
+    justify-content: start;
+    align-items: start;
+    padding: 20px;
+    gap: 30px;
+    flex-direction: column;
+  }
+  .footerInner .left {
+    justify-content: start;
+    align-items: start;
+
+    gap: 20px;
+    width: 100%;
+  }
+  .footerInner .right {
+    width: 100%;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .footerInner
+    .right
+    .container1 {
+    width: 100%;
+  }
+  .footerInner
+    .right
+    .container1
+    h3::before {
+    width: 40%;
+    position: absolute;
+    top: 30px;
+    left: 0;
+  }
+  .footerInner
+    .left
+    .leftContent {
+    gap: 10px;
+  }
+  .footerInner
+    .left
+    .leftContent
+    p {
+    width: 70%;
+  }
+  .footerInner
+    .right
+    .container1
+    ul {
+    margin-top: 10px;
+    gap: 5px;
+  }
+}

@@ -111,6 +111,9 @@
 .icons ul li:last-child {
   position: relative;
 }
+.icons ul li svg {
+  stroke: #000;
+}
 .dot {
   width: 10px;
   height: 10px;
