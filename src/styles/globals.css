@@ -72,3 +72,51 @@ a {
   .carousel-control-next-icon {
   display: none !important;
 }
+/* BouncingLogoLoader.css */
+/* Preloader.css */
+
+.preloader {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  height: 100vh;
+  background-color: #fff;
+  justify-content: center;
+}
+
+.logo {
+  width: 100px;
+  height: 50px;
+  animation: jump 1.5s
+    infinite ease-in-out;
+}
+
+.logo img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.line {
+  width: 130px;
+  height: 2px;
+  background-color: #333;
+  border-bottom-left-radius: 10px;
+  position: relative;
+  animation: lineBounce 1s
+    infinite ease-in-out; /* Add line bounce animation */
+}
+
+@keyframes jump {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(
+      -20px
+    );
+  }
+}

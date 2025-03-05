@@ -1,7 +1,7 @@
 
 const Appapis = {
-    Basurl: "https://localhost:3000/",
-    signIn: "/signIn",
+    Basurl: " https://specsauradataplazma.vercel.app",
+    signIn: "/api/otp/request",
     signOut: "/signOut"
 }
 

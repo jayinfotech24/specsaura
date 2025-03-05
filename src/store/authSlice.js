@@ -1,6 +1,6 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axiosInstance from "./axiosInstance";
-
+import Appapis from "./apiendpoints";
 const initialState = {
     count: 0,
     loading: false,
@@ -9,10 +9,10 @@ const initialState = {
 };
 
 
-const Login = createAsyncThunk("api/login", async (credentials, { rejectWithValue }) => {
+export const Login = createAsyncThunk("api/login", async (credentials, { rejectWithValue }) => {
 
     try {
-        const response = await axiosInstance.post(credentials)
+        const response = await axiosInstance.post(`${Appapis.Basurl}${Appapis.signIn}`, credentials)
         return response.data
     }
     catch (error) {

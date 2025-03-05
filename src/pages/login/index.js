@@ -3,6 +3,8 @@ import styles from "../../styles/login.module.css"
 import { useForm } from 'react-hook-form'
 import *as yup from "yup"
 import { yupResolver } from "@hookform/resolvers/yup";
+import { useDispatch } from 'react-redux';
+import { Login } from "../../store/authSlice"
 export default function index() {
 
     const validationSchema = yup.object().shape({
@@ -13,12 +15,27 @@ export default function index() {
 
     });
 
+    const dispatch = useDispatch()
+
     const { register, handleSubmit, formState: { errors } } = useForm({
         resolver: yupResolver(validationSchema),
     });
     const submitHandle = async (data) => {
-        console.log("Data", data)
-    }
+        const resObject = {
+            email: data.email
+        };
+
+        console.log("Request Payload:", resObject); // ✅ Log the data before sending
+
+        dispatch(Login(resObject))
+            .then((res) => {
+                console.log("Response:", res); // ✅ Log API response
+            })
+            .catch((err) => {
+                console.error("API Call Failed:", err); // ✅ Log API errors
+            });
+    };
+
     return (
         <div className={styles.main}>
             <div className={styles.inner}>
