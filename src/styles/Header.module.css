@@ -264,9 +264,17 @@
   }
   .icons ul li:nth-last-child(1) /* Last item */ {
     /* Second last item */
-    display: none;
+    /* display: none; */
   }
   .icons ul li:nth-last-child(2) /* Last item */ {
+    /* Second last item */
+    display: none;
+  }
+  .icons ul li:nth-last-child(3) /* Last item */ {
+    /* Second last item */
+    display: none;
+  }
+  .icons ul li:nth-last-child(4) /* Last item */ {
     /* Second last item */
     display: none;
   }

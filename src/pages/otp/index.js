@@ -3,11 +3,16 @@ import styles from "../../styles/otp.module.css";
 import { useForm } from 'react-hook-form';
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
-
+import { useDispatch } from 'react-redux';
+import { VerifyOtp } from '../../store/authSlice';
+import { useEffect } from 'react';
 export default function Index() {
-    const inputRefs = [useRef(null), useRef(null), useRef(null), useRef(null)];
+    const inputRefs = [useRef(null), useRef(null), useRef(null), useRef(null), useRef(null), useRef(null)];
     const [isError, setIsError] = useState(false);
     const [ErrorMessage, setErrorMessage] = useState(null);
+    const [timeLeft, setTimeLeft] = useState(0);
+    const dispatch = useDispatch();
+
     const handleChange = (e, index) => {
         setIsError(false);
         if (e.target.value.length === 1 && index < inputRefs.length - 1) {
@@ -21,13 +26,88 @@ export default function Index() {
         }
     };
 
+
+    useEffect(() => {
+        const storedExpiry = localStorage.getItem("otpExpiryTime");
+        const currentTime = Math.floor(Date.now() / 1000); // Current time in seconds
+
+        if (storedExpiry) {
+            const remainingTime = storedExpiry;
+            if (remainingTime > 0) {
+                setTimeLeft(remainingTime);
+            } else {
+                setTimeLeft(20);
+            }
+        } else {
+            setTimeLeft(20);
+        }
+    }, []);
+    useEffect(() => {
+        if (timeLeft > 0) {
+            const timer = setInterval(() => {
+                setTimeLeft(prev => {
+                    const updatedTime = prev - 1;
+                    localStorage.setItem("otpExpiryTime", updatedTime)
+                    if (updatedTime <= 0) {
+                        clearInterval(timer);
+                        return 0;
+                    }
+                    return updatedTime;
+                });
+            }, 1000);
+
+            return () => clearInterval(timer);
+        }
+    }, [timeLeft]);
+    const resendOtp = () => {
+        const newExpiryTime = Math.floor(Date.now() / 1000) + 300;
+
+        const Email = localStorage.getItem("email")
+        const resObject = {
+            email: Email
+        };
+
+        console.log("Request Payload:", resObject);
+        dispatch(Login(resObject))
+            .then((res) => {
+                console.log("Response:", res);
+                localStorage.setItem("email", Email)
+
+                localStorage.setItem("otpExpiryTime", newExpiryTime);
+                setTimeLeft(300);
+
+            })
+            .catch((err) => {
+                console.error("API Call Failed:", err);
+            });
+
+
+    };
+
+    const formatTime = () => {
+        const minutes = Math.floor(timeLeft / 60);
+        const seconds = timeLeft % 60;
+        return `${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
+    };
     const submitHandle = async (e) => {
         e.preventDefault()
         console.log("Data", inputRefs[0].current.value, inputRefs[1].current.value, inputRefs[2].current.value, inputRefs[3].current.value);
-
+        const combineString = inputRefs[0].current.value + inputRefs[1].current.value + inputRefs[2].current.value + inputRefs[3].current.value + inputRefs[4].current.value + inputRefs[5].current.value
+        console.log("Combine", combineString)
         if (inputRefs[0].current.value == "" || inputRefs[1].current.value == "" || inputRefs[2].current.value == "" || inputRefs[3].current.value == "") {
             setIsError(true);
             setErrorMessage("Please enter valid otp");
+        }
+        else {
+            const Email = localStorage.getItem("email");
+            const responseObject = {
+                email: Email,
+                otp: combineString
+            }
+
+            dispatch(VerifyOtp(responseObject)).then((response) => {
+                console.log("response", response);
+            })
         }
     };
     const handleRestrictLength = (e) => {
@@ -69,6 +149,20 @@ export default function Index() {
                         </div>
                         <div className={styles.buttonContainer}>
                             <button onClick={(e) => submitHandle(e)}>Submit</button>
+                        </div>
+                        <div className={styles.resend}>
+                            <p>
+                                Resend OTP in {formatTime()}{" "}
+                                <span
+                                    onClick={timeLeft === 0 ? resendOtp : null}
+                                    style={{
+                                        cursor: timeLeft === 0 ? "pointer" : "not-allowed",
+                                        color: timeLeft === 0 ? "blue" : "gray",
+                                    }}
+                                >
+                                    Resend
+                                </span>
+                            </p>
                         </div>
                     </form>
                 </div>

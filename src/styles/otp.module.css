@@ -101,7 +101,7 @@
   padding: 5px;
   border-radius: 10px;
   height: 70px;
-  color: #ced4da;
+  color: #000;
   border: 1px solid #ced4da;
   font-size: 14px;
   display: flex;
@@ -171,7 +171,20 @@
   bottom: -50%;
   left: 0;
 }
-
+.resend {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.resend p {
+  font-size: 15px;
+  color: #000;
+  font-weight: 500;
+}
+.resend p span {
+  color: #d3d3d3;
+}
 @media (max-width: 992px) {
   .inner
     .formContainer
@@ -182,6 +195,14 @@
   }
 }
 @media (max-width: 768px) {
+  .main {
+    padding: 20px;
+  }
+  .inner {
+    padding: 10px;
+    width: 100%;
+    height: auto;
+  }
   .inner
     .formContainer
     .content

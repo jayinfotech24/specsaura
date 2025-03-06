@@ -20,6 +20,19 @@ export const Login = createAsyncThunk("api/login", async (credentials, { rejectW
     }
 
 })
+export const VerifyOtp = createAsyncThunk("api/verify", async (credentials, { rejectWithValue }) => {
+
+    try {
+        const response = await axiosInstance.post(`${Appapis.Basurl}${Appapis.verifyOtp}`, credentials)
+        return response.data
+    }
+    catch (error) {
+        return rejectWithValue(error.response?.data || "Something went wrong");
+    }
+
+})
+
+
 
 const counterSlice = createSlice({
     name: "counter",
@@ -47,6 +60,18 @@ const counterSlice = createSlice({
 
             })
             .addCase(Login.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload;
+            })
+            .addCase(VerifyOtp.pending, (state, action) => {
+                state.loading = true
+
+            })
+            .addCase(VerifyOtp.fulfilled, (state, action) => {
+                state.loading = false;
+
+            })
+            .addCase(VerifyOtp.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.payload;
             });

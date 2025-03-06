@@ -25,14 +25,15 @@ export default function index() {
             email: data.email
         };
 
-        console.log("Request Payload:", resObject); // ✅ Log the data before sending
-
+        console.log("Request Payload:", resObject);
         dispatch(Login(resObject))
             .then((res) => {
-                console.log("Response:", res); // ✅ Log API response
+                console.log("Response:", res);
+                localStorage.setItem("email", data.email)
+
             })
             .catch((err) => {
-                console.error("API Call Failed:", err); // ✅ Log API errors
+                console.error("API Call Failed:", err);
             });
     };
 
