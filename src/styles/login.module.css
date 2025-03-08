@@ -96,12 +96,30 @@
   .inputContainer
   input {
   width: 100%;
-  padding: 20px 30px;
+  padding: 20px 40px;
   border-radius: 10px;
   height: 55px;
   color: #ced4da;
   border: 1px solid #ced4da;
   font-size: 14px;
+  color: #000 !important;
+}
+
+.inner
+  .inputContainer
+  span::after {
+  position: absolute;
+  content: '';
+  bottom: 10%;
+  left: 10px;
+  width: 28px;
+  height: 28px;
+  background: url(/Images/mail.svg)
+    no-repeat center center;
+  transform: translate(
+    -6%,
+    -27%
+  );
 }
 .inner
   .formContainer
@@ -199,5 +217,13 @@
     .inputContainer
     input {
     height: 40px;
+  }
+  .inner
+    .inputContainer
+    span::after {
+    width: 18px;
+    height: 18px;
+
+    background-size: 18px 18px;
   }
 }

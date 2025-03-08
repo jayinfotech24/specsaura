@@ -54,6 +54,7 @@ export default function index() {
                     <form onSubmit={handleSubmit(submitHandle)}>
                         <div className={styles.inputContainer}>
                             <input type="text" placeholder='Email address' {...register("email")} maxLength={30} />
+                            <span></span>
                             {errors.email && <p className={styles.errorMessage}>{errors.email.message}</p>}
 
                         </div>

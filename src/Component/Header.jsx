@@ -60,7 +60,7 @@ export default function Header({ isHeaderVisible }) {
                     <Hamburger toggled={isOpen} toggle={setOpen} />
 
                 </div>
-                <div className={styles.logo}>
+                <div className={styles.logo} onClick={() => router.push("/")}>
                     <img src="/Images/logo2 (1).png" />
                 </div>
 
