@@ -4,15 +4,19 @@ import { useForm } from 'react-hook-form';
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useDispatch } from 'react-redux';
-import { VerifyOtp } from '../../store/authSlice';
+import { Login, VerifyOtp } from '../../store/authSlice';
 import { useEffect } from 'react';
+import toast, { Toaster } from 'react-hot-toast';
+import { useRouter } from 'next/router';
+import Preloader from "../../Component/Animated"
 export default function Index() {
+    const [isLogin, setIsLogin] = useState(false);
     const inputRefs = [useRef(null), useRef(null), useRef(null), useRef(null), useRef(null), useRef(null)];
     const [isError, setIsError] = useState(false);
     const [ErrorMessage, setErrorMessage] = useState(null);
     const [timeLeft, setTimeLeft] = useState(0);
     const dispatch = useDispatch();
-
+    const router = useRouter()
     const handleChange = (e, index) => {
         setIsError(false);
         if (e.target.value.length === 1 && index < inputRefs.length - 1) {
@@ -36,10 +40,10 @@ export default function Index() {
             if (remainingTime > 0) {
                 setTimeLeft(remainingTime);
             } else {
-                setTimeLeft(20);
+                setTimeLeft(120);
             }
         } else {
-            setTimeLeft(20);
+            setTimeLeft(120);
         }
     }, []);
     useEffect(() => {
@@ -60,7 +64,8 @@ export default function Index() {
         }
     }, [timeLeft]);
     const resendOtp = () => {
-        const newExpiryTime = Math.floor(Date.now() / 1000) + 300;
+        setIsLogin(true)
+        const newExpiryTime = Math.floor(Date.now() / 1000) + 120;
 
         const Email = localStorage.getItem("email")
         const resObject = {
@@ -70,14 +75,23 @@ export default function Index() {
         console.log("Request Payload:", resObject);
         dispatch(Login(resObject))
             .then((res) => {
+
+                if (res.payload.status == 200) {
+                    toast.success("OTP Sent succesfully")
+                    setIsLogin(false)
+
+
+                }
+                setIsLogin(false)
                 console.log("Response:", res);
                 localStorage.setItem("email", Email)
 
                 localStorage.setItem("otpExpiryTime", newExpiryTime);
-                setTimeLeft(300);
+                setTimeLeft(120);
 
             })
             .catch((err) => {
+                setIsLogin(false)
                 console.error("API Call Failed:", err);
             });
 
@@ -90,6 +104,7 @@ export default function Index() {
         return `${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
     };
     const submitHandle = async (e) => {
+        setIsLogin(true)
         e.preventDefault()
         console.log("Data", inputRefs[0].current.value, inputRefs[1].current.value, inputRefs[2].current.value, inputRefs[3].current.value);
         const combineString = inputRefs[0].current.value + inputRefs[1].current.value + inputRefs[2].current.value + inputRefs[3].current.value + inputRefs[4].current.value + inputRefs[5].current.value
@@ -97,6 +112,7 @@ export default function Index() {
         if (inputRefs[0].current.value == "" || inputRefs[1].current.value == "" || inputRefs[2].current.value == "" || inputRefs[3].current.value == "") {
             setIsError(true);
             setErrorMessage("Please enter valid otp");
+            setIsLogin(false)
         }
         else {
             const Email = localStorage.getItem("email");
@@ -107,6 +123,25 @@ export default function Index() {
 
             dispatch(VerifyOtp(responseObject)).then((response) => {
                 console.log("response", response);
+                if (response.payload.status == 200) {
+                    localStorage.setItem("token", response.payload.authToken)
+                    localStorage.setItem("email", response.payload.email)
+                    localStorage.setItem("userId", response.payload.userId)
+                    setIsLogin(false)
+                    router.push("/")
+
+
+                }
+                if (response.payload.status == 501) {
+                    toast.error("Invalid otp");
+                    setIsLogin(false)
+                }
+                if (response.payload.status == 400) {
+                    toast.error("Your otp was expired");
+                    setIsLogin(false)
+                }
+
+
             })
         }
     };
@@ -120,6 +155,16 @@ export default function Index() {
 
     return (
         <div className={styles.main}>
+            <Toaster
+                position="top-center"
+                reverseOrder={false}
+            />
+            {
+                isLogin && (
+                    <Preloader />
+                )
+
+            }
             <div className={styles.inner}>
                 <div className={styles.logo}>
                     <img src="/Images/logo2 (1).png" alt="Logo" />

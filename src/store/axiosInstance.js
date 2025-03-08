@@ -13,8 +13,8 @@ axiosInstance.interceptors.request.use(
         const userId = localStorage.getItem("userId");
 
 
-        config.headers["userId"] = userId || "null"
-        config.headers["token"] = token || "null"
+        // config.headers["userId"] = userId || "null"
+        config.headers["authorization"] = token || "null"
         config.headers["Content-Type"] = "application/json";
         return config;
     },

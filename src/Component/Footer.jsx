@@ -26,7 +26,7 @@ export default function Footer() {
                     <div className={styles.container1}>
                         <h3>Help & Information</h3>
                         <ul>
-                            <li>Pagination</li>
+
                             <li>Terms & Condition</li>
                             <li>Contact</li>
                             <li>Accesories</li>
@@ -39,7 +39,7 @@ export default function Footer() {
                             <li>Help Center</li>
                             <li>Address Store</li>
                             <li>Privacy Policy</li>
-                            <li>Reciver & Amplifire</li>
+
 
                         </ul>
                     </div>
