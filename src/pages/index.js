@@ -178,7 +178,7 @@ export default function index() {
                                 <div className={styles.icons}>
                                     <FaXTwitter width={24} height={24} />
                                     <FaInstagram />
-                                    <FaThreads />
+
                                     <FaFacebookF />
                                 </div>
                             </div>

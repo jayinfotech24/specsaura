@@ -1,0 +1,464 @@
+.main {
+  display: flex;
+  justify-content: start;
+  align-content: center;
+  width: 100%;
+  flex-direction: column;
+
+  height: 100%;
+  background-color: #fff;
+}
+.inner {
+  width: 100%;
+  display: flex;
+  justify-content: start;
+  flex-direction: column;
+  margin-top: 80px;
+}
+.poster {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 400px;
+  position: relative;
+}
+.poster img {
+  width: 100%;
+  object-fit: cover;
+  height: 100%;
+}
+.poster .posterContent {
+  width: 100px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(
+    -50%,
+    -50%
+  );
+}
+.poster .posterContent h1 {
+  font-size: 60px;
+  font-family: Lato;
+  font-weight: 500;
+  color: #000;
+}
+.inner .listContainer {
+  width: 100%;
+  padding: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.listContainer table {
+  width: 100%;
+  border: 1px solid #dee2e6;
+}
+.listContainer table thead {
+  width: 100%;
+  border: 1px solid #dee2e6;
+}
+.listContainer
+  table
+  thead
+  tr {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+.listContainer
+  table
+  thead
+  tr
+  td {
+  border: 1px solid #dee2e6;
+  padding: 20px 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #000;
+}
+.listContainer
+  table
+  thead
+  tr
+  td:first-child {
+  width: 40%;
+  text-align: start;
+  display: flex;
+  justify-content: start;
+}
+
+.listContainer
+  table
+  thead
+  tr
+  td:nth-child(2) {
+  width: 10%;
+}
+.listContainer
+  table
+  tbody
+  tr
+  td:nth-child(2)
+  p {
+  display: none;
+}
+
+.listContainer
+  table
+  thead
+  tr
+  td:nth-child(3) {
+  width: 30%;
+}
+
+.listContainer
+  table
+  tbody
+  tr
+  td:nth-child(3)
+  p {
+  display: none;
+}
+.listContainer
+  table
+  tbody
+  tr
+  td:nth-child(3)
+  .quantity {
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+  justify-content: center;
+  align-items: center;
+}
+.listContainer
+  table
+  thead
+  tr
+  td:nth-child(4) {
+  width: 10%;
+}
+.listContainer
+  table
+  tbody
+  tr
+  td:nth-child(4)
+  p {
+  display: none;
+  visibility: hidden;
+}
+.listContainer
+  table
+  thead
+  tr
+  td:nth-child(5) {
+  width: 10%;
+}
+.listContainer
+  table
+  tbody
+  tr
+  td:nth-child(5)
+  p {
+  display: none;
+  visibility: hidden;
+}
+
+.listContainer table tbody {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.listContainer
+  table
+  tbody
+  tr {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  flex-direction: row;
+}
+.listContainer
+  table
+  tbody
+  tr
+  td {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 10px;
+}
+.listContainer
+  table
+  tbody
+  tr
+  td:first-child {
+  display: flex;
+  justify-content: start;
+  align-items: center;
+  width: 40%;
+}
+.listContainer
+  table
+  tbody
+  tr
+  td
+  .product {
+  display: flex;
+  flex-direction: row;
+  justify-content: start;
+  gap: 20px;
+  align-items: center;
+}
+.product img {
+  width: 30%;
+}
+.product .productContent {
+  display: flex;
+  justify-content: start;
+  align-items: start;
+  flex-direction: column;
+  gap: 5px;
+  width: 70%;
+}
+.product .productContent h2 {
+  font-size: 20px;
+  font-weight: 500;
+  color: #000;
+}
+.product .productContent p {
+  font-size: 15px;
+  font-weight: 500;
+  color: #dee2e6;
+}
+.listContainer
+  table
+  tbody
+  tr
+  td:nth-child(2) {
+  width: 10%;
+  display: flex;
+  padding: 20px;
+  justify-content: center;
+  align-items: center;
+}
+.listContainer
+  table
+  tbody
+  tr
+  td:nth-child(2)
+  h2 {
+  font-size: 20px;
+  color: #959595;
+  font-weight: 500;
+}
+.listContainer
+  table
+  tbody
+  tr
+  td:nth-child(3) {
+  width: 30%;
+  display: flex;
+  padding: 20px;
+  justify-content: center;
+  align-items: center;
+  flex-direction: row;
+  gap: 10px;
+}
+.listContainer
+  table
+  tbody
+  tr
+  td:nth-child(3)
+  h2 {
+  font-size: 20px;
+  color: #000 !important;
+  font-weight: 600;
+}
+.listContainer
+  table
+  tbody
+  tr
+  td:nth-child(4) {
+  width: 10%;
+  display: flex;
+  padding: 20px;
+  justify-content: center;
+  align-items: center;
+}
+.listContainer
+  table
+  tbody
+  tr
+  td:nth-child(4)
+  h2 {
+  font-size: 20px;
+  color: #959595;
+  font-weight: 500;
+}
+
+.listContainer
+  table
+  tbody
+  tr
+  td:nth-child(5) {
+  width: 10%;
+  display: flex;
+  padding: 20px;
+  justify-content: center;
+  align-items: center;
+}
+.listContainer svg {
+  cursor: pointer;
+}
+@media (max-width: 768px) {
+  .poster {
+    height: 100px;
+  }
+  .poster img {
+    object-fit: contain;
+  }
+  .poster .posterContent h1 {
+    font-size: 30px;
+  }
+  .listContainer table thead {
+    display: none;
+  }
+  .listContainer
+    table
+    tbody
+    tr {
+    flex-direction: column;
+    border: 1px solid #dee2e6;
+  }
+  .listContainer
+    table
+    tbody
+    tr
+    td:first-child {
+    width: 100%;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 20px;
+  }
+  .listContainer
+    table
+    tbody
+    tr
+    td:nth-child(2) {
+    width: 100%;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 20px;
+  }
+  .listContainer
+    table
+    tbody
+    tr
+    td:nth-child(3) {
+    width: 100%;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 20px;
+  }
+  .listContainer
+    table
+    tbody
+    tr
+    td:nth-child(4) {
+    width: 100%;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 20px;
+  }
+  .listContainer
+    table
+    tbody
+    tr
+    td:nth-child(5) {
+    width: 100%;
+    align-items: center;
+    justify-content: end;
+  }
+
+  .listContainer
+    table
+    tbody
+    tr
+    td:nth-child(2)
+    p,
+  .listContainer
+    table
+    tbody
+    tr
+    td:nth-child(3)
+    p,
+  .listContainer
+    table
+    tbody
+    tr
+    td:nth-child(4)
+    p,
+  .listContainer
+    table
+    tbody
+    tr
+    td:nth-child(5)
+    p {
+    display: block;
+    visibility: visible;
+    color: #000;
+    font-size: 15px;
+  }
+  .listContainer
+    table
+    tbody
+    tr
+    td:nth-child(2)
+    h2,
+  .listContainer
+    table
+    tbody
+    tr
+    td:nth-child(3)
+    h2,
+  .listContainer
+    table
+    tbody
+    tr
+    td:nth-child(4)
+    h2,
+  .listContainer
+    table
+    tbody
+    tr
+    td:nth-child(5)
+    h2 {
+    font-size: 15px;
+    font-weight: 500;
+  }
+  .product
+    .productContent
+    h2 {
+    font-size: 15px;
+  }
+  .product .productContent p {
+    font-size: 12px;
+  }
+  .listContainer
+    table
+    tbody
+    tr
+    td:nth-child(3)
+    .quantity {
+    gap: 5px;
+  }
+}
