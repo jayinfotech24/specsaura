@@ -4,13 +4,16 @@ import { FaXTwitter } from "react-icons/fa6";
 import { FaInstagram } from "react-icons/fa";
 import { FaThreads } from "react-icons/fa6";
 import { FaFacebookF } from "react-icons/fa";
+import { useRouter } from 'next/router';
 export default function Footer() {
+
+    const router = useRouter()
     return (
         <div className={styles.footer}>
             <div className={styles.footerInner}>
                 <div className={styles.left}>
                     <div className={styles.leftContent}>
-                        <div className={styles.logo}>
+                        <div className={styles.logo} onClick={() => router.push("/")}>
                             <img src='/Images/logo2 (1).png' />
                         </div>
                         <p>Sophisticated simplicity for the independent mind</p>
@@ -27,8 +30,8 @@ export default function Footer() {
                         <h3>Help & Information</h3>
                         <ul>
 
-                            <li>Terms & Condition</li>
-                            <li>Contact</li>
+                            <li onClick={() => router.push("/terms_condition")}  >Terms & Condition</li>
+                            <li onClick={() => router.push("/contact")}>Contact</li>
                             <li>Accesories</li>
 
                         </ul>
@@ -38,7 +41,7 @@ export default function Footer() {
                         <ul>
                             <li>Help Center</li>
                             <li>Address Store</li>
-                            <li>Privacy Policy</li>
+                            <li onClick={() => router.push("/privacy_policy")}>Privacy Policy</li>
 
 
                         </ul>

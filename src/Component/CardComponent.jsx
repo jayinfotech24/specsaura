@@ -1,9 +1,11 @@
 import React from "react";
 import styles from "../styles/CardComponent.module.css";
+import { useRouter } from "next/router";
 
 export default function CardComponent({ src, name, price }) {
+    const router = useRouter()
     return (
-        <div className={styles.main}>
+        <div className={styles.main} onClick={() => router.push("/detail")}>
             <div className={styles.inner}>
                 <div className={styles.imageContainer}>
                     <img src={src} alt="Product" />

@@ -214,9 +214,9 @@
     display: flex;
     flex-direction: row;
     gap: 20px;
-    justify-content: center;
+    justify-content: start;
     align-items: center;
-    background-color: #000;
+    background-color: #fff;
     color: #fff;
     font-size: 15px;
     border-radius: 10px;
@@ -226,7 +226,7 @@
     .first
     span
     svg {
-    stroke: #fff;
+    stroke: #000;
   }
   .buttonContainer .second {
     width: 50%;
@@ -236,7 +236,7 @@
     display: flex;
     flex-direction: row;
     gap: 20px;
-    justify-content: center;
+    justify-content: end;
     align-items: center;
 
     color: #000;

@@ -12,16 +12,27 @@ import { FaInstagram } from "react-icons/fa";
 import { FaThreads } from "react-icons/fa6";
 import { FaFacebookF } from "react-icons/fa";
 import CustomCarousle from '../Component/CustomCarousle';
-
+import Footer from '../Component/Footer';
+import { useRouter } from 'next/router';
+import Preloader from "../Component/Animated"
 export default function index() {
     const [isHeaderVisible, setIsHeaderVisible] = useState(false);
     const [lastScrollY, setLastScrollY] = useState(0);
     const carouselRef = useRef(null);
+    const [isLoading, setIsLoading] = useState(false);
 
-
+    const router = useRouter();
     // useEffect(() => {
     //     console.log("Scroll", window.scrollY, carouselRef.current.offsetHeight)
     // }, [lastScrollY])
+
+
+    useEffect(() => {
+        setIsLoading(true)
+        setTimeout(() => {
+            setIsLoading(false)
+        }, 3000)
+    }, [])
     useEffect(() => {
         const handleScroll = () => {
             if (!carouselRef.current) return; // Ensure ref is assigned
@@ -64,6 +75,12 @@ export default function index() {
 
     return (
         <div className={styles.main}>
+            {
+                isLoading && (
+                    <Preloader />
+                )
+
+            }
             {<Header isHeaderVisible={isHeaderVisible} />}
             <div className={styles.inner}>
 
@@ -101,13 +118,13 @@ export default function index() {
 
                     <div className={styles.collectionContent}>
                         <div className={styles.collectionCards}>
-                            <div className={styles.imageContainer}>
+                            <div className={styles.imageContainer} onClick={() => router.push("//category/f")}>
                                 <img src="/Images/glass.avif" />
                             </div>
                             <h2>Aviator glasses</h2>
                         </div>
                         <div className={styles.collectionCards}>
-                            <div className={styles.imageContainer}>
+                            <div className={styles.imageContainer} onClick={() => router.push("//category/f")}>
                                 <img src="/Images/glass2.avif" />
                             </div>
                             <h2>
@@ -115,7 +132,7 @@ export default function index() {
                             </h2>
                         </div>
                         <div className={styles.collectionCards}>
-                            <div className={styles.imageContainer}>
+                            <div className={styles.imageContainer} onClick={() => router.push("//category/f")}>
                                 <img src="/Images/glass3.avif" />
                             </div>
                             <h2>
@@ -123,7 +140,7 @@ export default function index() {
                             </h2>
                         </div>
                         <div className={styles.collectionCards}>
-                            <div className={styles.imageContainer}>
+                            <div className={styles.imageContainer} onClick={() => router.push("//category/f")}>
                                 <img src="/Images/glass4.avif" />
                             </div>
                             <h2>
@@ -131,7 +148,7 @@ export default function index() {
                             </h2>
                         </div>
                         <div className={styles.collectionCards}>
-                            <div className={styles.imageContainer}>
+                            <div className={styles.imageContainer} onClick={() => router.push("//category/f")}>
                                 <img src="/Images/glass5.avif" />
                             </div>
                             <h2>
@@ -139,7 +156,7 @@ export default function index() {
                             </h2>
                         </div>
                         <div className={styles.collectionCards}>
-                            <div className={styles.imageContainer}>
+                            <div className={styles.imageContainer} onClick={() => router.push("//category/f")}>
                                 <img src="/Images/glass6.avif" />
                             </div>
                             <h2>
@@ -167,7 +184,7 @@ export default function index() {
 
                     </div>
                 </div>
-                <div className={styles.footer}>
+                {/* <div className={styles.footer}>
                     <div className={styles.footerInner}>
                         <div className={styles.left}>
                             <div className={styles.leftContent}>
@@ -218,7 +235,8 @@ export default function index() {
                         </div>
 
                     </div>
-                </div>
+                </div> */}
+                <Footer />
             </div>
         </div>
     )
