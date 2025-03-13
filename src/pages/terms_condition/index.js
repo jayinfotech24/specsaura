@@ -27,7 +27,7 @@ const TermsAndConditions = () => {
                     <p>Orders can be placed through our website. All orders are subject to availability and acceptance.</p>
                     <h3>3.2 Pricing and Payment</h3>
                     <ul className={styles.list}>
-                        <li>Prices are listed in [your currency] and are subject to change.</li>
+                        <li>Prices are listed in rupees and are subject to change.</li>
                         <li>We accept online payments through secure third-party payment gateways.</li>
                         <li>Your order will be processed only after successful payment.</li>
                     </ul>
@@ -39,9 +39,9 @@ const TermsAndConditions = () => {
 
                     <h2>5. Returns and Refunds</h2>
                     <h3>5.1 Return Policy</h3>
-                    <p>Returns are accepted within [X] days of delivery if the product is defective or incorrect. Prescription glasses cannot be returned unless they are incorrect or damaged upon arrival.</p>
+                    <p>Returns are accepted within 7 days of delivery if the product is defective or incorrect. Prescription glasses cannot be returned unless they are incorrect or damaged upon arrival.</p>
                     <h3>5.2 Refund Policy</h3>
-                    <p>Refunds are issued after product inspection. Refunds may take [X] business days to process.</p>
+                    <p>Refunds are issued after product inspection. Refunds may take 7 business days to process.</p>
 
                     <h2>6. Eye Doctor Services</h2>
                     <p>Our eye doctor services are for general guidance and should not be considered a substitute for a full in-person eye exam. We are not responsible for misdiagnosis or incorrect prescriptions due to incomplete or inaccurate information provided by you.</p>
