@@ -139,6 +139,7 @@
   font-size: 14px;
   color: #000;
   font-weight: 600;
+  cursor: pointer;
 }
 .firstCardContainer
   .card
@@ -159,19 +160,86 @@
   color: black;
   font-size: 12px;
 } */
+/* 
+
+Second Step */
+
 .inner .secondMain {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+.secondMain .secondInner {
+  display: flex;
+  width: 100%;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  gap: 50px;
+  padding: 20px;
+}
+.secondInner h1 {
+  font-size: 30px;
+  color: #333368;
+  line-height: normal;
+  font-weight: 600;
+  font-family: 'Marcellus',
+    serif;
+}
+
+.secondInner
+  .OptionContainer {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 30px;
+  flex-direction: row;
+  padding: 50px 200px;
+}
+.secondInner
+  .OptionContainer
+  .optionCard {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  gap: 10px;
+  width: 30%;
+  border-radius: 7px;
+  border: 1px solid #000;
+  height: 280px;
+  cursor: pointer;
+}
+.secondInner
+  .OptionContainer
+  .optionCard
+  svg {
+  stroke: #000;
+}
+.secondInner
+  .OptionContainer
+  .optionCard
+  h2 {
+  font-size: 25px;
+  font-weight: 500;
+  color: #000;
+}
+.inner .thiredMain {
   width: 100%;
   display: flex;
   justify-content: center;
   align-items: center;
   height: 100%;
 }
-.secondMain .secondInner {
+.thiredMain .thiredInner {
   display: flex;
-  width: 45%;
+  width: 50%;
   justify-content: start;
   align-items: start;
-  flex-direction: column;
+  flex-direction: row;
   gap: 50px;
   background-color: #faf7f5;
   box-shadow: rgba(
@@ -184,7 +252,7 @@
   border-radius: 10px;
   padding: 30px;
 }
-.secondMain .secondInner h1 {
+.thiredMain .thiredInner h1 {
   font-size: 30px;
   color: #333368;
   line-height: normal;
@@ -193,20 +261,40 @@
     serif;
 }
 
-.secondMain
-  .secondInner
-  .secondCardContainer {
+.thiredMain
+  .thiredInner
+  .thiredCardContainer {
   display: flex;
 
   flex-direction: column;
   justify-content: start;
   align-items: start;
   gap: 10px;
-  width: 100%;
+  width: 33%;
+  cursor: pointer;
 }
-.secondMain
-  .secondInner
-  .secondCardContainer
+.thiredMain
+  .thiredInner
+  .thiredCardContainer
+  .ContentContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.thiredMain
+  .thiredInner
+  .thiredCardContainer
+  .ContentContainer
+  h2 {
+  font-size: 15px;
+  font-weight: 600;
+  color: #000;
+  text-align: center;
+}
+.thiredMain
+  .thiredInner
+  .thiredCardContainer
   .card {
   display: flex;
   flex-direction: row;
@@ -227,7 +315,7 @@
   border: 1px solid #a9a9a9;
   cursor: pointer;
 }
-.secondCardContainer
+.thiredCardContainer
   .card
   .cardContent {
   display: flex;
@@ -237,7 +325,7 @@
   align-items: start;
   width: 100%;
 }
-.secondCardContainer
+.thiredCardContainer
   .card
   .cardContent
   .buttonContainer {
@@ -249,7 +337,7 @@
   justify-content: space-between;
   align-items: start;
 }
-.secondCardContainer
+.thiredCardContainer
   .card
   .cardContent
   .buttonContainer
@@ -260,14 +348,14 @@
   line-height: 25px;
   font-family: 'Lora', serif;
 }
-.secondCardContainer
+.thiredCardContainer
   .card
   .cardContent
   .buttonContainer
   svg {
   stroke: #333368;
 }
-.secondCardContainer
+.thiredCardContainer
   .card
   .cardContent
   .contentList {
@@ -279,7 +367,7 @@
   align-items: flex-start;
   gap: 5px;
 }
-.secondCardContainer
+.thiredCardContainer
   .card
   .cardContent
   .contentList
@@ -292,7 +380,7 @@
   list-style-type: none;
   gap: 2px;
 }
-.secondCardContainer
+.thiredCardContainer
   .card
   .cardContent
   .contentList
@@ -304,7 +392,7 @@
   color: #565684;
   font-family: 'Lora', serif;
 }
-.secondCardContainer
+.thiredCardContainer
   .card
   .cardContent
   .total {
@@ -322,7 +410,7 @@
   border-bottom-left-radius: 10px;
   border-bottom-right-radius: 10px;
 }
-.secondCardContainer
+.thiredCardContainer
   .card
   .cardContent
   .total
@@ -333,7 +421,7 @@
   line-height: normal;
   font-family: 'Lora', serif;
 }
-.inner .secondMain button {
+.inner .thiredMain button {
   padding: 10px;
   border-radius: 10px;
   display: flex;
@@ -348,7 +436,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  height: calc(100vh - 80px);
+  height: 100%;
 }
 .inner .thiredMain button {
   padding: 10px;
@@ -360,6 +448,282 @@
   color: black;
   font-size: 12px;
 }
+
+/* Forth step */
+
+.forthMain {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+}
+.forthMain .forthInner {
+  display: flex;
+  width: 100%;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  gap: 50px;
+  padding: 20px;
+  height: 100%;
+}
+.forthMain .forthInner h1 {
+  font-size: 30px;
+  color: #333368;
+  line-height: normal;
+  font-weight: 600;
+  font-family: 'Marcellus',
+    serif;
+}
+.forthInner .formContainer {
+  border-width: 1px;
+  border-style: solid;
+  border-radius: 10px;
+  padding: 30px 40px;
+  margin: 40px auto 0;
+  min-width: 62%;
+  max-width: 700px;
+  border: 1px solid #000;
+}
+.forthInner
+  .formContainer
+  table {
+  border-spacing: 1rem;
+  table-layout: fixed;
+  border-collapse: unset;
+  box-shadow: none;
+  width: 100%;
+}
+.forthInner
+  .formContainer
+  table
+  thead
+  tr {
+  margin-bottom: 1rem;
+  width: 100%;
+
+  display: flex;
+  justify-content: space-between;
+  flex-direction: row;
+}
+.forthInner
+  .formContainer
+  table
+  thead
+  tr
+  td {
+  font-size: 20px;
+  font-weight: 600;
+  color: #000;
+  display: flex;
+  width: 100%;
+  justify-content: center;
+  align-items: center;
+}
+.forthInner
+  .formContainer
+  table
+  tbody {
+  width: 100%;
+}
+.forthInner
+  .formContainer
+  table
+  tbody
+  tr {
+  margin-bottom: 1rem;
+  width: 100%;
+
+  display: flex;
+  justify-content: space-between;
+  flex-direction: row;
+}
+.forthInner
+  .formContainer
+  table
+  tbody
+  tr
+  td {
+  font-size: 15px;
+  color: #000;
+  text-align: center;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  cursor: pointer;
+}
+.forthInner
+  .formContainer
+  table
+  tbody
+  tr
+  td
+  option {
+  cursor: pointer;
+}
+.forthInner
+  .formContainer
+  table
+  tbody
+  tr
+  td:first-child {
+  font-size: 15px;
+  font-weight: 600;
+  color: #000 !important;
+  justify-content: start;
+  align-items: start;
+}
+.forthInner
+  .formContainer
+  table
+  tbody
+  tr
+  .lastTd {
+  width: 100%;
+  text-align: start;
+  display: flex;
+  justify-content: start;
+}
+.forthInner
+  .formContainer
+  table
+  tbody
+  tr
+  .lastTd
+  select {
+  padding-right: 60px;
+  width: 100%;
+}
+.forthInner
+  .formContainer
+  table
+  tbody
+  tr
+  .checkBox {
+  display: flex;
+  width: 100%;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  text-align: center;
+}
+.forthInner
+  .formContainer
+  table
+  tbody
+  tr
+  td
+  select {
+  border-bottom: 1px solid
+    #000;
+}
+.forthInner .buttonWrapper {
+  padding: 30px 40px;
+  /* margin: 40px auto 0; */
+  min-width: 70%;
+  max-width: 700px;
+}
+.forthInner .buttonWrapper p {
+  font-size: 15px;
+  font-weight: 500;
+  color: #000;
+}
+.forthInner
+  .buttonWrapper
+  button {
+  width: 100%;
+  pad: 20px;
+  justify-content: center;
+  display: flex;
+  align-items: center;
+  border-radius: 7px;
+  border: 1px solid #000;
+  color: #000;
+  background-color: transparent;
+  height: 56px;
+  margin-top: 30px;
+  position: relative;
+  cursor: pointer;
+}
+.forthInner
+  .buttonWrapper
+  button
+  span {
+  position: absolute;
+  left: 2%;
+}
+.forthInner
+  .mobileFormContainer {
+  display: none;
+}
+.buttonContainer {
+  width: 100%;
+  display: flex;
+  justify-content: end;
+  padding: 20px;
+  align-items: end;
+}
+.buttonContainer button {
+  justify-content: center;
+  display: flex;
+  align-items: center;
+  background-color: #000;
+  color: #fff;
+  padding: 10px;
+  border-radius: 10px;
+  color: #fff;
+  font-size: 15px;
+  cursor: pointer;
+}
+.thiredInner {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  gap: 20px;
+}
+.thiredCardContainer {
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  gap: 10px;
+  width: 200px;
+  height: 300px;
+  border: 1px solid #000;
+  border-radius: 7px;
+}
+.thiredCardContainer
+  .ImageContainer {
+  display: flex;
+  justify-content: center;
+  align-content: center;
+  width: 100%;
+}
+.thiredCardContainer
+  .ImageContainer
+  img {
+  width: 100%;
+  object-fit: contain;
+  margin-top: 10px;
+  border-radius: 10px;
+}
+
+.backButton {
+  position: fixed;
+  top: 13%;
+  left: 10px;
+  width: 30px;
+  height: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+}
+.backButton svg {
+  stroke: #000;
+}
 @media (max-width: 1400px) {
   .main {
     height: 100%;
@@ -367,16 +731,16 @@
   .inner .firstMain {
     padding: 50px;
   }
-  .inner .secondMain {
-    padding: 50px;
+  .inner .thiredMain {
+    padding: 100px 50px;
   }
 }
 @media (max-width: 992px) {
   .main {
     height: 100vh;
   }
-  .secondMain .secondInner {
-    width: 60%;
+  .thiredMain .thiredInner {
+    width: 100%;
   }
   .firstMain .firstInner {
     width: 70%;
@@ -385,29 +749,42 @@
     .firstCardContainer {
     width: 100%;
   }
+  /* 
+  Second Step */
+  .secondMain {
+    height: 100vh;
+  }
+
+  .secondInner
+    .OptionContainer {
+    padding: 0px !important;
+  }
 }
 @media (max-width: 768px) {
-  .inner .secondMain {
+  .main {
+    height: 100%;
+  }
+  .inner .thiredMain {
     width: 100%;
     padding: 20px;
     height: 100%;
   }
-  .secondMain .secondInner {
+  .thiredMain .thiredInner {
     width: 100%;
   }
-  .secondMain
-    .secondInner
+  .thiredMain
+    .thiredInner
     h1 {
     font-size: 25px;
   }
-  .secondCardContainer
+  .thiredCardContainer
     .card
     .cardContent
     .buttonContainer
     p {
     font-size: 17px;
   }
-  .secondCardContainer
+  .thiredCardContainer
     .card
     .cardContent
     .contentList
@@ -415,7 +792,7 @@
     li {
     font-size: 13px;
   }
-  .secondCardContainer
+  .thiredCardContainer
     .card
     .cardContent
     .total
@@ -446,5 +823,184 @@
     p {
     font-size: 12px;
     margin: 0px;
+  }
+  /* Second Step */
+  .secondInner h1 {
+    font-size: 25px;
+  }
+  .secondInner
+    .OptionContainer
+    .optionCard {
+    height: 200px;
+    width: 50%;
+  }
+
+  .secondInner
+    .OptionContainer
+    .optionCard
+    svg {
+    width: 30px;
+    height: 30px;
+  }
+  .secondInner
+    .OptionContainer
+    .optionCard
+    h2 {
+    font-size: 20px;
+  }
+  /* Fourth strp */
+
+  .forthInner .formContainer {
+    display: none;
+  }
+  .forthMain .forthInner h1 {
+    font-size: 20px;
+  }
+  .forthInner
+    .mobileFormContainer {
+    border-width: 1px;
+    border-style: solid;
+    border-radius: 10px;
+    padding: 20px;
+    /* margin: 40px auto 0; */
+    min-width: 100%;
+    max-width: 700px;
+    border: 1px solid #000;
+    display: flex;
+    height: 100%;
+    flex-direction: column;
+    justify-content: start;
+    align-items: start;
+    gap: 10px;
+  }
+  .forthInner
+    .mobileFormContainer
+    .row {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    justify-content: start;
+    align-items: START;
+  }
+  .forthInner
+    .mobileFormContainer
+    .row
+    .columnContainer {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+  }
+  .forthInner
+    .mobileFormContainer
+    .row
+    .columnContainer
+    .column {
+    display: flex;
+    flex-direction: column;
+    justify-content: start;
+    align-items: start;
+    gap: 5px;
+    width: 33%;
+  }
+  .forthInner
+    .mobileFormContainer
+    .row
+    .columnContainer
+    .column
+    label {
+    font-size: 15px;
+    font-weight: 500;
+    color: #000;
+  }
+  .forthInner
+    .mobileFormContainer
+    .row
+    .columnContainer
+    .column
+    select {
+    font-size: 15px;
+    font-weight: 500;
+    color: #000;
+    display: flex;
+    justify-content: start;
+    align-items: start;
+    width: 100%;
+    padding: 2px;
+    border-radius: 5px;
+    border: 1px solid #000;
+  }
+  .forthInner
+    .mobileFormContainer
+    .row
+    h2 {
+    font-size: 15px;
+    font-weight: 600;
+    color: #000;
+  }
+  .forthInner
+    .mobileFormContainer
+    .devider {
+    background: #dfe3e8;
+    margin: 1rem auto;
+    height: 1px;
+    display: block !important;
+    width: 100%;
+  }
+  .forthInner .buttonWrapper {
+    padding: 0px !important;
+  }
+  .forthInner
+    .mobileFormContainer
+    .pupilDistance {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    justify-content: start;
+    align-items: start;
+    gap: 5px;
+  }
+  .forthInner
+    .mobileFormContainer
+    .pupilDistance
+    h2 {
+    font-size: 15px;
+    font-weight: 600;
+    color: #000;
+  }
+  .forthInner
+    .mobileFormContainer
+    .pupilDistance
+    select {
+    font-size: 15px;
+    font-weight: 500;
+    color: #000;
+    display: flex;
+    justify-content: start;
+    align-items: start;
+    width: 50%;
+    padding: 2px;
+    border-radius: 5px;
+    border: 1px solid #000;
+  }
+  .forthInner
+    .mobileFormContainer
+    .pupilDistance
+    .innerPupil {
+    display: flex;
+    justify-content: start;
+    gap: 10px;
+    flex-direction: row;
+  }
+  .forthInner
+    .mobileFormContainer
+    .pupilDistance
+    .innerPupil
+    p {
+    font-size: 15px;
+    font-weight: 500;
+    color: #000;
   }
 }

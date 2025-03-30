@@ -1,8 +1,18 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import styles from "../../styles/cart.module.css"
 import Header from "../../Component/Header"
 import Footer from "../../Component/Footer"
+import { Validate } from '../../store/commonFunction'
+import { useRouter } from 'next/router'
 export default function index() {
+
+    const router = useRouter()
+
+
+
+    useEffect(() => {
+        Validate(router)
+    }, [])
     return (
         <div className={styles.main}>
             <Header isHeaderVisible={true} />

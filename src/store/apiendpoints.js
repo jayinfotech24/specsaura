@@ -4,7 +4,8 @@ const Appapis = {
     signIn: "/request",
     signOut: "/signOut",
     verifyOtp: "/verify",
-    contact: "/contact"
+    contact: "/contact",
+    prescription: "/presc"
 }
 
 export default Appapis

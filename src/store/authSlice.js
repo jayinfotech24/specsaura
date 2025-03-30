@@ -31,10 +31,21 @@ export const VerifyOtp = createAsyncThunk("api/verify", async (credentials, { re
     }
 
 })
-export const Contact = createAsyncThunk("api/contact", async (credentials, { rejectWithValue }) => {
+export const Contact = createAsyncThunk("api/", async (credentials, { rejectWithValue }) => {
 
     try {
         const response = await axiosInstance.post(`${Appapis.Basurl}${Appapis.contact}`, credentials)
+        return response.data
+    }
+    catch (error) {
+        return rejectWithValue(error.response?.data || "Something went wrong");
+    }
+
+})
+export const SavePrescription = createAsyncThunk("api/presc", async (credentials, { rejectWithValue }) => {
+
+    try {
+        const response = await axiosInstance.post(`${Appapis.Basurl}${Appapis.prescription}`, credentials)
         return response.data
     }
     catch (error) {
@@ -97,7 +108,19 @@ const counterSlice = createSlice({
             .addCase(Contact.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.payload;
-            });
+            })
+            .addCase(SavePrescription.pending, (state, action) => {
+                state.loading = true
+
+            })
+            .addCase(SavePrescription.fulfilled, (state, action) => {
+                state.loading = false;
+
+            })
+            .addCase(SavePrescription.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload;
+            })
 
 
     }

@@ -124,7 +124,7 @@ export default function Index() {
             dispatch(VerifyOtp(responseObject)).then((response) => {
                 console.log("response", response);
                 if (response.payload.status == 200) {
-                    localStorage.setItem("token", response.payload.authToken)
+                    localStorage.setItem("userToken", response.payload.authToken)
                     localStorage.setItem("email", response.payload.email)
                     localStorage.setItem("userId", response.payload.userId)
                     setIsLogin(false)

@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import styles from "../../styles/contact.module.css"
 import Footer from "../../Component/Footer"
 import Header from "../../Component/Header"
@@ -9,7 +9,17 @@ import { useDispatch } from 'react-redux'
 import { Contact } from '../../store/authSlice'
 import toast, { Toaster } from 'react-hot-toast'
 import Preloader from "../../Component/Animated"
+import { useRouter } from 'next/router'
+import { Validate } from '../../store/commonFunction'
 export default function index() {
+
+
+    const router = useRouter();
+
+
+    useEffect(() => {
+        Validate(router)
+    }, [])
 
     const [IsLoading, setIsLoading] = useState(false)
     const dispatch = useDispatch()
@@ -30,7 +40,7 @@ export default function index() {
         contact: yup
             .number()
 
-            .typeError("Please enter a valid contact number")
+            .typeError("Please enter a valid contact")
             .required("Please enter your contact number"),
 
     });
