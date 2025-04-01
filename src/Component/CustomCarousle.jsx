@@ -1,11 +1,25 @@
 import React, { useState, useEffect } from "react";
 import styles from "../styles/Custom.module.css";
 import { motion } from "framer-motion";
+import { useDispatch } from "react-redux";
+import { WallPaperList } from "../store/authSlice";
 const images = ["/Images/poster.webp", "/Images/poster2.webp"];
 
 export default function CustomCarousle() {
     const [currentIndex, setCurrentIndex] = useState(0);
 
+    const dispatch = useDispatch()
+    const GetData = () => {
+
+        dispatch(WallPaperList()).then((res) => {
+            console.log("ResWallpper", res)
+        })
+    }
+
+
+    useEffect(() => {
+        GetData()
+    }, [])
     useEffect(() => {
         const interval = setInterval(() => {
             setCurrentIndex((prevIndex) => (prevIndex === 1 ? 0 : 1));

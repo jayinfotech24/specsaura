@@ -5,7 +5,10 @@ const Appapis = {
     signOut: "/signOut",
     verifyOtp: "/verify",
     contact: "/contact",
-    prescription: "/presc"
+    prescription: "/presc",
+    fileUpload: "/upload",
+    ctegory: "/category",
+    wallpaper: "/wallpaper"
 }
 
 export default Appapis

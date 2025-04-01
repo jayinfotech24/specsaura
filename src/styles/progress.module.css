@@ -620,10 +620,25 @@ Second Step */
     #000;
 }
 .forthInner .buttonWrapper {
-  padding: 30px 40px;
+  padding: 0px 10px;
   /* margin: 40px auto 0; */
   min-width: 70%;
   max-width: 700px;
+}
+.forthInner
+  .filenameContainer {
+  /* margin: 40px auto 0; */
+  min-width: 70%;
+  max-width: 700px;
+  display: flex;
+  justify-content: end;
+}
+.fileNameContainer {
+  width: 100%;
+  padding: 0px 40px;
+  height: 30px;
+  display: flex;
+  justify-content: end;
 }
 .forthInner .buttonWrapper p {
   font-size: 15px;
@@ -724,6 +739,41 @@ Second Step */
 .backButton svg {
   stroke: #000;
 }
+.pdContainer {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+}
+.singlePd {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  justify-content: start;
+  align-items: start;
+}
+
+.singlePd {
+  font-size: 15px;
+  font-weight: 500;
+  color: #000;
+  display: flex;
+  justify-content: start;
+  align-items: start;
+  width: 100%;
+  padding: 2px;
+  border-radius: 5px;
+}
+.singlePd select {
+  padding-right: 0px !important;
+}
+.singlePd label {
+  font-size: 15px;
+  font-weight: 600;
+  color: #000;
+}
 @media (max-width: 1400px) {
   .main {
     height: 100%;
@@ -771,6 +821,14 @@ Second Step */
   }
   .thiredMain .thiredInner {
     width: 100%;
+    gap: 10px;
+    padding: 0px;
+    margin: auto;
+  }
+  .thiredMain
+    .thiredInner
+    .thiredCardContainer {
+    height: 200px;
   }
   .thiredMain
     .thiredInner
@@ -1002,5 +1060,12 @@ Second Step */
     font-size: 15px;
     font-weight: 500;
     color: #000;
+  }
+  .forthInner
+    .filenameContainer {
+    width: 100%;
+  }
+  .forthMain .forthInner {
+    gap: 10px;
   }
 }

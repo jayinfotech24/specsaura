@@ -1,5 +1,6 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axiosInstance from "./axiosInstance";
+import fileInstance from "./fileInstance"
 import Appapis from "./apiendpoints";
 const initialState = {
     count: 0,
@@ -53,6 +54,40 @@ export const SavePrescription = createAsyncThunk("api/presc", async (credentials
     }
 
 })
+export const FileUpload = createAsyncThunk("api/upload", async (credentials, { rejectWithValue }) => {
+
+    try {
+        const response = await fileInstance.post(`${Appapis.Basurl}${Appapis.fileUpload}`, credentials)
+        return response.data
+    }
+    catch (error) {
+        return rejectWithValue(error.response?.data || "Something went wrong", error);
+    }
+
+})
+export const CategoryList = createAsyncThunk("api/category", async (credentials, { rejectWithValue }) => {
+
+    try {
+        const response = await axiosInstance.get(`${Appapis.Basurl}${Appapis.ctegory}`, credentials)
+        return response.data
+    }
+    catch (error) {
+        return rejectWithValue(error.response?.data || "Something went wrong", error);
+    }
+
+})
+export const WallPaperList = createAsyncThunk("api/wallpaper", async (credentials, { rejectWithValue }) => {
+
+    try {
+        const response = await axiosInstance.get(`${Appapis.Basurl}${Appapis.wallpaper}`, credentials)
+        return response.data
+    }
+    catch (error) {
+        return rejectWithValue(error.response?.data || "Something went wrong", error);
+    }
+
+})
+
 
 
 
@@ -118,6 +153,45 @@ const counterSlice = createSlice({
 
             })
             .addCase(SavePrescription.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload;
+            })
+            .addCase(FileUpload.pending, (state, action) => {
+                state.loading = true
+
+            })
+            .addCase(FileUpload.fulfilled, (state, action) => {
+                state.loading = false;
+
+            })
+            .addCase(FileUpload.rejected, (state, action) => {
+                //console.log("Acc", action)
+                state.loading = false;
+                state.error = action.payload;
+            })
+            .addCase(CategoryList.pending, (state, action) => {
+                state.loading = true
+
+            })
+            .addCase(CategoryList.fulfilled, (state, action) => {
+                state.loading = false;
+
+            })
+            .addCase(CategoryList.rejected, (state, action) => {
+
+                state.loading = false;
+                state.error = action.payload;
+            })
+            .addCase(WallPaperList.pending, (state, action) => {
+                state.loading = true
+
+            })
+            .addCase(WallPaperList.fulfilled, (state, action) => {
+                state.loading = false;
+
+            })
+            .addCase(WallPaperList.rejected, (state, action) => {
+
                 state.loading = false;
                 state.error = action.payload;
             })

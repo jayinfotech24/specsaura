@@ -15,23 +15,39 @@ import CustomCarousle from '../Component/CustomCarousle';
 import Footer from '../Component/Footer';
 import { useRouter } from 'next/router';
 import Preloader from "../Component/Animated"
+import { useDispatch } from 'react-redux';
+import { CategoryList } from '../store/authSlice';
 export default function index() {
     const [isHeaderVisible, setIsHeaderVisible] = useState(false);
     const [lastScrollY, setLastScrollY] = useState(0);
     const carouselRef = useRef(null);
     const [isLoading, setIsLoading] = useState(false);
-
+    const [Category, setCategory] = useState([])
     const router = useRouter();
     // useEffect(() => {
-    //     console.log("Scroll", window.scrollY, carouselRef.current.offsetHeight)
+    //     //console.log("Scroll", window.scrollY, carouselRef.current.offsetHeight)
     // }, [lastScrollY])
-
+    const dispatch = useDispatch();
 
     useEffect(() => {
         setIsLoading(true)
         setTimeout(() => {
             setIsLoading(false)
         }, 3000)
+    }, [])
+
+
+
+    const GetCategory = () => {
+        dispatch(CategoryList()).then((res) => {
+            console.log("res", res.payload.items)
+            setCategory(res.payload.items)
+
+        })
+    }
+
+    useEffect(() => {
+        GetCategory()
     }, [])
     useEffect(() => {
         const handleScroll = () => {
@@ -61,8 +77,8 @@ export default function index() {
     }, [lastScrollY]);
 
     const handleSlideChange = (eventKey, direction) => {
-        console.log("Current Slide Index:", eventKey);
-        console.log("Slide Direction:", direction);
+        //console.log("Current Slide Index:", eventKey);
+        //console.log("Slide Direction:", direction);
         setActiveSlide(eventKey)
     };
 
@@ -117,52 +133,21 @@ export default function index() {
                     <h3>Our Collection</h3>
 
                     <div className={styles.collectionContent}>
-                        <div className={styles.collectionCards}>
-                            <div className={styles.imageContainer} onClick={() => router.push("//category/f")}>
-                                <img src="/Images/glass.avif" />
-                            </div>
-                            <h2>Aviator glasses</h2>
-                        </div>
-                        <div className={styles.collectionCards}>
-                            <div className={styles.imageContainer} onClick={() => router.push("//category/f")}>
-                                <img src="/Images/glass2.avif" />
-                            </div>
-                            <h2>
-                                Round Glasses
-                            </h2>
-                        </div>
-                        <div className={styles.collectionCards}>
-                            <div className={styles.imageContainer} onClick={() => router.push("//category/f")}>
-                                <img src="/Images/glass3.avif" />
-                            </div>
-                            <h2>
-                                Model Glasses
-                            </h2>
-                        </div>
-                        <div className={styles.collectionCards}>
-                            <div className={styles.imageContainer} onClick={() => router.push("//category/f")}>
-                                <img src="/Images/glass4.avif" />
-                            </div>
-                            <h2>
-                                Cat-Eyes Glasses
-                            </h2>
-                        </div>
-                        <div className={styles.collectionCards}>
-                            <div className={styles.imageContainer} onClick={() => router.push("//category/f")}>
-                                <img src="/Images/glass5.avif" />
-                            </div>
-                            <h2>
-                                Classic Glasses
-                            </h2>
-                        </div>
-                        <div className={styles.collectionCards}>
-                            <div className={styles.imageContainer} onClick={() => router.push("//category/f")}>
-                                <img src="/Images/glass6.avif" />
-                            </div>
-                            <h2>
-                                Panda Glassess
-                            </h2>
-                        </div>
+
+                        {
+                            Category.map((item) => {
+                                return (
+                                    <div className={styles.collectionCards}>
+                                        <div className={styles.imageContainer} onClick={() => router.push("//category/f")}>
+                                            <img src={item.url} />
+                                        </div>
+                                        <h2>{item.title}</h2>
+                                    </div>
+                                )
+                            })
+                        }
+
+
 
 
                     </div>
