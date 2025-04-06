@@ -16,38 +16,55 @@ import Footer from '../Component/Footer';
 import { useRouter } from 'next/router';
 import Preloader from "../Component/Animated"
 import { useDispatch } from 'react-redux';
-import { CategoryList } from '../store/authSlice';
+import { CategoryList, ProductList } from '../store/authSlice';
+import { IncreasePrice } from '../store/commonFunction';
+
 export default function index() {
     const [isHeaderVisible, setIsHeaderVisible] = useState(false);
     const [lastScrollY, setLastScrollY] = useState(0);
     const carouselRef = useRef(null);
     const [isLoading, setIsLoading] = useState(false);
     const [Category, setCategory] = useState([])
+    const [Procucts, setProducts] = useState([])
     const router = useRouter();
     // useEffect(() => {
-    //     //console.log("Scroll", window.scrollY, carouselRef.current.offsetHeight)
+    //     ////console.log("Scroll", window.scrollY, carouselRef.current.offsetHeight)
     // }, [lastScrollY])
     const dispatch = useDispatch();
 
-    useEffect(() => {
-        setIsLoading(true)
-        setTimeout(() => {
-            setIsLoading(false)
-        }, 3000)
-    }, [])
+
 
 
 
     const GetCategory = () => {
         dispatch(CategoryList()).then((res) => {
-            console.log("res", res.payload.items)
+            //console.log("res", res.payload.items)
             setCategory(res.payload.items)
 
         })
     }
 
+    const GetProduct = () => {
+        setIsLoading(true)
+        dispatch(ProductList()).then((res) => {
+            console.log("resProduct", res.payload)
+            if (res.payload.status == 200) {
+                setProducts(res.payload.products)
+                setIsLoading(false)
+            }
+        }).catch((error) => {
+            console.log("Error", error)
+            setIsLoading(false)
+        })
+    }
+
+
+    useEffect(() => {
+        console.log("Products", Procucts)
+    }, [Procucts])
     useEffect(() => {
         GetCategory()
+        GetProduct();
     }, [])
     useEffect(() => {
         const handleScroll = () => {
@@ -77,8 +94,8 @@ export default function index() {
     }, [lastScrollY]);
 
     const handleSlideChange = (eventKey, direction) => {
-        //console.log("Current Slide Index:", eventKey);
-        //console.log("Slide Direction:", direction);
+        ////console.log("Current Slide Index:", eventKey);
+        ////console.log("Slide Direction:", direction);
         setActiveSlide(eventKey)
     };
 
@@ -88,6 +105,8 @@ export default function index() {
     //     }, 5000);
     //     return () => clearTimeout(interval);
     // }, [activeSlide])
+
+
 
     return (
         <div className={styles.main}>
@@ -138,7 +157,7 @@ export default function index() {
                             Category.map((item) => {
                                 return (
                                     <div className={styles.collectionCards}>
-                                        <div className={styles.imageContainer} onClick={() => router.push("//category/f")}>
+                                        <div className={styles.imageContainer} onClick={() => router.push("/category/f")}>
                                             <img src={item.url} />
                                         </div>
                                         <h2>{item.title}</h2>
@@ -161,66 +180,22 @@ export default function index() {
                         <h1>Our Best Seller</h1>
                     </div>
                     <div className={styles.cardInner}>
+                        {
+                            Procucts.map((item) => {
+                                return (<>
 
-                        <CardComponent src={"/Images/Round-Glasses.webp"} name={"Round Glasses"} price={"$28.00"} />
-                        <CardComponent src={"/Images/glasses2.webp"} name={"Rectangle SunGlasses"} price={"$59.00"} />
-                        <CardComponent src={"/Images/glasses3.webp"} name={"Rectangle-SunGlasses-S"} price={"$15.00"} />
-                        <CardComponent src={"/Images/glasses4.webp"} name={"Premium-SunGlasses-S"} price={"$20.00"} />
+                                    <CardComponent id={item._id} src={item.url} name={item.name} price={IncreasePrice(Number(item.price))} total={item.totalItems} available={item.availableItems} images={item.images} />
+                                </>
+                                )
+
+                            })
+                        }
+
+
 
                     </div>
                 </div>
-                {/* <div className={styles.footer}>
-                    <div className={styles.footerInner}>
-                        <div className={styles.left}>
-                            <div className={styles.leftContent}>
-                                <div className={styles.logo}>
-                                    <img src='/Images/logo2 (1).png' />
-                                </div>
-                                <p>Sophisticated simplicity for the independent mind</p>
-                                <div className={styles.icons}>
-                                    <FaXTwitter width={24} height={24} />
-                                    <FaInstagram />
 
-                                    <FaFacebookF />
-                                </div>
-                            </div>
-                        </div>
-                        <div className={styles.right}>
-                            <div className={styles.container1}>
-                                <h3>Help & Information</h3>
-                                <ul>
-                                    <li>Pagination</li>
-                                    <li>Terms & Condition</li>
-                                    <li>Contact</li>
-                                    <li>Accesories</li>
-
-                                </ul>
-                            </div>
-                            <div className={styles.container1}>
-                                <h3>About Us</h3>
-                                <ul>
-                                    <li>Help Center</li>
-                                    <li>Address Store</li>
-                                    <li>Privacy Policy</li>
-                                    <li>Reciver & Amplifire</li>
-
-                                </ul>
-                            </div>
-                            <div className={styles.container1}>
-                                <h3>
-                                    Categories</h3>
-                                <ul>
-                                    <li>Women's Eyeglasses</li>
-                                    <li>Men's Eyeglasses</li>
-                                    <li>Ray Ban Eyeglasses</li>
-                                    <li>Designer Eyelasses</li>
-
-                                </ul>
-                            </div>
-                        </div>
-
-                    </div>
-                </div> */}
                 <Footer />
             </div>
         </div>

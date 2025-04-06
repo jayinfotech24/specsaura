@@ -84,7 +84,7 @@ export default function index() {
 
 
     useEffect(() => {
-        //console.log("Is", isFile)
+        ////console.log("Is", isFile)
     }, [isFile])
 
     const FirstPage = () => {
@@ -357,7 +357,7 @@ export default function index() {
         };
         const isMobile = useIsMobile();
 
-        //console.log("Is", isMobile)
+        ////console.log("Is", isMobile)
         const validationSchema = yup.object().shape({
             rightsph: yup.string().required("Right SPH is required"),
             rightcyl: yup.string().required("Right CYL is required"),
@@ -403,7 +403,7 @@ export default function index() {
             resolver: yupResolver(isMobile ? MobileValidationSchema : validationSchema)
         });
         useEffect(() => {
-            console.log("Err", errors)
+            //console.log("Err", errors)
             if (Object.keys(errors).length > 0) {
                 alert("Please  fill all detail")
             }
@@ -451,18 +451,18 @@ export default function index() {
                     prescriptionURL: FileUrl
                 }
             }
-            //console.log("Data", data)
+            ////console.log("Data", data)
 
 
             dispatch(SavePrescription(responseObject)).then((res) => {
-                console.log("resSaveFile", res)
+                //console.log("resSaveFile", res)
                 if (res.payload.status == 201) {
                     setIsLoading(false)
                     Changepage(3)
                 }
             }).catch((errr) => {
                 setIsLoading(false)
-                //console.log("Err", errr)
+                ////console.log("Err", errr)
             })
         }
         const handleClick = (e) => {
@@ -487,12 +487,12 @@ export default function index() {
         };
 
         const handleHiddenButtonClick = () => {
-            // //console.log("Hidden button clicked!");
+            // ////console.log("Hidden button clicked!");
             // alert("Hidden button was triggered!");
         };
         const handleUpload = () => {
             if (buttonRef.current) {
-                console.log("Triggering hidden button click..."); // Debugging log
+                //console.log("Triggering hidden button click..."); // Debugging log
                 buttonRef.current.click();
             } else {
                 console.error("buttonRef is undefined!"); // Debugging log
@@ -503,7 +503,7 @@ export default function index() {
             e.preventDefault()
             // Get the first selected file
             const formData = new FormData();
-            console.log("File", selectedFile)
+            //console.log("File", selectedFile)
 
             if (!selectedFile) {
                 alert("Please upload a file before proceeding.");
@@ -513,12 +513,12 @@ export default function index() {
             formData.append("file", selectedFile, uniqueFilename);
 
             dispatch(FileUpload(formData)).then((res) => {
-                console.log("Response", res.payload)
+                //console.log("Response", res.payload)
                 setFileUrl(res.payload.fileUrl)
 
 
                 const getFileUrl = res.payload.fileUrl
-                console.log("Get", getFileUrl)
+                //console.log("Get", getFileUrl)
 
                 const responseObject = {
                     rightEye: {
@@ -538,7 +538,7 @@ export default function index() {
                     prescriptionURL: getFileUrl
                 }
                 dispatch(SavePrescription(responseObject)).then((res) => {
-                    console.log("resSaveFile", res)
+                    //console.log("resSaveFile", res)
                     if (res.payload.status == 201) {
 
                         setIsLoading(false)
@@ -546,12 +546,12 @@ export default function index() {
                     }
                 }).catch((errr) => {
                     setIsLoading(false)
-                    console.log("Err", errr)
+                    //console.log("Err", errr)
                 })
 
             }).catch((error) => {
                 setIsLoading(false)
-                console.log("Error", error);
+                //console.log("Error", error);
             })
 
         }
@@ -562,7 +562,7 @@ export default function index() {
 
 
         useEffect(() => {
-            //console.log("tw", IsTwoPds)
+            ////console.log("tw", IsTwoPds)
         }, [IsTwoPds])
         return (
             <div

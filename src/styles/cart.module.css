@@ -53,6 +53,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
+  position: relative;
 }
 .listContainer table {
   width: 100%;
@@ -219,7 +220,8 @@
   align-items: center;
 }
 .product img {
-  width: 30%;
+  width: 100px;
+  height: 100px;
 }
 .product .productContent {
   display: flex;
@@ -318,6 +320,28 @@
 }
 .listContainer svg {
   cursor: pointer;
+}
+.button {
+  padding: 10px 15px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 15px;
+  color: #fff;
+  background-color: #000;
+  border-radius: 3px;
+  width: 200px;
+  height: 60px;
+  cursor: pointer;
+  text-transform: uppercase;
+  position: absolute;
+  bottom: -15%;
+  right: 1%;
+  margin-top: 47px;
+  transform: translate(
+    -5px,
+    10px
+  );
 }
 @media (max-width: 768px) {
   .poster {
@@ -460,5 +484,17 @@
     td:nth-child(3)
     .quantity {
     gap: 5px;
+  }
+  .button {
+    width: 150px;
+    height: 40px;
+
+    bottom: -4%;
+    right: 1%;
+    margin-top: 40px;
+    transform: translate(
+      -10px,
+      5px
+    );
   }
 }

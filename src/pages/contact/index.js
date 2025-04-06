@@ -57,10 +57,10 @@ export default function index() {
             subject: data.subject,
             message: data.message
         }
-        //console.log("res", responseObject)
+        ////console.log("res", responseObject)
 
         dispatch(Contact(responseObject)).then((response) => {
-            //console.log("Res", response)
+            ////console.log("Res", response)
             if (response.payload.status == 201) {
                 setIsLoading(false)
                 toast.success("Your Message sent successfully")
@@ -68,7 +68,7 @@ export default function index() {
             setIsLoading(false)
         }).catch((error) => {
             setIsLoading(false)
-            //console.log("error", error)
+            ////console.log("error", error)
         })
     }
 

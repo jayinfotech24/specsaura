@@ -4,7 +4,7 @@ import '@coreui/coreui/dist/css/coreui.min.css'
 
 export const CarouselDarkVariantExample = ({ handleSlideChange, activeSlide }) => {
 
-    //console.log("Ac", activeSlide)
+    ////console.log("Ac", activeSlide)
     return (
         <CCarousel key={activeSlide} controls indicators dark activeIndex={activeSlide} onSlid={(eventKey, direction) => handleSlideChange(eventKey, direction)} interval={1000}>
             {/* Auto-play every 3 seconds (3000ms) */}

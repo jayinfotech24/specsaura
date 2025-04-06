@@ -72,7 +72,7 @@ export default function Index() {
             email: Email
         };
 
-        //console.log("Request Payload:", resObject);
+        ////console.log("Request Payload:", resObject);
         dispatch(Login(resObject))
             .then((res) => {
 
@@ -83,7 +83,7 @@ export default function Index() {
 
                 }
                 setIsLogin(false)
-                //console.log("Response:", res);
+                ////console.log("Response:", res);
                 localStorage.setItem("email", Email)
 
                 localStorage.setItem("otpExpiryTime", newExpiryTime);
@@ -106,9 +106,9 @@ export default function Index() {
     const submitHandle = async (e) => {
         setIsLogin(true)
         e.preventDefault()
-        //console.log("Data", inputRefs[0].current.value, inputRefs[1].current.value, inputRefs[2].current.value, inputRefs[3].current.value);
+        ////console.log("Data", inputRefs[0].current.value, inputRefs[1].current.value, inputRefs[2].current.value, inputRefs[3].current.value);
         const combineString = inputRefs[0].current.value + inputRefs[1].current.value + inputRefs[2].current.value + inputRefs[3].current.value + inputRefs[4].current.value + inputRefs[5].current.value
-        //console.log("Combine", combineString)
+        ////console.log("Combine", combineString)
         if (inputRefs[0].current.value == "" || inputRefs[1].current.value == "" || inputRefs[2].current.value == "" || inputRefs[3].current.value == "") {
             setIsError(true);
             setErrorMessage("Please enter valid otp");
@@ -122,7 +122,7 @@ export default function Index() {
             }
 
             dispatch(VerifyOtp(responseObject)).then((response) => {
-                //console.log("response", response);
+                ////console.log("response", response);
                 if (response.payload.status == 200) {
                     localStorage.setItem("userToken", response.payload.authToken)
                     localStorage.setItem("email", response.payload.email)

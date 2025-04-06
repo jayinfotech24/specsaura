@@ -1,11 +1,41 @@
 import React from "react";
 import styles from "../styles/CardComponent.module.css";
 import { useRouter } from "next/router";
+import { useDispatch } from "react-redux";
+import { AddCart } from "../store/authSlice";
 
-export default function CardComponent({ src, name, price }) {
+export default function CardComponent({ id, src, name, price }) {
+
+
+    const dispatch = useDispatch()
+
+    const AddTocart = async () => {
+        const userId = localStorage.getItem("userId");
+        const responseObj = {
+            userID: userId,
+            productID: id,
+
+            numberOfItems: 1,
+
+        }
+
+        dispatch(AddCart(responseObj)).then((res) => {
+            console.log("Res", res)
+        }).catch((error) => [
+            console.log("Error", error)
+        ])
+    }
+
+
+    const GetDetail = () => {
+        router.push({
+            pathname: "/detail",
+            query: { id: id },
+        });
+    }
     const router = useRouter()
     return (
-        <div className={styles.main} onClick={() => router.push("/detail")}>
+        <div className={styles.main} onClick={() => GetDetail()}>
             <div className={styles.inner}>
                 <div className={styles.imageContainer}>
                     <img src={src} alt="Product" />

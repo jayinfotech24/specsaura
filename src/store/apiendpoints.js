@@ -8,7 +8,13 @@ const Appapis = {
     prescription: "/presc",
     fileUpload: "/upload",
     ctegory: "/category",
-    wallpaper: "/wallpaper"
+    wallpaper: "/wallpaper",
+    product: "/products/all",
+    cart: "/cart",
+    productDetail: (id) => `/product/${id}`,
+    createPayment: "/createPaymentOrder",
+    verify: "/varifyPayment",
+    cartItems: (id) => `/cart/${id}`,
 }
 
 export default Appapis

@@ -88,6 +88,78 @@ export const WallPaperList = createAsyncThunk("api/wallpaper", async (credential
 
 })
 
+export const ProductList = createAsyncThunk("api/productList", async (credentials, { rejectWithValue }) => {
+
+    try {
+        const response = await axiosInstance.get(`${Appapis.Basurl}${Appapis.product}`, credentials)
+        return response.data
+    }
+    catch (error) {
+        return rejectWithValue(error.response?.data || "Something went wrong", error);
+    }
+
+})
+export const AddCart = createAsyncThunk("api/cart", async (credentials, { rejectWithValue }) => {
+    console.log("Credentials", credentials)
+    try {
+        const response = await axiosInstance.post(`${Appapis.Basurl}${Appapis.cart}`, credentials)
+        return response.data
+    }
+    catch (error) {
+        return rejectWithValue(error.response?.data || "Something went wrong", error);
+    }
+
+})
+export const getProductDetail = createAsyncThunk(
+    "api/productDetail",
+    async (id, { rejectWithValue }) => {
+        try {
+            const response = await axiosInstance.get(`${Appapis.Basurl}${Appapis.productDetail(id)}`);
+            return response.data;
+        } catch (error) {
+            return rejectWithValue(error.response?.data || "Something went wrong");
+        }
+    }
+);
+export const MakePayment = createAsyncThunk(
+    "api/createPayment",
+    async (credentials, { rejectWithValue }) => {
+        try {
+            const response = await axiosInstance.post(`${Appapis.Basurl}${Appapis.createPayment}`, credentials);
+            return response.data;
+        } catch (error) {
+            return rejectWithValue(error.response?.data || "Something went wrong");
+        }
+    }
+);
+export const VerifyPayment = createAsyncThunk(
+    "api/verifyPayment",
+    async (response, { rejectWithValue }) => {
+        console.log("Inside Verify:", response);
+
+        try {
+            const res = await axiosInstance.post(
+                `${Appapis.Basurl}${Appapis.verify}`,
+                response
+            );
+
+            return res.data;
+        } catch (error) {
+            return rejectWithValue(error.response?.data || "Payment verification failed");
+        }
+    }
+);
+export const getCartDetail = createAsyncThunk(
+    "api/cartdetail",
+    async (id, { rejectWithValue }) => {
+        try {
+            const response = await axiosInstance.get(`${Appapis.Basurl}${Appapis.cartItems(id)}`);
+            return response.data;
+        } catch (error) {
+            return rejectWithValue(error.response?.data || "Something went wrong");
+        }
+    }
+);
 
 
 
@@ -165,7 +237,7 @@ const counterSlice = createSlice({
 
             })
             .addCase(FileUpload.rejected, (state, action) => {
-                //console.log("Acc", action)
+                ////console.log("Acc", action)
                 state.loading = false;
                 state.error = action.payload;
             })
@@ -191,6 +263,84 @@ const counterSlice = createSlice({
 
             })
             .addCase(WallPaperList.rejected, (state, action) => {
+
+                state.loading = false;
+                state.error = action.payload;
+            })
+            .addCase(ProductList.pending, (state, action) => {
+                state.loading = true
+
+            })
+            .addCase(ProductList.fulfilled, (state, action) => {
+                state.loading = false;
+
+            })
+            .addCase(ProductList.rejected, (state, action) => {
+
+                state.loading = false;
+                state.error = action.payload;
+            })
+            .addCase(AddCart.pending, (state, action) => {
+                state.loading = true
+
+            })
+            .addCase(AddCart.fulfilled, (state, action) => {
+                state.loading = false;
+
+            })
+            .addCase(AddCart.rejected, (state, action) => {
+
+                state.loading = false;
+                state.error = action.payload;
+            })
+            .addCase(getProductDetail.pending, (state, action) => {
+                state.loading = true
+
+            })
+            .addCase(getProductDetail.fulfilled, (state, action) => {
+                state.loading = false;
+
+            })
+            .addCase(getProductDetail.rejected, (state, action) => {
+
+                state.loading = false;
+                state.error = action.payload;
+            })
+            .addCase(MakePayment.pending, (state, action) => {
+                state.loading = true
+
+            })
+            .addCase(MakePayment.fulfilled, (state, action) => {
+                state.loading = false;
+
+            })
+            .addCase(MakePayment.rejected, (state, action) => {
+
+                state.loading = false;
+                state.error = action.payload;
+            })
+            .addCase(VerifyPayment.pending, (state, action) => {
+                state.loading = true
+
+            })
+            .addCase(VerifyPayment.fulfilled, (state, action) => {
+                state.loading = false;
+
+            })
+            .addCase(VerifyPayment.rejected, (state, action) => {
+
+                state.loading = false;
+                state.error = action.payload;
+            })
+            .addCase(getCartDetail.pending, (state, action) => {
+                state.loading = true
+
+            })
+            .addCase(getCartDetail.fulfilled, (state, action) => {
+                state.loading = false;
+
+            })
+            .addCase(getCartDetail.rejected, (state, action) => {
 
                 state.loading = false;
                 state.error = action.payload;

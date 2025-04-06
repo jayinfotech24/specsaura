@@ -9,7 +9,7 @@ export default function Header({ isHeaderVisible }) {
     const [IsSet, SetISSet] = useState(0)
     const [isOpen, setOpen] = useState(false)
     // useEffect(() => {
-    //     //console.log("OPen", isOpen)
+    //     ////console.log("OPen", isOpen)
     // }, [isOpen])
 
     const router = useRouter()

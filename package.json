@@ -2,12 +2,13 @@
   "name": "specsaura",
   "version": "0.1.0",
   "private": true,
-  "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
-    "lint": "next lint"
-  },
+"scripts": {
+  "dev": "next dev -p 5000",
+  "build": "next build",
+  "start": "next start -p 5000",
+  "lint": "next lint"
+}
+,
   "dependencies": {
     "@coreui/coreui": "^5.2.0",
     "@coreui/react": "^5.4.1",
