@@ -7,15 +7,18 @@ import { handlePayment, IncreasePrice, Validate } from '../../store/commonFuncti
 import { useDispatch } from 'react-redux';
 import { AddCart, getProductDetail } from '../../store/authSlice';
 import Preloader from '../../Component/Animated';
-
+import { ToastContainer, toast } from 'react-toastify';
 export default function Index() {
     const router = useRouter();
     const [currentImageIndex, setCurrentImageIndex] = useState(0);
+
     const images = [
         "/Images/glasses2.webp",
         "/Images/glasses3.webp",
         "/Images/glasses4.webp"
     ];
+
+
 
 
     const [Data, setData] = useState([])
@@ -31,13 +34,18 @@ export default function Index() {
         dispatch(getProductDetail(Id)).then((res) => {
             console.log("Res", res)
             setData(res.payload.product)
-            setIsLoading(false)
+
+
 
         }).catch((error) => {
             console.log("Errror", error)
             setIsLoading(false)
         })
-        setIsLoading(false)
+
+        setTimeout(() => {
+            setIsLoading(false)
+        }, 2000)
+
     }
 
     const { id } = router.query;
@@ -75,7 +83,12 @@ export default function Index() {
                 console.log("ResCart", res);
                 if (res.payload.status == 200) {
                     setIsLoading(false)
-                    // router.push("/cart")
+
+                    toast.success("Product added successfully")
+
+                }
+                if (res.payload.status == 401) {
+                    toast.error("Please login to continue")
                 }
                 setIsLoading(false)
             }
@@ -104,6 +117,7 @@ export default function Index() {
                 )
 
             }
+            <ToastContainer />
             <Header isHeaderVisible={true} />
             <div className={styles.inner}>
                 <div className={styles.left}>
@@ -129,7 +143,7 @@ export default function Index() {
                             {`${IncreasePrice(Number(Data.price))} ₹`}</h2>
                         <div className={styles.border}></div>
                     </div>
-                    <p>Black Transparent UV Protection Classic sunglasses combine usefulness with the design...</p>
+                    <p>{Data.description}</p>
                     <div className={styles.buttonWrapper}>
                         <button className={styles.cart} onClick={() => AddInCart()}>Add To Cart</button>
                         <button className={styles.buy} onClick={() => BuyNow()}>Buy It now</button>

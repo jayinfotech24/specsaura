@@ -128,9 +128,9 @@ export default function index() {
                 </div>
                 <div className={styles.right}>
                     <h2>Contact With Us</h2>
-                    <h1>Let’s work together</h1>
+                    <h1>Vision Plus – Lenses & Eye Care</h1>
 
-                    <p>Offering expert construction, renovation, and furniture solutions tailored to your needs, along with innovative IT services, planning, and design support to bring your vision to life..</p>
+                    <p>Explore our premium collection of lenses — designed for comfort, clarity, and style. From prescription eyewear to blue-light protection, we offer personalized vision solutions backed by expert support and innovative technology.</p>
                     <div className={styles.contactContainer}>
                         <div className={styles.cardContainer}>
                             <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 28 28" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-phone"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" /></svg>

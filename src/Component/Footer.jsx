@@ -16,7 +16,7 @@ export default function Footer() {
                         <div className={styles.logo} onClick={() => router.push("/")}>
                             <img src='/Images/logo2 (1).png' />
                         </div>
-                        <p>Sophisticated simplicity for the independent mind</p>
+                        <p>Enhancing your vision with lenses that define your lifestyle.</p>
                         <div className={styles.icons}>
                             <FaXTwitter width={24} height={24} />
                             <FaInstagram />

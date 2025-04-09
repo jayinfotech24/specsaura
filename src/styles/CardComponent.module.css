@@ -9,7 +9,7 @@
 
 .inner {
   flex: 0 0 auto;
-  width: 200px;
+  width: 250px;
   display: flex;
   flex-direction: column;
   gap: 10px;
@@ -29,6 +29,14 @@
 .inner .imageContainer img {
   width: 100%;
   object-fit: contain;
+  /* box-shadow: rgba(0, 0, 0, 0.05) 0px 6px 24px 0px, rgba(0, 0, 0, 0.08) 0px 0px 0px 1px; */
+  box-shadow: rgba(
+      100,
+      100,
+      111,
+      0.2
+    )
+    0px 7px 29px 0px;
 }
 .inner .content {
   display: flex;
@@ -37,6 +45,7 @@
   align-items: start;
   gap: 10px;
   flex-direction: column;
+  padding-left: 10px;
 }
 .inner .content h3 {
   font-family: Lato;
@@ -189,5 +198,8 @@
   }
   .inner .content h2 {
     font-size: 11px;
+  }
+  .inner {
+    width: 150px;
   }
 }

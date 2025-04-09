@@ -1,3 +1,4 @@
+import { toast } from "react-toastify";
 import { MakePayment, VerifyPayment } from "./authSlice";
 
 
@@ -62,10 +63,12 @@ export const handlePayment = async (dispatch, amount) => {
                 try {
                     const verifyRes = await dispatch(VerifyPayment(payload)).unwrap();
                     console.log("✅ Verified:", verifyRes);
-                    alert("✅ Payment Successful");
+                    toast.success("Verified")
+
                 } catch (error) {
                     console.error("❌ Verification Error:", error);
-                    alert("❌ Payment verification failed");
+
+                    toast.error(" Payment verification failed")
                 }
             },
             prefill: {
@@ -82,6 +85,7 @@ export const handlePayment = async (dispatch, amount) => {
         rzp.open();
     } catch (error) {
         console.error("Payment Error:", error);
-        alert("❌ Something went wrong. Try again.");
+
+        toast.error(" Something went wrong. Try again.")
     }
 };

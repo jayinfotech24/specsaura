@@ -10,6 +10,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { useRef } from 'react';
 import { useDispatch } from 'react-redux';
 import { FileUpload, SavePrescription } from '../../store/authSlice';
+import { ToastContainer, toast } from 'react-toastify';
 
 import ProgressBar from "@ramonak/react-progress-bar";
 import Preloader from '../../Component/Animated';
@@ -227,71 +228,7 @@ export default function index() {
                 exit={{ x: 100, opacity: 0 }}
                 transition={{ duration: 0.5, ease: "easeOut" }}
                 className={styles.thiredMain}>
-                {/* <div className={styles.thiredInner}>
-                    <h1>Choose Lens Package</h1>
-                    <div className={styles.thiredCardContainer}>
-                        <div className={styles.card}>
-                            <div className={styles.cardContent}>
-                                <div className={styles.buttonContainer}>
-                                    <p>Anti-Glare Premium</p>
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-right"><path d="m9 18 6-6-6-6" /></svg>
-                                </div>
-                                <div className={styles.contentList}>
-                                    <ul className={styles.list}>
-                                        <li>6 Months Warranty</li>
-                                        <li>Double Side Anti-Glare</li>
-                                        <li>6 Months Warranty</li>
 
-                                    </ul>
-                                </div>
-                                <div className={styles.total}>
-                                    <h2>Frame+Lens: Get it for ₹1500</h2>
-                                </div>
-                            </div>
-
-                        </div>
-                        <div className={styles.card}>
-                            <div className={styles.cardContent}>
-                                <div className={styles.buttonContainer}>
-                                    <p>Anti-Glare Premium</p>
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-right"><path d="m9 18 6-6-6-6" /></svg>
-                                </div>
-                                <div className={styles.contentList}>
-                                    <ul className={styles.list}>
-                                        <li>6 Months Warranty</li>
-                                        <li>Double Side Anti-Glare</li>
-                                        <li>6 Months Warranty</li>
-
-                                    </ul>
-                                </div>
-                                <div className={styles.total}>
-                                    <h2>Frame+Lens: Get it for ₹1500</h2>
-                                </div>
-                            </div>
-
-                        </div>
-                        <div className={styles.card}>
-                            <div className={styles.cardContent}>
-                                <div className={styles.buttonContainer}>
-                                    <p>Anti-Glare Premium</p>
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-right"><path d="m9 18 6-6-6-6" /></svg>
-                                </div>
-                                <div className={styles.contentList}>
-                                    <ul className={styles.list}>
-                                        <li>6 Months Warranty</li>
-                                        <li>Double Side Anti-Glare</li>
-                                        <li>6 Months Warranty</li>
-
-                                    </ul>
-                                </div>
-                                <div className={styles.total}>
-                                    <h2>Frame+Lens: Get it for ₹1500</h2>
-                                </div>
-                            </div>
-
-                        </div>
-                    </div>
-                </div> */}
                 <button className={styles.backButton} onClick={() => Changepage(2)}>
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-left-icon lucide-arrow-left"><path d="m12 19-7-7 7-7" /><path d="M19 12H5" /></svg>
                 </button>
@@ -455,14 +392,15 @@ export default function index() {
 
 
             dispatch(SavePrescription(responseObject)).then((res) => {
-                //console.log("resSaveFile", res)
+                console.log("resSaveFile", res)
                 if (res.payload.status == 201) {
+                    toast.success("Detail added sucessfully.")
                     setIsLoading(false)
                     Changepage(3)
                 }
             }).catch((errr) => {
                 setIsLoading(false)
-                ////console.log("Err", errr)
+                console.log("Err", errr)
             })
         }
         const handleClick = (e) => {
@@ -513,9 +451,9 @@ export default function index() {
             formData.append("file", selectedFile, uniqueFilename);
 
             dispatch(FileUpload(formData)).then((res) => {
-                //console.log("Response", res.payload)
+                console.log("Response", res.payload)
                 setFileUrl(res.payload.fileUrl)
-
+                setIsLoading(false)
 
                 const getFileUrl = res.payload.fileUrl
                 //console.log("Get", getFileUrl)
@@ -538,11 +476,12 @@ export default function index() {
                     prescriptionURL: getFileUrl
                 }
                 dispatch(SavePrescription(responseObject)).then((res) => {
-                    //console.log("resSaveFile", res)
+                    console.log("resSaveFile", res)
                     if (res.payload.status == 201) {
 
                         setIsLoading(false)
                         Changepage(3)
+                        toast.success("Prescription added successfully!")
                     }
                 }).catch((errr) => {
                     setIsLoading(false)
@@ -571,6 +510,7 @@ export default function index() {
                 exit={{ x: 100, opacity: 0 }}
                 transition={{ duration: 0.5, ease: "easeOut" }}
                 className={styles.forthMain}>
+                <ToastContainer />
                 <button className={styles.backButton} onClick={() => Changepage(1)}>
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-left-icon lucide-arrow-left"><path d="m12 19-7-7 7-7" /><path d="M19 12H5" /></svg>
                 </button>
@@ -748,6 +688,7 @@ export default function index() {
                     </div>
 
                     <div className={styles.mobileFormContainer}>
+                        <ToastContainer />
                         <div className={styles.row}>
                             <h2>OD(Right Eye)</h2>
                             <div className={styles.columnContainer}>

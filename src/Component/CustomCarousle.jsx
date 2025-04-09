@@ -63,12 +63,7 @@ export default function CustomCarousle() {
             )}
 
             {/* Navigation Buttons */}
-            <button className={styles.prev} onClick={() => setCurrentIndex((prev) => (prev - 1 + Images.length) % Images.length)}>
-                &#10094;
-            </button>
-            <button className={styles.next} onClick={() => setCurrentIndex((prev) => (prev + 1) % Images.length)}>
-                &#10095;
-            </button>
+
 
             {/* Dots Navigation */}
             <div className={styles.dots}>
