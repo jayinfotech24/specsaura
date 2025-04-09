@@ -1,0 +1,155 @@
+.main {
+  display: flex;
+  justify-content: start;
+  align-content: center;
+  width: 100%;
+  flex-direction: column;
+
+  height: 100%;
+  background-color: #fff;
+}
+.inner {
+  width: 100%;
+  display: flex;
+  justify-content: start;
+  flex-direction: column;
+  margin-top: 80px;
+  padding: 30px;
+  height: 100%;
+  overflow-y: auto;
+}
+.inner .content {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: start;
+  align-items: start;
+  padding: 40px;
+  background: #fff;
+  border: 1px solid #d3d3d3;
+  border-radius: 20px;
+  box-shadow: rgba(
+      0,
+      0,
+      0,
+      0.2
+    )
+    0px 18px 50px -10px;
+  gap: 10px;
+}
+
+.inner .content h1 {
+  font-size: 30px;
+  color: #000;
+  font-weight: 600;
+}
+.inner .content h2 {
+  font-size: 20px;
+  color: #000;
+  font-weight: 600;
+}
+.inner .content h3 {
+  font-size: 18px;
+  color: #000;
+  font-weight: 600;
+}
+.inner .content p {
+  font-size: 15px;
+  font-weight: 400;
+  color: #000;
+}
+.inner .content .list {
+  display: flex;
+  justify-content: start;
+  align-items: start;
+  gap: 5px;
+  width: 100%;
+  flex-direction: column;
+  list-style-type: disc;
+  margin-left: 30px;
+}
+.inner .content .list li {
+  font-size: 15px;
+  font-weight: 400;
+  color: #000;
+}
+.inner .content p span {
+  cursor: pointer;
+  font-size: 15px;
+  font-weight: 400;
+  color: #007bff;
+}
+.inner .content h4 {
+  font-size: 16px;
+  color: #333; /* Slightly softer black */
+  font-weight: 500;
+  margin-bottom: 8px;
+}
+
+.inner .content h4 span {
+  font-size: 16px;
+  font-weight: 400;
+  color: #007bff;
+}
+
+.inner
+  .content
+  h4
+  span.email {
+  color: #007bff;
+
+  cursor: pointer;
+}
+
+.inner
+  .content
+  h4
+  span.email:hover {
+  color: #0056b3;
+}
+
+.inner
+  .content
+  h4
+  span.address {
+  display: block;
+  font-weight: 500;
+  color: #444;
+  line-height: 1.6;
+  max-width: 500px;
+}
+@media (max-width: 768px) {
+  .inner {
+    padding: 20px;
+  }
+  .inner .content {
+    padding: 20px;
+  }
+  .inner .content h1 {
+    font-size: 20px;
+  }
+  .inner .content p {
+    font-size: 12px;
+  }
+  .inner .content h2 {
+    font-size: 16px;
+  }
+  .inner .content h3 {
+    font-size: 14px;
+  }
+  .inner .content .list li {
+    font-size: 12px;
+  }
+  .inner .content p span {
+    font-size: 12px;
+  }
+  .inner .content h4 {
+    font-size: 12px;
+  }
+  .inner
+    .content
+    h4
+    span.address {
+    font-size: 12px;
+  }
+}

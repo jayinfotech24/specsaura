@@ -1,0 +1,222 @@
+.main {
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  gap: 10px;
+  justify-content: start;
+  align-items: center;
+  padding: 20px;
+  background-color: #fff;
+  height: 100%;
+}
+.main .inner {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  margin-top: 80px;
+  justify-content: center;
+  align-items: center;
+  padding: 40px;
+}
+.inner .formContainer {
+  width: 70%;
+  border-radius: 3px;
+  background-color: #fff;
+  display: flex;
+  flex-direction: column;
+  justify-content: start;
+  align-content: center;
+  box-shadow: rgba(
+      99,
+      99,
+      99,
+      0.2
+    )
+    0px 2px 8px 0px;
+  padding: 30px;
+}
+.inner .formContainer h2 {
+  font-size: 20px;
+  color: #ed0f0f;
+  font-weight: 500;
+}
+
+.inner .formContainer form {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  gap: 30px;
+  flex-direction: column;
+}
+.inner
+  .formContainer
+  form
+  .profileImageContainer {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  border: 2px solid #ddd;
+}
+.inner
+  .formContainer
+  form
+  .profileImageContainer
+  img {
+  width: 100%;
+  object-fit: cover;
+}
+.inner
+  .formContainer
+  form
+  .coloumnContainer {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-content: center;
+  gap: 30px;
+  flex-direction: row;
+}
+.formContainer
+  form
+  .coloumnContainer
+  .inputContainer {
+  width: 50%;
+  display: flex;
+  justify-content: start;
+  align-items: start;
+  gap: 5px;
+  position: relative;
+  flex-direction: column;
+}
+.formContainer
+  form
+  .coloumnContainer
+  .inputContainer
+  p {
+  color: #000;
+  font-size: 15px;
+  font-size: 400;
+}
+.formContainer
+  form
+  .coloumnContainer
+  .inputContainer
+  input {
+  background-color: #f5f5f5;
+  width: 100%;
+  border-radius: 4px;
+  padding: 10px 15px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 15px;
+}
+.formContainer
+  form
+  .coloumnContainer
+  .inputContainer
+  input::placeholder {
+  font-size: 15px;
+  color: #7a7a7a;
+}
+.errorMessage {
+  color: #fd5b25 !important;
+  font-size: 12px !important;
+  position: absolute;
+  bottom: -30%;
+  left: 0;
+}
+.inner
+  .formContainer
+  form
+  .buttonContainer {
+  display: flex;
+  justify-content: end;
+  align-items: center;
+  width: 100%;
+}
+
+.inner
+  .formContainer
+  form
+  .buttonContainer
+  button {
+  padding: 10px 15px;
+  border-radius: 3px;
+  background-color: #ed0f0f;
+  color: #fff;
+  font-size: 15px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 215px;
+  height: 40px;
+  cursor: pointer;
+}
+@media (max-width: 992px) {
+  .main {
+    height: 100%;
+  }
+}
+@media (max-width: 768px) {
+  .main {
+    height: 100%;
+  }
+  .inner {
+    padding: 0px !important;
+  }
+  .inner .formContainer {
+    width: 100%;
+    padding: 10px;
+  }
+  .inner .formContainer h2 {
+    font-size: 18px;
+  }
+  .inner
+    .formContainer
+    form
+    .profileImageContainer {
+    width: 100px;
+    height: 100px;
+  }
+  .formContainer
+    form
+    .coloumnContainer
+    .inputContainer
+    p {
+    font-size: 13px;
+  }
+  .inner
+    .formContainer
+    form
+    .coloumnContainer {
+    gap: 20px;
+  }
+  .inner .formContainer form {
+    gap: 20px;
+  }
+  .formContainer
+    form
+    .coloumnContainer
+    .inputContainer
+    input {
+    padding: 8px 10px;
+    font-size: 13px;
+  }
+  .formContainer
+    form
+    .coloumnContainer
+    .inputContainer
+    input::placeholder {
+    font-size: 13px;
+  }
+  .errorMessage {
+    font-size: 10px;
+  }
+}

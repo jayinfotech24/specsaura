@@ -2,19 +2,22 @@
   "name": "specsaura",
   "version": "0.1.0",
   "private": true,
-  "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
-    "lint": "next lint"
-  },
+"scripts": {
+  "dev": "next dev -p 8000",
+  "build": "next build",
+  "start": "next start -p 8000",
+  "lint": "next lint"
+}
+,
   "dependencies": {
     "@coreui/coreui": "^5.2.0",
     "@coreui/react": "^5.4.1",
     "@hookform/resolvers": "^4.1.0",
+    "@ramonak/react-progress-bar": "^5.3.0",
     "@reduxjs/toolkit": "^2.5.1",
     "@tailwindcss/postcss": "^4.0.4",
     "axios": "^1.7.9",
+    "bootstrap": "^5.3.3",
     "clsx": "^2.1.1",
     "framer-motion": "^12.4.0",
     "hamburger-react": "^2.5.2",

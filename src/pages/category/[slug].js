@@ -1,10 +1,18 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import styles from "../../styles/category.module.css"
 import Footer from '../../Component/Footer'
 import Header from "../../Component/Header"
 import CardComponent from '../../Component/CardComponent'
+import { Validate } from '../../store/commonFunction'
+import { useRouter } from 'next/router'
 
 export default function index() {
+
+    const router = useRouter();
+
+    useEffect(() => {
+        Validate(router)
+    }, [])
     return (
         <div className={styles.main}>
             <Header isHeaderVisible={true} />

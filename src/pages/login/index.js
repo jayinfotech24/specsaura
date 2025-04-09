@@ -21,6 +21,7 @@ export default function index() {
 
     });
 
+
     const dispatch = useDispatch()
 
     const { register, handleSubmit, formState: { errors } } = useForm({
@@ -32,10 +33,10 @@ export default function index() {
             email: data.email
         };
 
-        console.log("Request Payload:", resObject);
+        ////console.log("Request Payload:", resObject);
         dispatch(Login(resObject))
             .then((res) => {
-                console.log("Response:", res);
+                ////console.log("Response:", res);
                 localStorage.setItem("email", data.email)
                 if (res.payload.status == 200) {
                     toast.success("OTP Sent succesfully")

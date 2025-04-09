@@ -463,14 +463,33 @@
   transform: translateX(-50%);
 }
 .cardComponent .cardInner {
-  display: grid;
-  grid-template-columns: repeat(
-    4,
-    1fr
-  ); /* 4 cards per row */
+  display: flex;
+  overflow-x: auto;
   gap: 10px;
-  justify-content: center;
-  align-items: center;
+  padding: 10px;
+  scroll-behavior: smooth;
+  width: 100%;
+}
+.cardComponent
+  .cardInner::-webkit-scrollbar {
+  height: 5px;
+}
+
+.cardComponent
+  .cardInner::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 10px;
+}
+
+.cardComponent
+  .cardInner::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 10px;
+}
+
+.cardComponent
+  .cardInner::-webkit-scrollbar-thumb:hover {
+  background: #555;
 }
 
 /* Desktop responsive */

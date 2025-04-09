@@ -9,7 +9,7 @@ export default function Header({ isHeaderVisible }) {
     const [IsSet, SetISSet] = useState(0)
     const [isOpen, setOpen] = useState(false)
     // useEffect(() => {
-    //     console.log("OPen", isOpen)
+    //     ////console.log("OPen", isOpen)
     // }, [isOpen])
 
     const router = useRouter()
@@ -29,7 +29,7 @@ export default function Header({ isHeaderVisible }) {
                             <div className={styles.buttonContainer}>
                                 <button className={styles.first} onClick={() => setOpen(false)}>
                                     <span>
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-table-of-contents"><path d="M16 12H3" /><path d="M16 18H3" /><path d="M16 6H3" /><path d="M21 12h.01" /><path d="M21 18h.01" /><path d="M21 6h.01" /></svg>
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-x"><path d="M18 6 6 18" /><path d="m6 6 12 12" /></svg>
                                     </span>
 
                                 </button>
@@ -41,8 +41,8 @@ export default function Header({ isHeaderVisible }) {
                                 </button>
                             </div>
                             <ul className={styles.manuList}>
-                                <li>Home</li>
-                                <li>Shop</li>
+                                <li onClick={() => { router.push("/") }}>Home</li>
+                                <li onClick={() => { router.push("/category/f") }}>Shop</li>
                                 <li>Featured</li>
                                 <li>Pages</li>
                                 <li>Blogs</li>
@@ -66,8 +66,8 @@ export default function Header({ isHeaderVisible }) {
 
                 <div className={styles.menuitems}>
                     <ul>
-                        <li>Home</li>
-                        <li>Shop</li>
+                        <li onClick={() => { router.push("/") }}>Home</li>
+                        <li onClick={() => { router.push("/category/f") }}>Shop</li>
                         <li>Featured</li>
                         <li>Pages</li>
                         <li>Blogs</li>
