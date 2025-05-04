@@ -78,3 +78,26 @@
   color: #000;
   font-weight: 500;
 }
+@media (max-width: 992px) {
+  .inner .imageContainer {
+    height: 225px;
+  }
+  .content h2 {
+    font-size: 22px;
+  }
+  .content p {
+    font-size: 13px;
+  }
+}
+
+@media (max-width: 768px) {
+  .inner .imageContainer {
+    height: 225px;
+  }
+  .content h2 {
+    font-size: 20px;
+  }
+  .content p {
+    font-size: 12px;
+  }
+}

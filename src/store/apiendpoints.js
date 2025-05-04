@@ -1,4 +1,3 @@
-
 const Appapis = {
     Basurl: "https://specsauradataplazma.vercel.app/api",
     signIn: "/request",
@@ -14,7 +13,9 @@ const Appapis = {
     productDetail: (id) => `/product/${id}`,
     createPayment: "/createPaymentOrder",
     verify: "/varifyPayment",
-    cartItems: (id) => `/cart/${id}`,
+    cartItems: (id) => `/cart/all/${id}`,
+    deleteCart: (id) => `/cart/${id}`,
+    createOrder: "/order",
 }
 
 export default Appapis

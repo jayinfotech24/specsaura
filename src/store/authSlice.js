@@ -117,6 +117,7 @@ export const getProductDetail = createAsyncThunk(
             const response = await axiosInstance.get(`${Appapis.Basurl}${Appapis.productDetail(id)}`);
             return response.data;
         } catch (error) {
+
             return rejectWithValue(error.response?.data || "Something went wrong");
         }
     }
@@ -128,23 +129,25 @@ export const MakePayment = createAsyncThunk(
             const response = await axiosInstance.post(`${Appapis.Basurl}${Appapis.createPayment}`, credentials);
             return response.data;
         } catch (error) {
+            console.log("Error", error)
             return rejectWithValue(error.response?.data || "Something went wrong");
         }
     }
 );
 export const VerifyPayment = createAsyncThunk(
     "api/verifyPayment",
-    async (response, { rejectWithValue }) => {
-        console.log("Inside Verify:", response);
+    async (credentials, { rejectWithValue }) => {
+        console.log("Inside Verify:", credentials);
 
         try {
-            const res = await axiosInstance.post(
+            const response = await axiosInstance.post(
                 `${Appapis.Basurl}${Appapis.verify}`,
-                response
+                credentials
             );
 
-            return res.data;
+            return response.data;
         } catch (error) {
+            console.log("Error", error)
             return rejectWithValue(error.response?.data || "Payment verification failed");
         }
     }
@@ -161,7 +164,31 @@ export const getCartDetail = createAsyncThunk(
     }
 );
 
+export const DeleteCart = createAsyncThunk(
+    "api/deleteCart",
+    async (id, { rejectWithValue }) => {
+        try {
+            const response = await axiosInstance.delete(`${Appapis.Basurl}${Appapis.deleteCart(id)}`);
+            return response.data;
+        } catch (error) {
+            console.log("DeleteCartError", error)
+            return rejectWithValue(error.response?.data || "Something went wrong");
+        }
+    }
+);
 
+export const CreateOrder = createAsyncThunk(
+    "api/createOrder",
+    async (credentials, { rejectWithValue }) => {
+        try {
+            const response = await axiosInstance.post(`${Appapis.Basurl}${Appapis.createOrder}`, credentials);
+            return response.data;
+        } catch (error) {
+            console.log("CreateOrderError", error)
+            return rejectWithValue(error.response?.data || "Something went wrong");
+        }
+    }
+);
 
 const counterSlice = createSlice({
     name: "counter",
@@ -345,7 +372,31 @@ const counterSlice = createSlice({
                 state.loading = false;
                 state.error = action.payload;
             })
+            .addCase(DeleteCart.pending, (state, action) => {
+                state.loading = true
 
+            })
+            .addCase(DeleteCart.fulfilled, (state, action) => {
+                state.loading = false;
+
+            })
+            .addCase(DeleteCart.rejected, (state, action) => {
+                console.log("DeleteCart", action)
+                state.loading = false;
+                state.error = action.payload;
+            })
+
+            .addCase(CreateOrder.pending, (state, action) => {
+                state.loading = true
+
+            })
+            .addCase(CreateOrder.fulfilled, (state, action) => {
+                state.loading = false;
+            })
+            .addCase(CreateOrder.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload;
+            })
 
     }
 });

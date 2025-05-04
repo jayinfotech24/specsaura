@@ -5,8 +5,10 @@ import Footer from "../../Component/Footer"
 import { handlePayment, IncreasePrice, Validate } from '../../store/commonFunction'
 import { useRouter } from 'next/router'
 import { useDispatch } from 'react-redux'
-import { getCartDetail, getProductDetail } from '../../store/authSlice'
+import { getCartDetail, getProductDetail, DeleteCart } from '../../store/authSlice'
 import Preloader from '../../Component/Animated'
+import AlertModal from '../../Component/AlertModal'
+
 export default function index() {
 
     const router = useRouter()
@@ -14,9 +16,16 @@ export default function index() {
     const [IsLoading, setIsLoading] = useState(false)
     const [productDetails, setProductDetails] = useState([]);
     const [CartData, setCartData] = useState([])
+    const [alertState, setAlertState] = useState({
+        isOpen: false,
+        type: 'info',
+        title: '',
+        message: '',
+        onConfirm: null
+    });
 
     useEffect(() => {
-        setIsLoading(true)
+
         const fetchProductsOneByOne = async () => {
             const productArray = [];
 
@@ -24,6 +33,7 @@ export default function index() {
                 try {
                     const res = await dispatch(getProductDetail(item.productID)).unwrap();
                     productArray.push(res.product); // make sure `res` has `product`
+
                 } catch (err) {
                     console.error(`Error fetching product ${item.productID}:`, err);
                 }
@@ -44,9 +54,21 @@ export default function index() {
     }, [])
 
     const Payment = async (amount) => {
-        setIsLoading(true)
-        await handlePayment(dispatch, amount)
-        setIsLoading(false)
+        // Convert amount to number and validate
+        const sendAmount = Number(amount);
+        if (isNaN(sendAmount)) {
+            console.error('Invalid amount provided');
+            return;
+        }
+
+        setIsLoading(true);
+        try {
+            await handlePayment(dispatch, sendAmount);
+        } catch (error) {
+            console.error('Payment failed:', error);
+        } finally {
+            setIsLoading(false);
+        }
     }
 
     const getDeatail = () => {
@@ -54,25 +76,77 @@ export default function index() {
         const userId = localStorage.getItem("userId");
         dispatch(getCartDetail(userId)).then((res) => {
             console.log("Res", res)
-            setCartData(res.payload);
+            setCartData(res.payload.items);
+            setIsLoading(false)
         }).catch((error) => {
             console.log("Err", error)
+            setIsLoading(false)
         })
     }
 
     useEffect(() => {
         getDeatail()
     }, [])
-    const totalAmount = productDetails.reduce((acc, item) => {
-        return acc + (item.totalItems * IncreasePrice((item.price)));
+    const totalAmount = CartData.reduce((acc, item) => {
+        return acc + (Number(item.productID.price));
     }, 0);
+
+    console.log("Total Amount:", totalAmount); // For debugging
+
+
+    const handleDelete = async (id) => {
+        setAlertState({
+            isOpen: true,
+            type: 'info',
+            title: 'Remove Item',
+            message: 'Are you sure you want to remove this item from your cart?',
+            onConfirm: async () => {
+                try {
+                    setIsLoading(true);
+                    const res = await dispatch(DeleteCart(id)).unwrap();
+                    console.log("Delete successful:", res);
+                    setAlertState({
+                        isOpen: true,
+                        type: 'success',
+                        title: 'Success',
+                        message: 'Item removed successfully!',
+                        onConfirm: null
+                    });
+                    getDeatail();
+                } catch (error) {
+                    console.error("Error deleting item:", error);
+                    setAlertState({
+                        isOpen: true,
+                        type: 'error',
+                        title: 'Error',
+                        message: 'Failed to remove item. Please try again.',
+                        onConfirm: null
+                    });
+                } finally {
+                    setIsLoading(false);
+                }
+            }
+        });
+    }
+
+    const closeAlert = () => {
+        setAlertState(prev => ({ ...prev, isOpen: false }));
+    }
+
+    const handlePayment = () => {
+        const totalAmount = CartData.reduce((sum, item) => sum + (Number(item.productID.price)), 0);
+        router.push({
+            pathname: '/order-details',
+            query: { amount: totalAmount }
+        });
+    };
+
     return (
         <div className={styles.main}>
             {
                 IsLoading && (
                     <Preloader />
                 )
-
             }
             <Header isHeaderVisible={true} />
             <div className={styles.inner}>
@@ -83,73 +157,72 @@ export default function index() {
                     </div>
                 </div>
                 <div className={styles.listContainer}>
-                    <table>
-                        <thead>
-                            <tr>
-                                <td>Product name</td>
-                                <td>Price</td>
-                                <td>Quantity</td>
-                                <td>Total</td>
-                                <td></td>
-                            </tr>
-
-                        </thead>
-                        <tbody>
-
-                            {
-                                productDetails.map((item) => {
-                                    return (
-                                        <tr>
-                                            <td>
-                                                <div className={styles.product}>
-                                                    <img src={item.url} />
-                                                    <div className={styles.productContent}>
-                                                        <h2>{item.name}</h2>
-                                                        <p>{item.color}</p>
+                    {CartData.length === 0 ? (
+                        <div className={styles.emptyCart}>
+                            <img src="/Images/empty-cart.svg" alt="Empty Cart" className={styles.emptyCartImage} />
+                            <h2>Your Cart is Empty</h2>
+                            <p>Looks like you haven't added any items to your cart yet.</p>
+                            <button
+                                onClick={() => router.push('/')}
+                                className={styles.shopNowButton}
+                            >
+                                Start Shopping
+                            </button>
+                        </div>
+                    ) : (
+                        <>
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <td>Product name</td>
+                                        <td>Price</td>
+                                        <td></td>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {CartData.map((item) => {
+                                        return (
+                                            <tr key={item._id}>
+                                                <td data-label="Product">
+                                                    <div className={styles.product}>
+                                                        <img src={item.productID.url} alt={item.productID.name} />
+                                                        <div className={styles.productContent}>
+                                                            <h2>{item.productID.name}</h2>
+                                                            <p>{item.productID.color}</p>
+                                                        </div>
                                                     </div>
-
-                                                </div>
-
-                                            </td>
-                                            <td>
-                                                <p>Price</p>
-                                                <h2> {`${IncreasePrice(Number(item.price))} ₹`}</h2>
-                                            </td>
-                                            <td>
-                                                <p>Quantity</p>
-                                                <div className={styles.quantity}>
-                                                    {/* <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 20 20" fill="#000" stroke="#000" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-plus"><path d="M5 12h14" /><path d="M12 5v14" /></svg> */}
-                                                    <h2>{item.totalItems}</h2>
-                                                    {/* <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 20 20" fill="#000" stroke="#000" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-minus"><path d="M5 12h14" /></svg> */}
-                                                </div>
-
-
-                                            </td>
-                                            <td>
-                                                <p>Total</p>
-                                                <h2>{`₹ ${(Number(item.totalItems)) * IncreasePrice(Number(item.price))}`}</h2>
-
-                                            </td>
-                                            <td>
-                                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-x"><path d="M18 6 6 18" /><path d="m6 6 12 12" /></svg>
-                                            </td>
-
-                                        </tr>
-                                    )
-                                })
-                            }
-
-
-                        </tbody>
-                    </table>
-                    <button onClick={() => Payment(totalAmount)} className={styles.button}>
-                        {`Pay ₹${totalAmount}`}
-                    </button>
-
+                                                </td>
+                                                <td data-label="Price">
+                                                    <h2 style={{ fontSize: '14px' }}>{`₹${IncreasePrice(Number(item.productID.price))}`}</h2>
+                                                </td>
+                                                <td data-label="Action">
+                                                    <svg style={{ cursor: "pointer" }}
+                                                        onClick={() => handleDelete(item._id)} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#000" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" className={styles.deleteIcon}>
+                                                        <path d="M18 6 6 18" />
+                                                        <path d="m6 6 12 12" />
+                                                    </svg>
+                                                </td>
+                                            </tr>
+                                        )
+                                    })}
+                                </tbody>
+                            </table>
+                            <button onClick={handlePayment} className={styles.button}>
+                                {`Pay ₹${totalAmount.toLocaleString('en-IN')}`}
+                            </button>
+                        </>
+                    )}
                 </div>
-
             </div>
             <Footer />
+            <AlertModal
+                isOpen={alertState.isOpen}
+                onClose={closeAlert}
+                title={alertState.title}
+                message={alertState.message}
+                type={alertState.type}
+                onConfirm={alertState.onConfirm}
+            />
         </div>
     )
 }

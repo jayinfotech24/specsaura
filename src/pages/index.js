@@ -154,7 +154,7 @@ export default function index() {
                     <div className={styles.collectionContent}>
 
                         {
-                            Category.map((item) => {
+                            Category?.map((item) => {
                                 return (
                                     <div className={styles.collectionCards}>
                                         <div className={styles.imageContainer} onClick={() => router.push("/category/f")}>
