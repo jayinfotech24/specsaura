@@ -121,7 +121,7 @@ export default function index() {
                             <textarea placeholder='Message' {...register("message")} maxLength={250} />
                             {errors.message && <p className={styles.textErrorMessage}>{errors.message.message}</p>}
                         </div>
-                        <button type='submit'>
+                        <button type='submit' className={styles.submitButton}>
                             Send A Message
                         </button>
                     </form>

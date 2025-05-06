@@ -3,21 +3,59 @@ import styles from "../styles/Header.module.css"
 import Hamburger from 'hamburger-react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { useRouter } from 'next/router'
+import { useDispatch } from 'react-redux'
+import { ProductList } from '../store/authSlice'
 
 export default function Header({ isHeaderVisible }) {
     const [IsSet, SetISSet] = useState(0)
     const [isOpen, setOpen] = useState(false)
     const [isSearchOpen, setIsSearchOpen] = useState(false)
     const [searchQuery, setSearchQuery] = useState('')
-
+    const [products, setProducts] = useState([])
+    const [filteredProducts, setFilteredProducts] = useState([])
+    const dispatch = useDispatch()
     const router = useRouter()
+
+    useEffect(() => {
+        const fetchProducts = async () => {
+            try {
+                const response = await dispatch(ProductList()).unwrap()
+                if (response.status === 200) {
+                    setProducts(response.products)
+                }
+            } catch (error) {
+                console.error("Error fetching products:", error)
+            }
+        }
+        fetchProducts()
+    }, [dispatch])
+
+    useEffect(() => {
+        if (searchQuery.trim()) {
+            const filtered = products.filter(product => 
+                product.name.toLowerCase().includes(searchQuery.toLowerCase())
+            )
+            setFilteredProducts(filtered)
+        } else {
+            setFilteredProducts([])
+        }
+    }, [searchQuery, products])
 
     const handleSearch = (e) => {
         e.preventDefault()
         if (searchQuery.trim()) {
-            router.push(`/search?q=${encodeURIComponent(searchQuery)}`)
+            router.push(`/category/f?search=${encodeURIComponent(searchQuery)}`)
             setIsSearchOpen(false)
             setSearchQuery('')
+        }
+    }
+
+    const handleLoginClick = () => {
+        const userToken = localStorage.getItem('userToken');
+        if (userToken) {
+            router.push("/profile");
+        } else {
+            router.push("/login");
         }
     }
 
@@ -38,7 +76,7 @@ export default function Header({ isHeaderVisible }) {
                                 </span>
 
                             </button>
-                            <button onClick={() => router.push("/login")} className={styles.second}>
+                            <button onClick={handleLoginClick} className={styles.second}>
                                 <span>
                                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-user-round"><circle cx="12" cy="8" r="5" /><path d="M20 21a8 8 0 0 0-16 0" /></svg>
                                 </span>
@@ -80,7 +118,7 @@ export default function Header({ isHeaderVisible }) {
                                 <path d="m21 21-4.3-4.3" />
                             </svg>
                         </li>
-                        <li onClick={() => router.push("/login")}>
+                        <li onClick={handleLoginClick}>
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-user-round">
                                 <circle cx="12" cy="8" r="5" />
                                 <path d="M20 21a8 8 0 0 0-16 0" />
@@ -119,6 +157,7 @@ export default function Header({ isHeaderVisible }) {
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
                                 className={styles.searchInput}
+                                autoFocus
                             />
                             <button type="submit" className={styles.searchButton}>
                                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-search">
@@ -127,6 +166,32 @@ export default function Header({ isHeaderVisible }) {
                                 </svg>
                             </button>
                         </form>
+                        {filteredProducts.length > 0 && (
+                            <div className={styles.searchResults}>
+                                {filteredProducts.map((product) => (
+                                    <div 
+                                        key={product._id} 
+                                        className={styles.searchResultItem}
+                                        onClick={() => {
+                                            router.push(`/detail?id=${product._id}`)
+                                            setIsSearchOpen(false)
+                                            setSearchQuery('')
+                                        }}
+                                    >
+                                        <img src={product.url} alt={product.name} />
+                                        <div className={styles.searchResultInfo}>
+                                            <h4>{product.name}</h4>
+                                            <p>₹{product.price}</p>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+                        {searchQuery && filteredProducts.length === 0 && (
+                            <div className={styles.noResults}>
+                                <p>No products found</p>
+                            </div>
+                        )}
                     </motion.div>
                 )}
             </AnimatePresence>

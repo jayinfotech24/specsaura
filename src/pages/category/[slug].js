@@ -1,17 +1,38 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import styles from "../../styles/category.module.css"
 import Footer from '../../Component/Footer'
 import Header from "../../Component/Header"
 import CardComponent from '../../Component/CardComponent'
 import { Validate } from '../../store/commonFunction'
 import { useRouter } from 'next/router'
+import { useDispatch } from 'react-redux'
+import { ProductList } from '../../store/authSlice'
 
 export default function index() {
 
     const router = useRouter();
-
+    const dispatch = useDispatch();
+    const [Products, setProducts] = useState([]);
+    const [IsLoading, setIsLoading] = useState(false);
     useEffect(() => {
         Validate(router)
+    }, [])
+    const GetProduct = () => {
+        setIsLoading(true)
+        dispatch(ProductList()).then((res) => {
+            console.log("resProduct", res.payload)
+            if (res.payload.status == 200) {
+                setProducts(res.payload.products)
+                setIsLoading(false)
+            }
+        }).catch((error) => {
+            console.log("Error", error)
+            setIsLoading(false)
+        })
+    }
+
+    useEffect(() => {
+        GetProduct();
     }, [])
     return (
         <div className={styles.main}>
@@ -28,20 +49,10 @@ export default function index() {
 
                     </div>
                     <div className={styles.cardInner}>
+                        {Products.map((item, index) => (
+                            <CardComponent key={index} src={item.url} name={item.name} price={item.price} />
+                        ))}
 
-                        <CardComponent src={"/Images/Round-Glasses.webp"} name={"Round Glasses"} price={"$28.00"} />
-                        <CardComponent src={"/Images/glasses2.webp"} name={"Rectangle SunGlasses"} price={"$59.00"} />
-                        <CardComponent src={"/Images/glasses3.webp"} name={"Rectangle-SunGlasses-S"} price={"$15.00"} />
-                        <CardComponent src={"/Images/glasses4.webp"} name={"Premium-SunGlasses-S"} price={"$20.00"} />
-                        <CardComponent src={"/Images/Round-Glasses.webp"} name={"Round Glasses"} price={"$28.00"} />
-                        <CardComponent src={"/Images/glasses2.webp"} name={"Rectangle SunGlasses"} price={"$59.00"} />
-                        <CardComponent src={"/Images/glasses3.webp"} name={"Rectangle-SunGlasses-S"} price={"$15.00"} />
-                        <CardComponent src={"/Images/glasses4.webp"} name={"Premium-SunGlasses-S"} price={"$20.00"} />
-
-                        <CardComponent src={"/Images/Round-Glasses.webp"} name={"Round Glasses"} price={"$28.00"} />
-                        <CardComponent src={"/Images/glasses2.webp"} name={"Rectangle SunGlasses"} price={"$59.00"} />
-                        <CardComponent src={"/Images/glasses3.webp"} name={"Rectangle-SunGlasses-S"} price={"$15.00"} />
-                        <CardComponent src={"/Images/glasses4.webp"} name={"Premium-SunGlasses-S"} price={"$20.00"} />
 
 
                     </div>

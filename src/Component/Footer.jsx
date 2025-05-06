@@ -5,9 +5,16 @@ import { FaInstagram } from "react-icons/fa";
 import { FaThreads } from "react-icons/fa6";
 import { FaFacebookF } from "react-icons/fa";
 import { useRouter } from 'next/router';
-export default function Footer() {
 
+export default function Footer() {
     const router = useRouter()
+
+    const handleAddressClick = () => {
+        const address = "Shop no 30, Shardhadeep Complex, Near Laxmi Gathiya Rath, Opp. Anant Atila, Shastri nagar cross road, Ahmedabad, Gujarat, Pin code: 380063";
+        const encodedAddress = encodeURIComponent(address);
+        window.open(`https://www.google.com/maps/search/?api=1&query=${encodedAddress}`, '_blank');
+    }
+
     return (
         <div className={styles.footer}>
             <div className={styles.footerInner}>
@@ -20,7 +27,6 @@ export default function Footer() {
                         <div className={styles.icons}>
                             <FaXTwitter width={24} height={24} />
                             <FaInstagram />
-
                             <FaFacebookF />
                         </div>
                     </div>
@@ -29,36 +35,29 @@ export default function Footer() {
                     <div className={styles.container1}>
                         <h3>Help & Information</h3>
                         <ul>
-
-                            <li onClick={() => router.push("/terms_condition")}  >Terms & Condition</li>
+                            <li onClick={() => router.push("/terms_condition")}>Terms & Condition</li>
                             <li onClick={() => router.push("/contact")}>Contact</li>
                             <li>Accesories</li>
-
                         </ul>
                     </div>
                     <div className={styles.container1}>
                         <h3>About Us</h3>
                         <ul>
-                            <li>Help Center</li>
-                            <li>Address Store</li>
+                            <li onClick={() => router.push("/help-center")}>Help Center</li>
+                            <li onClick={handleAddressClick} style={{ cursor: 'pointer' }}>Address Store</li>
                             <li onClick={() => router.push("/privacy_policy")}>Privacy Policy</li>
-
-
                         </ul>
                     </div>
                     <div className={styles.container1}>
-                        <h3>
-                            Categories</h3>
+                        <h3>Categories</h3>
                         <ul>
                             <li>Women's Eyeglasses</li>
                             <li>Men's Eyeglasses</li>
                             <li>Ray Ban Eyeglasses</li>
                             <li>Designer Eyelasses</li>
-
                         </ul>
                     </div>
                 </div>
-
             </div>
         </div>
     )

@@ -67,7 +67,7 @@ export default function CardComponent({ id, src, name, price }) {
 
                 <div className={styles.content}>
                     <h3>{name}</h3>
-                    <h2>{price}</h2>
+                    <h2>{`₹ ${price}`} </h2>
                 </div>
             </div>
         </div>
