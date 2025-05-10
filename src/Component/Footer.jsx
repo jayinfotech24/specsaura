@@ -15,6 +15,10 @@ export default function Footer() {
         window.open(`https://www.google.com/maps/search/?api=1&query=${encodedAddress}`, '_blank');
     }
 
+    const handleCategoryClick = (gender) => {
+        router.push(`/category/f?gender=${gender}`);
+    }
+
     return (
         <div className={styles.footer}>
             <div className={styles.footerInner}>
@@ -51,10 +55,10 @@ export default function Footer() {
                     <div className={styles.container1}>
                         <h3>Categories</h3>
                         <ul>
-                            <li>Women's Eyeglasses</li>
-                            <li>Men's Eyeglasses</li>
-                            <li>Ray Ban Eyeglasses</li>
-                            <li>Designer Eyelasses</li>
+                            <li onClick={() => handleCategoryClick('women')} style={{ cursor: 'pointer' }}>Women's Eyeglasses</li>
+                            <li onClick={() => handleCategoryClick('men')} style={{ cursor: 'pointer' }}>Men's Eyeglasses</li>
+                            <li onClick={() => handleCategoryClick('rayban')} style={{ cursor: 'pointer' }}>Ray Ban Eyeglasses</li>
+                            <li onClick={() => handleCategoryClick('designer')} style={{ cursor: 'pointer' }}>Designer Eyelasses</li>
                         </ul>
                     </div>
                 </div>

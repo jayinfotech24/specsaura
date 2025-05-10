@@ -4,24 +4,20 @@ import styles from '../../styles/profile.module.css';
 import Header from '../../Component/Header';
 import Footer from '../../Component/Footer';
 import { FaUser, FaShoppingBag, FaHeart, FaMapMarkerAlt, FaPhone, FaEnvelope } from 'react-icons/fa';
+import UpdateProfileForm from '../../Component/UpdateProfileForm';
+import { GetOrderById } from '../../store/authSlice';
+import { useDispatch } from 'react-redux';
+import { GetUser } from '../../store/authSlice';
+import { UpdateUser } from '../../store/authSlice';
+
 
 const Profile = () => {
     const router = useRouter();
+    const dispatch = useDispatch();
     const [activeTab, setActiveTab] = useState('profile');
-    const [userData, setUserData] = useState({
-        name: 'John Doe',
-        email: 'john@example.com',
-        phone: '+91 1234567890',
-        address: '123 Main Street, City, State',
-        orders: [
-            { id: 1, date: '2024-03-15', total: '₹2,499', status: 'Delivered' },
-            { id: 2, date: '2024-03-10', total: '₹1,999', status: 'Processing' }
-        ],
-        wishlist: [
-            { id: 1, name: 'Classic Black Frames', price: '₹1,499', image: '/Images/glasses1.jpg' },
-            { id: 2, name: 'Designer Sunglasses', price: '₹2,999', image: '/Images/glasses2.jpg' }
-        ]
-    });
+    const [userData, setUserData] = useState({});
+    const [orderData, setOrderData] = useState([]);
+    const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
         const userToken = localStorage.getItem('userToken');
@@ -30,10 +26,75 @@ const Profile = () => {
         }
     }, [router]);
 
+
     const handleLogout = () => {
         localStorage.removeItem('userToken');
         router.push('/login');
     };
+
+    const handleProfileUpdate = (updatedData) => {
+        if (!userData?._id) return;
+
+        const updatePayload = {
+            email: userData?.email,
+            name: updatedData?.name,
+            number: updatedData?.number,
+            address: updatedData?.address,
+        };
+        console.log("UpdatedData", updatePayload);
+
+        dispatch(UpdateUser(updatePayload)).then((res) => {
+            console.log("ResponseUpdate", res);
+            if (res.payload.status === 200) {
+                setUserData(res.payload.mainUser);
+            }
+        }).catch((error) => {
+            console.error('Error updating user:', error);
+        });
+    };
+
+    const GetUserDetails = async () => {
+        try {
+            setIsLoading(true);
+            const response = await dispatch(GetUser()).unwrap();
+            console.log(response);
+            if (response.status === 200) {
+                setUserData(response.mainUser);
+            }
+        } catch (error) {
+            console.error('Error fetching user details:', error);
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    const GetOrderDetail = async (userId) => {
+        console.log("Call", userId);
+        if (!userId) return;
+
+        try {
+            const response = await dispatch(GetOrderById(userId)).unwrap();
+            console.log(response);
+            if (response.status === 200) {
+
+                setOrderData(response.items || []);
+            }
+        } catch (error) {
+            console.error('Error fetching order details:', error);
+        }
+    };
+
+    // Fetch user data on component mount
+    useEffect(() => {
+        GetUserDetails();
+    }, []);
+
+    // Fetch order data when userData is available
+    useEffect(() => {
+        if (userData?._id) {
+            GetOrderDetail(userData._id);
+        }
+    }, [userData]);
 
     return (
         <div className={styles.main}>
@@ -42,10 +103,10 @@ const Profile = () => {
                 <div className={styles.sidebar}>
                     <div className={styles.userInfo}>
                         <div className={styles.avatar}>
-                            <FaUser size={40} />
+                            <FaUser />
                         </div>
-                        <h2>{userData.name}</h2>
-                        <p>{userData.email}</p>
+                        <h2>{userData?.name || 'User'}</h2>
+                        <p>{userData?.email}</p>
                     </div>
                     <nav className={styles.nav}>
                         <button
@@ -60,12 +121,6 @@ const Profile = () => {
                         >
                             <FaShoppingBag /> Orders
                         </button>
-                        <button
-                            className={`${styles.navItem} ${activeTab === 'wishlist' ? styles.active : ''}`}
-                            onClick={() => setActiveTab('wishlist')}
-                        >
-                            <FaHeart /> Wishlist
-                        </button>
                         <button className={styles.logoutButton} onClick={handleLogout}>
                             Logout
                         </button>
@@ -73,82 +128,72 @@ const Profile = () => {
                 </div>
 
                 <div className={styles.content}>
-                    {activeTab === 'profile' && (
-                        <div className={styles.profileSection}>
-                            <h1>Profile Information</h1>
-                            <div className={styles.infoCard}>
-                                <div className={styles.infoItem}>
-                                    <FaUser className={styles.icon} />
-                                    <div>
-                                        <h3>Full Name</h3>
-                                        <p>{userData.name}</p>
-                                    </div>
-                                </div>
-                                <div className={styles.infoItem}>
-                                    <FaEnvelope className={styles.icon} />
-                                    <div>
-                                        <h3>Email</h3>
-                                        <p>{userData.email}</p>
-                                    </div>
-                                </div>
-                                <div className={styles.infoItem}>
-                                    <FaPhone className={styles.icon} />
-                                    <div>
-                                        <h3>Phone</h3>
-                                        <p>{userData.phone}</p>
-                                    </div>
-                                </div>
-                                <div className={styles.infoItem}>
-                                    <FaMapMarkerAlt className={styles.icon} />
-                                    <div>
-                                        <h3>Address</h3>
-                                        <p>{userData.address}</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    )}
+                    {isLoading ? (
+                        <div className={styles.loading}>Loading...</div>
+                    ) : (
+                        <>
+                            {activeTab === 'profile' && (
+                                <UpdateProfileForm
+                                    userData={userData}
+                                    onUpdate={handleProfileUpdate}
+                                />
+                            )}
 
-                    {activeTab === 'orders' && (
-                        <div className={styles.ordersSection}>
-                            <h1>Order History</h1>
-                            <div className={styles.ordersList}>
-                                {userData.orders.map(order => (
-                                    <div key={order.id} className={styles.orderCard}>
-                                        <div className={styles.orderHeader}>
-                                            <h3>Order #{order.id}</h3>
-                                            <span className={`${styles.status} ${styles[order.status.toLowerCase()]}`}>
-                                                {order.status}
-                                            </span>
-                                        </div>
-                                        <div className={styles.orderDetails}>
-                                            <p>Date: {order.date}</p>
-                                            <p>Total: {order.total}</p>
-                                        </div>
+                            {activeTab === 'orders' && (
+                                <div className={styles.ordersSection}>
+                                    <h1>My Orders</h1>
+                                    <div className={styles.ordersList}>
+                                        {orderData && orderData.length > 0 ? (
+                                            orderData.map(order => (
+                                                <div key={order._id} className={styles.orderCard}>
+                                                    <div className={styles.orderHeader}>
+                                                        <h3>Order #{order._id}</h3>
+                                                        <span className={`${styles.status} ${styles[order.status?.toLowerCase()]}`}>
+                                                            {order.status}
+                                                        </span>
+                                                    </div>
+                                                    <div className={styles.orderDetails}>
+                                                        <p>Date: {new Date(order.createdAt).toLocaleDateString()}</p>
+                                                        <p>Total: ₹{order.totalAmount}</p>
+                                                        <div className={styles.shippingInfo}>
+                                                            <h4>Shipping Address:</h4>
+                                                            <p>{order.shippingAddress?.fullName}</p>
+                                                            <p>{order.shippingAddress?.address}</p>
+                                                            <p>{order.shippingAddress?.city}, {order.shippingAddress?.state} - {order.shippingAddress?.zipCode}</p>
+                                                            <p>{order.shippingAddress?.country}</p>
+                                                            <p>Phone: {order.shippingAddress?.phone}</p>
+                                                        </div>
+                                                        <div className={styles.itemsList}>
+                                                            <h4>Items:</h4>
+                                                            {order.items?.map(item => (
+                                                                <div key={item._id} className={styles.orderItem}>
+                                                                    <img
+                                                                        src={item.product?.url}
+                                                                        alt={item.product?.name}
+                                                                        className={styles.itemImage}
+                                                                    />
+                                                                    <div className={styles.itemDetails}>
+                                                                        <p className={styles.itemName}>{item.product?.name}</p>
+                                                                        <p className={styles.itemPrice}>₹{item.product?.price}</p>
+                                                                        <p className={styles.itemQuantity}>Quantity: {item.quantity}</p>
+                                                                    </div>
+                                                                </div>
+                                                            ))}
+                                                        </div>
+                                                        <div className={styles.paymentInfo}>
+                                                            <p>Payment Method: {order.paymentMethod}</p>
+                                                            <p>Payment Status: {order.paymentStatus}</p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            ))
+                                        ) : (
+                                            <div className={styles.noOrders}>No orders found</div>
+                                        )}
                                     </div>
-                                ))}
-                            </div>
-                        </div>
-                    )}
-
-                    {activeTab === 'wishlist' && (
-                        <div className={styles.wishlistSection}>
-                            <h1>My Wishlist</h1>
-                            <div className={styles.wishlistGrid}>
-                                {userData.wishlist.map(item => (
-                                    <div key={item.id} className={styles.wishlistCard}>
-                                        <img src={item.image} alt={item.name} />
-                                        <div className={styles.wishlistInfo}>
-                                            <h3>{item.name}</h3>
-                                            <p>{item.price}</p>
-                                            <button className={styles.addToCartButton}>
-                                                Add to Cart
-                                            </button>
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
+                                </div>
+                            )}
+                        </>
                     )}
                 </div>
             </div>

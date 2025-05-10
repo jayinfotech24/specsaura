@@ -189,6 +189,42 @@ export const CreateOrder = createAsyncThunk(
         }
     }
 );
+export const GetUser = createAsyncThunk("api/getUser", async (credentials, { rejectWithValue }) => {
+    try {
+        const response = await axiosInstance.get(`${Appapis.Basurl}${Appapis.Getuser}`);
+        return response.data;
+    }
+    catch (error) {
+
+        return rejectWithValue(error.response?.data || "Something went wrong");
+    }
+});
+export const GetOrderById = createAsyncThunk(
+    "api/getOrder",
+    async (id, { rejectWithValue }) => {
+        try {
+            const response = await axiosInstance.get(`${Appapis.Basurl}${Appapis.getOrder(id)}`);
+            return response.data;
+        } catch (error) {
+            console.log("GetOrderErroor", error.message)
+            return rejectWithValue(error.response?.data || "Something went wrong");
+        }
+    }
+);
+export const UpdateUser = createAsyncThunk(
+    "api/updateUser",
+    async (credentials, { rejectWithValue }) => {
+        try {
+            const response = await axiosInstance.patch(`${Appapis.Basurl}${Appapis.updateUser}`, credentials);
+            return response.data;
+        } catch (error) {
+            return rejectWithValue(error.response?.data || "Something went wrong");
+        }
+    }
+);
+
+
+
 
 const counterSlice = createSlice({
     name: "counter",
@@ -397,6 +433,42 @@ const counterSlice = createSlice({
                 state.loading = false;
                 state.error = action.payload;
             })
+            .addCase(GetUser.pending, (state, action) => {
+                state.loading = true
+
+            })
+            .addCase(GetUser.fulfilled, (state, action) => {
+                state.loading = false;
+            })
+            .addCase(GetUser.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload;
+            })
+            .addCase(GetOrderById.pending, (state, action) => {
+                state.loading = true
+
+            })
+            .addCase(GetOrderById.fulfilled, (state, action) => {
+                state.loading = false;
+            })
+            .addCase(GetOrderById.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload;
+            })
+            .addCase(UpdateUser.pending, (state, action) => {
+                state.loading = true
+
+            })
+            .addCase(UpdateUser.fulfilled, (state, action) => {
+                state.loading = false;
+
+            })
+            .addCase(UpdateUser.rejected, (state, action) => {
+                console.log("UpdateUserError", action)
+                state.loading = false;
+                state.error = action.payload;
+            })
+
 
     }
 });
