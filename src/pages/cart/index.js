@@ -5,9 +5,10 @@ import Footer from "../../Component/Footer"
 import { handlePayment, IncreasePrice, Validate } from '../../store/commonFunction'
 import { useRouter } from 'next/router'
 import { useDispatch } from 'react-redux'
-import { getCartDetail, getProductDetail, DeleteCart } from '../../store/authSlice'
+import { getCartDetail, getProductDetail, DeleteCart, DeleteFullCart } from '../../store/authSlice'
 import Preloader from '../../Component/Animated'
 import AlertModal from '../../Component/AlertModal'
+import { toast } from 'react-hot-toast'
 
 export default function index() {
 
@@ -88,10 +89,12 @@ export default function index() {
         getDeatail()
     }, [])
     const totalAmount = CartData.reduce((acc, item) => {
-        return acc + (Number(item.productID.price));
+        const itemPrice = Number(item.productID.price) || 0;
+        const itemQuantity = Number(item.numberOfItems) || 1;
+        return acc + (itemPrice * itemQuantity);
     }, 0);
 
-    console.log("Total Amount:", totalAmount); // For debugging
+    console.log("Total Amount:", totalAmount);
 
 
     const handleDelete = async (id) => {
@@ -133,12 +136,32 @@ export default function index() {
         setAlertState(prev => ({ ...prev, isOpen: false }));
     }
 
-    const handlePayment = () => {
-        const totalAmount = CartData.reduce((sum, item) => sum + (Number(item.productID.price)), 0);
+    const handleProceedToCheckout = () => {
         router.push({
             pathname: '/order-details',
-            query: { amount: totalAmount }
+            query: { from: 'cart' }
         });
+    };
+
+    const handleClearCart = async () => {
+        try {
+            const productIds = CartData.map(item => item._id);
+            console.log("Product IDs", productIds);
+            const payload = {
+                ids: productIds
+            };
+            await dispatch(DeleteFullCart(payload)).then((res) => {
+                console.log("Cart cleared successfully", res);
+                toast.success("Cart cleared successfully");
+                getDeatail(); // Refresh cart data
+            }).catch((error) => {
+                console.log("Error clearing cart:", error);
+                toast.error("Failed to clear cart");
+            });
+        } catch (error) {
+            console.error("Error clearing cart:", error);
+            toast.error("Failed to clear cart");
+        }
     };
 
     return (
@@ -176,11 +199,16 @@ export default function index() {
                                     <tr>
                                         <td>Product name</td>
                                         <td>Price</td>
+                                        <td>Quantity</td>
                                         <td></td>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     {CartData.map((item) => {
+                                        const itemPrice = Number(item.productID.price) || 0;
+                                        const itemQuantity = Number(item.numberOfItems) || 1;
+                                        const itemTotal = itemPrice * itemQuantity;
+
                                         return (
                                             <tr key={item._id}>
                                                 <td data-label="Product">
@@ -193,9 +221,14 @@ export default function index() {
                                                     </div>
                                                 </td>
                                                 <td data-label="Price">
-                                                    <h2 style={{ fontSize: '14px' }}>{`₹${IncreasePrice(Number(item.productID.price))}`}</h2>
+                                                    <h2 style={{ fontSize: '14px' }}>{`₹${itemTotal.toLocaleString('en-IN')}`}</h2>
                                                 </td>
-                                                <td data-label="Action">
+                                                <td data-label="Quantity">
+                                                    <div className={styles.quantity}>
+                                                        <h2>{itemQuantity}</h2>
+                                                    </div>
+                                                </td>
+                                                <td>
                                                     <svg style={{ cursor: "pointer" }}
                                                         onClick={() => handleDelete(item._id)} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#000" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" className={styles.deleteIcon}>
                                                         <path d="M18 6 6 18" />
@@ -207,9 +240,14 @@ export default function index() {
                                     })}
                                 </tbody>
                             </table>
-                            <button onClick={handlePayment} className={styles.button}>
-                                {`Pay ₹${totalAmount.toLocaleString('en-IN')}`}
-                            </button>
+                            <div className={styles.buttonContainer}>
+                                <button onClick={handleClearCart} className={styles.clearButton}>
+                                    Clear Cart
+                                </button>
+                                <button onClick={handleProceedToCheckout} className={styles.button}>
+                                    {`Pay ₹${totalAmount.toLocaleString('en-IN')}`}
+                                </button>
+                            </div>
                         </>
                     )}
                 </div>

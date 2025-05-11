@@ -18,7 +18,9 @@ const Appapis = {
     createOrder: "/order",
     Getuser: "/user/info",
     getOrder: (id) => `/orders/user/${id}`,
-    updateUser: `/user/update/`
+    updateUser: `/user/update/`,
+    deleteFullCart: "/cart",
+    getCartMany: "/cart"
 }
 
 export default Appapis

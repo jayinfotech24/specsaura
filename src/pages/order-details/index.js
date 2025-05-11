@@ -3,18 +3,21 @@ import { useRouter } from 'next/router';
 import styles from '../../styles/orderDetails.module.css';
 import Header from '../../Component/Header';
 import Footer from '../../Component/Footer';
-import { CreateOrder, getCartDetail } from '../../store/authSlice';
+import { CreateOrder, getCartDetail, DeleteFullCart } from '../../store/authSlice';
 import { useDispatch } from 'react-redux';
 import Preloader from '../../Component/Animated';
 import { handlePayment } from '../../store/commonFunction';
 import axios from 'axios';
 import { toast } from 'react-toastify';
+import { MakePayment, VerifyPayment } from '../../store/authSlice';
+import Script from 'next/script';
 
 const OrderDetails = () => {
     const router = useRouter();
     const dispatch = useDispatch();
-    const [isLoading, setIsLoading] = useState(true);
-    const { amount } = router.query;
+    const [isLoading, setIsLoading] = useState(false);
+    const { amount, from } = router.query;
+    const [isRazorpayLoaded, setIsRazorpayLoaded] = useState(false);
 
     const [formData, setFormData] = useState({
         shippingAddress: {
@@ -30,34 +33,65 @@ const OrderDetails = () => {
 
     const [orderData, setOrderData] = useState({
         items: [],
-        totalAmount: amount ? parseFloat(amount) : 0
+        total: 0
     });
 
     useEffect(() => {
-        const fetchCartDetails = async () => {
-            try {
-                const userId = localStorage.getItem("userId");
-                const response = await dispatch(getCartDetail(userId)).unwrap();
-                console.log("Response", response)
-                setOrderData(prev => ({
-                    ...prev,
-                    items: response.items || []
-                }));
-            } catch (error) {
-                console.error("Error fetching cart details:", error);
-            } finally {
-                setIsLoading(false);
-            }
-        };
+        // If coming from cart, fetch cart items
+        if (from === 'cart') {
+            const fetchCartDetails = async () => {
+                try {
+                    const userId = localStorage.getItem("userId");
+                    const response = await dispatch(getCartDetail(userId)).unwrap();
+                    console.log("Cart Response", response);
 
-        fetchCartDetails();
-    }, [dispatch]);
+                    // Calculate total from cart items
+                    const total = response.items.reduce((acc, item) => {
+                        const itemPrice = Number(item.productID.price) || 0;
+                        const itemQuantity = Number(item.numberOfItems) || 1;
+                        return acc + (itemPrice * itemQuantity);
+                    }, 0);
+
+                    setOrderData({
+                        items: response.items || [],
+                        total: total
+                    });
+                } catch (error) {
+                    console.error("Error fetching cart details:", error);
+                } finally {
+                    setIsLoading(false);
+                }
+            };
+
+            fetchCartDetails();
+        } else {
+            // If coming from Buy Now, get selected product and specs data
+            const selectedProduct = JSON.parse(localStorage.getItem('selectedProduct') || '{}');
+            const specsData = JSON.parse(localStorage.getItem('specsData') || '{}');
+
+            if (selectedProduct) {
+                const basePrice = Number(selectedProduct.price) || 0;
+                const additionalCost = Number(specsData.additionalCost) || 0;
+                const total = basePrice + additionalCost;
+
+                setOrderData({
+                    items: [{
+                        productID: {
+                            ...selectedProduct,
+                            specs: specsData
+                        }
+                    }],
+                    total: total
+                });
+            }
+        }
+    }, [dispatch, from]);
 
     useEffect(() => {
         if (amount) {
             setOrderData(prev => ({
                 ...prev,
-                totalAmount: parseFloat(amount)
+                total: parseFloat(amount)
             }));
         }
     }, [amount]);
@@ -84,52 +118,122 @@ const OrderDetails = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         setIsLoading(true);
+
         try {
-            // Process payment and get verification response
-            const Amount = Math.abs(orderData.totalAmount / 100);
-            const paymentResponse = await handlePayment(dispatch, Amount);
-            console.log("Payment Response", paymentResponse);
-
-            if (paymentResponse && paymentResponse.status == 200) {
-                // Create order after successful payment verification
-                const orderPayload = {
-                    user: localStorage.getItem("userId"),
-                    items: orderData.items.map(item => ({
-                        product: item.productID._id,
-                        cart: item._id,
-
-                        quantity: 1
-                    })),
-                    totalAmount: orderData.totalAmount,
-                    status: "Pending",
-                    paymentStatus: "Fulfilled",
-                    paymentMethod: "Online",
-                    shippingAddress: formData.shippingAddress,
-
-                };
-
-                console.log("Order Payload", orderPayload)
-                const orderResponse = await dispatch(CreateOrder(orderPayload)).unwrap();
-                console.log("Order Response", orderResponse);
-
-                if (orderResponse.status == 201) {
-                    toast.success("Order created successfully!");
-                    // Redirect to order confirmation with order ID and amount
-                    router.push({
-                        pathname: '/order-confirmation',
-                        // query: {
-                        //     orderId: orderResponse.data.order._id,
-                        //     amount: orderData.totalAmount,
-                        //     paymentId: paymentResponse.paymentId
-                        // }
-                    });
-                }
+            if (!isRazorpayLoaded) {
+                toast.error("Payment system is not ready. Please try again.");
+                return;
             }
+
+            // Get the total amount from orderData
+            const amount = orderData.total;
+
+            // Create payment order
+            const result = await dispatch(MakePayment({ amount })).unwrap();
+
+            if (!result || !result.id) {
+                throw new Error("Invalid payment order response");
+            }
+
+            // Initialize Razorpay
+            const options = {
+                key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
+                amount: amount * 100, // Convert to paise
+                currency: "INR",
+                name: "Specsaura",
+                description: "Specsaura Order",
+                order_id: result.id,
+                handler: async function (response) {
+                    const payload = {
+                        razorpay_order_id: response.razorpay_order_id,
+                        razorpay_payment_id: response.razorpay_payment_id,
+                        razorpay_signature: response.razorpay_signature,
+                        orderData: orderData // Include order data for backend processing
+                    };
+
+                    try {
+                        const verifyRes = await dispatch(VerifyPayment(payload)).unwrap();
+                        console.log("Verify Response", verifyRes);
+
+                        // Create order after successful payment verification
+                        const orderPayload = {
+                            user: localStorage.getItem("userId"),
+                            items: orderData.items.map(item => ({
+                                product: item.productID._id,
+                                cart: item._id,
+                                prescription: item.productID.prescription || null,
+                                quantity: item.numberOfItems || 1
+                            })),
+                            totalAmount: orderData.total,
+                            status: "Pending",
+                            paymentStatus: "Completed",
+                            paymentMethod: "Online",
+                            shippingAddress: formData.shippingAddress
+                        };
+
+                        try {
+                            const orderRes = await dispatch(CreateOrder(orderPayload)).unwrap();
+                            console.log("Order created successfully", orderRes);
+                            alert("ORder Created")
+                            // Delete cart after successful order creation
+                            const productIds = orderData.items.map(item => item._id);
+                            const cartPayload = {
+                                ids: productIds
+                            };
+                            await dispatch(DeleteFullCart(cartPayload)).then((res) => {
+                                console.log("Cart cleared successfully", res);
+                            }).catch((error) => {
+                                console.log("Error clearing cart:", error);
+                            });
+
+                            toast.success("Payment successful!");
+                            // Clear localStorage after successful payment
+                            localStorage.removeItem('selectedProduct');
+                            localStorage.removeItem('specsData');
+                            router.push('/order-confirmation');
+                        } catch (error) {
+                            console.error("Error creating order:", error);
+                            toast.error("Error creating order. Please contact support.");
+                        }
+                    } catch (error) {
+                        console.error("Payment verification failed:", error);
+                        toast.error("Payment verification failed. Please contact support.");
+                    }
+                },
+                prefill: {
+                    name: "Mihir Yoganandi",
+                    email: "yoganandimihir@gmail.com",
+                    contact: "9313331856",
+                },
+                theme: {
+                    color: "#1A73E8",
+                },
+            };
+
+            const rzp = new window.Razorpay(options);
+            rzp.open();
         } catch (error) {
             console.error("Error in payment or order creation:", error);
             toast.error("An error occurred. Please try again.");
         } finally {
             setIsLoading(false);
+        }
+    };
+
+    const handleClearCart = async () => {
+        try {
+            const productIds = orderData.items.map(item => item.productID._id);
+            await dispatch(DeleteFullCart({ ids: productIds })).then((res) => {
+                console.log("Cart cleared successfully", res);
+                toast.success("Cart cleared successfully");
+                router.push('/cart'); // Redirect to cart page after clearing
+            }).catch((error) => {
+                console.log("Error clearing cart:", error);
+                toast.error("Failed to clear cart");
+            });
+        } catch (error) {
+            console.error("Error clearing cart:", error);
+            toast.error("Failed to clear cart");
         }
     };
 
@@ -139,6 +243,14 @@ const OrderDetails = () => {
 
     return (
         <div className={styles.main}>
+            <Script
+                src="https://checkout.razorpay.com/v1/checkout.js"
+                onLoad={() => setIsRazorpayLoaded(true)}
+                onError={() => {
+                    console.error("Failed to load Razorpay script");
+                    toast.error("Failed to load payment system. Please refresh the page.");
+                }}
+            />
             <Header isHeaderVisible={true} />
             <div className={styles.container}>
                 <div className={styles.header}>
@@ -153,13 +265,33 @@ const OrderDetails = () => {
                             <div className={styles.itemsList}>
                                 {orderData.items.map((item, index) => (
                                     <div key={index} className={styles.item}>
-                                        <img src={item.productID?.url || '/Images/placeholder.png'} alt={item.productID?.name || 'Product'} className={styles.itemImage} />
+                                        <img
+                                            src={item.productID?.image || item.productID?.url || '/Images/placeholder.png'}
+                                            alt={item.productID?.name || 'Product'}
+                                            className={styles.itemImage}
+                                        />
                                         <div className={styles.itemDetails}>
                                             <h3>{item.productID?.name || 'Product Name'}</h3>
-                                            <div className={styles.itemInfo}>
-                                                <span>Color: {item.productID?.color || 'N/A'}</span>
-                                                <span className={styles.price}>₹{item.productID?.price?.toLocaleString('en-IN') || '0'}</span>
-                                            </div>
+                                            {from === 'cart' ? (
+                                                <div className={styles.itemInfo}>
+                                                    <span>Quantity: {item.quantity || 1}</span>
+                                                    <span className={styles.price}>
+                                                        ₹{(item.productID?.price * (item.quantity || 1)).toLocaleString('en-IN')}
+                                                    </span>
+                                                </div>
+                                            ) : (
+                                                <div className={styles.itemInfo}>
+                                                    {item.productID?.specs && (
+                                                        <div className={styles.specsInfo}>
+                                                            <span>Power Type: {item.productID.specs.powerType || 'Standard'}</span>
+                                                            <span>Frame Type: {item.productID.specs.frameType || 'Standard'}</span>
+                                                        </div>
+                                                    )}
+                                                    <span className={styles.price}>
+                                                        ₹{item.productID?.price?.toLocaleString('en-IN')}
+                                                    </span>
+                                                </div>
+                                            )}
                                         </div>
                                     </div>
                                 ))}
@@ -256,7 +388,7 @@ const OrderDetails = () => {
                             <div className={styles.summary}>
                                 <div className={styles.summaryItem}>
                                     <span>Subtotal</span>
-                                    <span>₹{orderData.totalAmount.toLocaleString('en-IN')}</span>
+                                    <span>₹{orderData.total.toLocaleString('en-IN')}</span>
                                 </div>
                                 <div className={styles.summaryItem}>
                                     <span>Shipping</span>
@@ -269,7 +401,7 @@ const OrderDetails = () => {
                                 <div className={styles.total}>
                                     <span>Total Amount</span>
                                     <span className={styles.totalAmount}>
-                                        ₹{(orderData.totalAmount).toLocaleString('en-IN')}
+                                        ₹{orderData.total.toLocaleString('en-IN')}
                                     </span>
                                 </div>
                             </div>
@@ -283,6 +415,13 @@ const OrderDetails = () => {
                             onClick={() => router.back()}
                         >
                             Back to Cart
+                        </button>
+                        <button
+                            type="button"
+                            className={styles.clearButton}
+                            onClick={handleClearCart}
+                        >
+                            Clear Cart
                         </button>
                         <button
                             type="submit"

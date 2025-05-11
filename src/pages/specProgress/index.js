@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import styles from "../../styles/progress.module.css"
 import ProgressHeader from '../../Component/ProgressHeader'
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useRouter } from 'next/router';
 import { Validate } from '../../store/commonFunction';
 import { useForm } from 'react-hook-form'
@@ -9,11 +9,11 @@ import *as yup from "yup"
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useRef } from 'react';
 import { useDispatch } from 'react-redux';
-import { FileUpload, SavePrescription } from '../../store/authSlice';
+import { FileUpload, SavePrescription, AddCart } from '../../store/authSlice';
 import { ToastContainer, toast } from 'react-toastify';
-
 import ProgressBar from "@ramonak/react-progress-bar";
 import Preloader from '../../Component/Animated';
+
 export default function index() {
 
     const [firstStep, setFirstStep] = useState(true);
@@ -24,6 +24,8 @@ export default function index() {
     const [isTwoComplete, setIsTwoComplete] = useState(false);
     const [isThiredComplete, setIsThiredComplete] = useState(false)
     const [isFourthComplete, setIsFourthComplete] = useState(false)
+    const [selectedProduct, setSelectedProduct] = useState(null);
+    const [totalPrice, setTotalPrice] = useState(0);
     const inputRef = useRef()
     const [selectedFile, setSelectedFile] = useState(null);
     const [isFile, setIsFile] = useState(false)
@@ -32,12 +34,17 @@ export default function index() {
     const [progress, setProgress] = useState(0);
     const [IsLoading, setIsLoading] = useState(false)
     const dispatch = useDispatch();
-
-
-
+    const { action } = router.query;
 
     useEffect(() => {
         Validate(router)
+        // Load selected product from localStorage
+        const storedProduct = localStorage.getItem('selectedProduct');
+        if (storedProduct) {
+            const product = JSON.parse(storedProduct);
+            setSelectedProduct(product);
+            setTotalPrice(product.price);
+        }
     }, [])
 
     const Changepage = (number, IsFile) => {
@@ -89,190 +96,266 @@ export default function index() {
     }, [isFile])
 
     const FirstPage = () => {
-
         return (
             <motion.div
                 className={styles.firstMain}
-                initial={{ x: 500, opacity: 0 }}
-                animate={{ x: 0, opacity: 1 }}
-                exit={{ x: 100, opacity: 0 }}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
                 transition={{ duration: 0.5, ease: "easeOut" }}
             >
-
-
-
+                <button className={styles.backButton} onClick={() => router.push("/")}>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-left-icon lucide-arrow-left"><path d="m12 19-7-7 7-7" /><path d="M19 12H5" /></svg>
+                </button>
                 <div className={styles.firstInner}>
-                    <h1>Select your Power Type</h1>
+
+                    <motion.h1
+                        initial={{ opacity: 0, y: -20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.2 }}
+                    >
+
+
+                        Select your Power Type
+                    </motion.h1>
                     <div className={styles.firstCardContainer}>
-
-                        <div className={styles.card} onClick={() => Changepage(1)}>
-                            <div className={styles.left}>
-                                <img src="/Images/single_vision.webp" />
-                            </div>
-                            <div className={styles.right}>
-                                <div className={styles.content}>
-                                    <button>
-                                        Single Vision
-
-                                    </button>
-                                    <p>For distance or near vision (Thin, anti-glare, blue-cut options)</p>
+                        {[
+                            {
+                                title: "Single Vision",
+                                description: "For distance or near vision (Thin, anti-glare, blue-cut options)",
+                                image: "/Images/single_vision.webp",
+                                onClick: () => Changepage(1)
+                            },
+                            {
+                                title: "Bifocal/Progressive",
+                                description: "Bifocal and Progressives (For two powers in same lenses)",
+                                image: "/Images/bifocal.webp",
+                                onClick: () => {
+                                    setIsBifocal(true)
+                                    Changepage(1)
+                                }
+                            },
+                            {
+                                title: "Zero Power",
+                                description: "Block 98% of harmful rays (Anti-glare and blue-cut options)",
+                                image: "/Images/zero_power.webp",
+                                onClick: () => Changepage(1)
+                            },
+                            {
+                                title: "Frame Only",
+                                description: "Buy Only Frame",
+                                image: "/Images/frame_only.webp",
+                                onClick: () => router.push("/cart")
+                            }
+                        ].map((card, index) => (
+                            <motion.div
+                                key={index}
+                                className={styles.card}
+                                onClick={card.onClick}
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ delay: 0.3 + index * 0.1 }}
+                                whileHover={{ scale: 1.02, boxShadow: "0 8px 16px rgba(0,0,0,0.1)" }}
+                                whileTap={{ scale: 0.98 }}
+                            >
+                                <div className={styles.left}>
+                                    <img src={card.image} alt={card.title} />
                                 </div>
-                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-right"><path d="m9 18 6-6-6-6" /></svg>
-
-                            </div>
-                        </div>
-                        <div className={styles.card} onClick={() => Changepage(1)}>
-                            <div className={styles.left}>
-                                <img src="/Images/bifocal.webp" />
-                            </div>
-                            <div className={styles.right} onClick={() => {
-                                setIsBifocal(true)
-                                Changepage(1)
-                            }}>
-                                <div className={styles.content}>
-                                    <button>
-                                        Bifocal/Progressive
-
-                                    </button>
-                                    <p>Bifocal and Progressives (For two powers in same lenses)</p>
+                                <div className={styles.right}>
+                                    <div className={styles.content}>
+                                        <button>{card.title}</button>
+                                        <p>{card.description}</p>
+                                    </div>
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-chevron-right">
+                                        <path d="m9 18 6-6-6-6" />
+                                    </svg>
                                 </div>
-                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-right"><path d="m9 18 6-6-6-6" /></svg>
-
-                            </div>
-                        </div>
-                        <div className={styles.card} onClick={() => Changepage(1)}>
-                            <div className={styles.left}>
-                                <img src="/Images/zero_power.webp" />
-                            </div>
-                            <div className={styles.right}>
-                                <div className={styles.content}>
-                                    <button>
-                                        Zero Power
-
-                                    </button>
-                                    <p>Block 98% of harmful rays (Anti-glare and blue-cut options)</p>
-                                </div>
-                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-right"><path d="m9 18 6-6-6-6" /></svg>
-
-                            </div>
-                        </div>
-                        <div className={styles.card} onClick={() => router.push("/cart")}>
-                            <div className={styles.left}>
-                                <img src="/Images/frame_only.webp" />
-                            </div>
-                            <div className={styles.right}>
-                                <div className={styles.content}>
-                                    <button>
-                                        Frame Only
-
-                                    </button>
-                                    <p>Buy Only Frame</p>
-                                </div>
-                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-right"><path d="m9 18 6-6-6-6" /></svg>
-
-                            </div>
-                        </div>
-
+                            </motion.div>
+                        ))}
                     </div>
-
                 </div>
             </motion.div>
         )
     }
     const SecondPage = () => {
-
         return (
             <motion.div
-                initial={{ x: 500, opacity: 0 }}
-                animate={{ x: 0, opacity: 1 }}
-                exit={{ x: 100, opacity: 0 }}
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -20 }}
                 transition={{ duration: 0.5, ease: "easeOut" }}
-                className={styles.secondMain}>
-
-                <button className={styles.backButton} onClick={() => Changepage(0)}>
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-left-icon lucide-arrow-left"><path d="m12 19-7-7 7-7" /><path d="M19 12H5" /></svg>
-                </button>
+                className={styles.secondMain}
+            >
+                <motion.button
+                    className={styles.backButton}
+                    onClick={() => Changepage(0)}
+                    whileHover={{ scale: 1.1 }}
+                    whileTap={{ scale: 0.9 }}
+                >
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="m12 19-7-7 7-7" />
+                        <path d="M19 12H5" />
+                    </svg>
+                </motion.button>
                 <div className={styles.secondInner}>
-                    <h1>Add Your Prescription</h1>
-
+                    <motion.h1
+                        initial={{ opacity: 0, y: -20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.2 }}
+                    >
+                        Add Your Prescription
+                    </motion.h1>
                     <div className={styles.OptionContainer}>
-                        <div className={styles.optionCard} onClick={() => {
-                            setIsFile(true)
-                            Changepage(2)
-                        }}>
-                            <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-upload"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="17 8 12 3 7 8" /><line x1="12" x2="12" y1="3" y2="15" /></svg>
-                            <h2>Upload File</h2>
-                        </div>
-
-                        <div className={styles.optionCard} onClick={() => {
-                            setIsFile(false)
-                            Changepage(2)
-                        }}>
-                            <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-pen"><path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z" /></svg>
-                            <h2>Enter Manually</h2>
-                        </div>
-
+                        {[
+                            {
+                                icon: "upload",
+                                title: "Upload File",
+                                onClick: () => {
+                                    setIsFile(true)
+                                    Changepage(2)
+                                }
+                            },
+                            {
+                                icon: "pen",
+                                title: "Enter Manually",
+                                onClick: () => {
+                                    setIsFile(false)
+                                    Changepage(2)
+                                }
+                            }
+                        ].map((option, index) => (
+                            <motion.div
+                                key={index}
+                                className={styles.optionCard}
+                                onClick={option.onClick}
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ delay: 0.3 + index * 0.1 }}
+                                whileHover={{ scale: 1.05, boxShadow: "0 8px 16px rgba(0,0,0,0.1)" }}
+                                whileTap={{ scale: 0.95 }}
+                            >
+                                <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                    {option.icon === "upload" ? (
+                                        <>
+                                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                                            <polyline points="17 8 12 3 7 8" />
+                                            <line x1="12" x2="12" y1="3" y2="15" />
+                                        </>
+                                    ) : (
+                                        <path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z" />
+                                    )}
+                                </svg>
+                                <h2>{option.title}</h2>
+                            </motion.div>
+                        ))}
                     </div>
                 </div>
-
             </motion.div>
         )
     }
 
     const ThiredPage = () => {
+        const handleAddToCart = async () => {
+            try {
+                setIsLoading(true);
+                const userId = localStorage.getItem("userId");
+                const selectedProduct = JSON.parse(localStorage.getItem('selectedProduct') || '{}');
+                const specsData = JSON.parse(localStorage.getItem('specsData') || '{}');
+
+                const responseObject = {
+                    userID: userId,
+                    productID: selectedProduct.id,
+                    numberOfItems: 1,
+                    specs: specsData
+                };
+
+                const res = await dispatch(AddCart(responseObject)).unwrap();
+
+                if (res.status === 200) {
+                    toast.success("Product added to cart successfully");
+                    // Clear the stored data
+                    localStorage.removeItem('selectedProduct');
+                    localStorage.removeItem('specsData');
+                    // Redirect to cart page
+                    router.push('/cart');
+                } else if (res.status === 401) {
+                    toast.error("Please login to continue");
+                } else {
+                    toast.error("Failed to add product to cart");
+                }
+            } catch (error) {
+                console.error("Error adding to cart:", error);
+                toast.error("Failed to add product to cart");
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
         return (
             <motion.div
-
-                initial={{ x: 500, opacity: 0 }}
-                animate={{ x: 0, opacity: 1 }}
-                exit={{ x: 100, opacity: 0 }}
+                className={styles.thiredMain}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
                 transition={{ duration: 0.5, ease: "easeOut" }}
-                className={styles.thiredMain}>
-
-                <button className={styles.backButton} onClick={() => Changepage(2)}>
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-left-icon lucide-arrow-left"><path d="m12 19-7-7 7-7" /><path d="M19 12H5" /></svg>
-                </button>
+            >
                 <div className={styles.thiredInner}>
-                    <div className={styles.thiredCardContainer} onClick={() => router.push("/payment")}>
+                    <motion.h1
+                        initial={{ opacity: 0, y: -20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.2 }}
+                    >
+                        Review Your Order
+                    </motion.h1>
 
-                        <div className={styles.ImageContainer}>
-                            <img src="/Images/card.webp" />
+                    {selectedProduct && (
+                        <div className={styles.orderSummary}>
+                            <div className={styles.productDetails}>
+                                <img src={selectedProduct.image} alt={selectedProduct.name} />
+                                <div className={styles.productInfo}>
+                                    <h2>{selectedProduct.name}</h2>
+                                    <p>Base Price: ₹{selectedProduct.price}</p>
+                                </div>
+                            </div>
+
+                            <div className={styles.priceBreakdown}>
+                                <h3>Price Breakdown</h3>
+                                <div className={styles.priceItem}>
+                                    <span>Base Frame</span>
+                                    <span>₹{selectedProduct.price}</span>
+                                </div>
+                                {/* Add more price breakdown items based on selections */}
+                                <div className={styles.totalPrice}>
+                                    <span>Total Amount</span>
+                                    <span>₹{totalPrice}</span>
+                                </div>
+                            </div>
+
+                            <div className={styles.buttonContainer}>
+                                {action === 'addToCart' ? (
+                                    <button
+                                        className={styles.proceedButton}
+                                        onClick={handleAddToCart}
+                                        disabled={IsLoading}
+                                    >
+                                        {IsLoading ? 'Adding to Cart...' : 'Add to Cart'}
+                                    </button>
+                                ) : (
+                                    <button
+                                        className={styles.proceedButton}
+                                        onClick={() => router.push('/order-details')}
+                                        disabled={IsLoading}
+                                    >
+                                        Proceed to Payment
+                                    </button>
+                                )}
+                            </div>
                         </div>
-                        <div className={styles.ContentContainer}>
-                            <h2>1.61 - Thin BluPro Single-Vision</h2>
-
-
-                        </div>
-
-                    </div>
-                    <div className={styles.thiredCardContainer} onClick={() => router.push("/payment")}>
-
-                        <div className={styles.ImageContainer}>
-                            <img src="/Images/card.webp" />
-                        </div>
-                        <div className={styles.ContentContainer}>
-                            <h2>1.61 - Thin BluPro Single-Vision</h2>
-
-
-                        </div>
-
-                    </div>   <div className={styles.thiredCardContainer} onClick={() => router.push("/payment")}>
-
-                        <div className={styles.ImageContainer}>
-                            <img src="/Images/card.webp" />
-                        </div>
-                        <div className={styles.ContentContainer}>
-                            <h2>1.61 - Thin BluPro Single-Vision</h2>
-
-
-                        </div>
-
-                    </div>
+                    )}
                 </div>
-
             </motion.div>
-        )
-    }
+        );
+    };
 
     const FourtPage = () => {
         const buttonRef = useRef(null)
@@ -393,7 +476,7 @@ export default function index() {
 
             dispatch(SavePrescription(responseObject)).then((res) => {
                 console.log("resSaveFile", res)
-                if (res.payload.status == 201) {
+                if (res.payload.status == 200) {
                     toast.success("Detail added sucessfully.")
                     setIsLoading(false)
                     Changepage(3)
@@ -477,7 +560,7 @@ export default function index() {
                 }
                 dispatch(SavePrescription(responseObject)).then((res) => {
                     console.log("resSaveFile", res)
-                    if (res.payload.status == 201) {
+                    if (res.payload.status == 200) {
 
                         setIsLoading(false)
                         Changepage(3)
@@ -511,10 +594,11 @@ export default function index() {
                 transition={{ duration: 0.5, ease: "easeOut" }}
                 className={styles.forthMain}>
                 <ToastContainer />
-                <button className={styles.backButton} onClick={() => Changepage(1)}>
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-left-icon lucide-arrow-left"><path d="m12 19-7-7 7-7" /><path d="M19 12H5" /></svg>
-                </button>
-                {!isFile && <div className={styles.forthInner}>
+
+                {!isFile && <div style={{ marginTop: "70px" }} className={styles.forthInner}>
+                    <button className={styles.backButton} onClick={() => Changepage(1)}>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-left-icon lucide-arrow-left"><path d="m12 19-7-7 7-7" /><path d="M19 12H5" /></svg>
+                    </button>
                     <h1>Enter Your Prescription Manually</h1>
 
                     <div className={styles.formContainer}>
@@ -814,7 +898,7 @@ export default function index() {
                             }
 
                             {IsTwoPds && (
-                                <div className={styles.pdContainer}>
+                                <div style={{ width: "100%" }} className={styles.pdContainer}>
                                     <div className={styles.singlePd}>
                                         <label>Left</label>
                                         <select {...register("leftPd")}>
@@ -866,6 +950,9 @@ export default function index() {
                     isFile && (
 
                         <div className={styles.forthInner} style={{ height: "100vh" }} >
+                            <button className={styles.backButton} onClick={() => Changepage(1)}>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-left-icon lucide-arrow-left"><path d="m12 19-7-7 7-7" /><path d="M19 12H5" /></svg>
+                            </button>
                             <h1>Upload Prescription</h1>
                             <p>Please upload your prescription as a PNG, JPG or PDF file.</p>
                             <form >
@@ -904,12 +991,7 @@ export default function index() {
 
     return (
         <div className={styles.main}>
-            {
-                IsLoading && (
-                    <Preloader />
-                )
-
-            }
+            {IsLoading && <Preloader />}
             <div className={styles.inner}>
                 <ProgressHeader
                     Changepage={Changepage}
@@ -918,12 +1000,12 @@ export default function index() {
                     isThiredComplete={isThiredComplete}
                     isFourthComplete={isFourthComplete}
                 />
-
-                {firstStep && <FirstPage />}
-                {secondStep && <SecondPage />}
-                {thiredStep && <FourtPage />}
-                {fourthStep && <ThiredPage />}
-
+                <AnimatePresence mode="wait">
+                    {firstStep && <FirstPage key="first" />}
+                    {secondStep && <SecondPage key="second" />}
+                    {thiredStep && <FourtPage key="third" />}
+                    {fourthStep && <ThiredPage key="fourth" />}
+                </AnimatePresence>
             </div>
         </div>
     )

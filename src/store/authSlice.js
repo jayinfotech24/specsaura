@@ -224,6 +224,36 @@ export const UpdateUser = createAsyncThunk(
 );
 
 
+export const DeleteFullCart = createAsyncThunk(
+    "api/deleteFullCart",
+    async (credentials, { rejectWithValue }) => {
+        try {
+            const response = await axiosInstance.delete(
+                `${Appapis.Basurl}${Appapis.deleteFullCart}`,
+                {
+                    data: credentials // <-- this is the fix
+                }
+            );
+            return response.data;
+        } catch (error) {
+            return rejectWithValue(error.response?.data || "Something went wrong");
+        }
+    }
+);
+
+
+export const GetCartMany = createAsyncThunk(
+    "api/getCartMany",
+    async (credentials, { rejectWithValue }) => {
+        try {
+            const response = await axiosInstance.get(`${Appapis.Basurl}${Appapis.getCartMany}`);
+            return response.data;
+        }
+        catch (error) {
+            return rejectWithValue(error.response?.data || "Something went wrong");
+        }
+    }
+);
 
 
 const counterSlice = createSlice({
@@ -465,6 +495,29 @@ const counterSlice = createSlice({
             })
             .addCase(UpdateUser.rejected, (state, action) => {
                 console.log("UpdateUserError", action)
+                state.loading = false;
+                state.error = action.payload;
+            })
+            .addCase(DeleteFullCart.pending, (state, action) => {
+                state.loading = true
+
+            })
+            .addCase(DeleteFullCart.fulfilled, (state, action) => {
+                state.loading = false;
+
+            })
+            .addCase(DeleteFullCart.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload;
+            })
+            .addCase(GetCartMany.pending, (state, action) => {
+                state.loading = true
+
+            })
+            .addCase(GetCartMany.fulfilled, (state, action) => {
+                state.loading = false;
+            })
+            .addCase(GetCartMany.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.payload;
             })

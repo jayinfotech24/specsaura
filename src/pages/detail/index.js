@@ -47,53 +47,58 @@ export default function Index() {
             numberOfItems: 1,
         };
 
-        dispatch(AddCart(responseObject)).then(async (res) => {
-            console.log("Res", res)
-            if (Data.availableItems > 0) {
-                if (res.payload.status == 200) {
-                    setIsLoading(false);
+        try {
+            setIsLoading(true);
+            const res = await dispatch(AddCart(responseObject)).unwrap();
+            console.log("Buy Now Response:", res);
 
-                    const sendingAmount = Math.abs(Data.price);
+            if (Data.availableItems > 0 && res.status === 200) {
+                // Store the selected product in localStorage for the specs progress form
+                localStorage.setItem('selectedProduct', JSON.stringify({
+                    id: id,
+                    name: Data.name,
+                    price: Data.price,
+                    image: Data.images?.[0] || Data.url || '/Images/placeholder.webp',
+                    url: Data.url || '/Images/placeholder.webp'
+                }));
 
-                    // Redirect to order details page with the amount
-                    router.push({
-                        pathname: '/order-details',
-                        query: { amount: sendingAmount }
-                    });
-                }
+                // Redirect to specs progress form
+                router.push('/specProgress');
+            } else {
+                toast.error("Product is out of stock");
             }
-        }).catch((error) => {
+        } catch (error) {
+            console.error("Error in Buy Now:", error);
+            toast.error("Failed to process your request. Please try again.");
+        } finally {
             setIsLoading(false);
-            console.log("Error", error);
-        });
+        }
     };
 
-    const AddInCart = () => {
-        setIsLoading(true);
-        const userId = localStorage.getItem("userId");
-        const responseObject = {
-            userID: userId,
-            productID: id,
-            numberOfItems: 1,
-        };
+    const AddInCart = async () => {
+        try {
+            setIsLoading(true);
 
-        dispatch(AddCart(responseObject)).then((res) => {
-            if (Data.availableItems > 0) {
-                if (res.payload.status == 200) {
-                    setIsLoading(false);
-                    toast.success("Product added successfully");
-                }
-                if (res.payload.status == 401) {
-                    toast.error("Please login to continue");
-                }
-            } else {
-                toast.error("Item is out of stock");
-            }
+            // Store the selected product in localStorage for the specs progress form
+            localStorage.setItem('selectedProduct', JSON.stringify({
+                id: id,
+                name: Data.name,
+                price: Data.price,
+                image: Data.images?.[0] || Data.url || '/Images/placeholder.webp',
+                url: Data.url || '/Images/placeholder.webp'
+            }));
+
+            // Redirect to specs progress form with a flag indicating it's for adding to cart
+            router.push({
+                pathname: '/specProgress',
+                query: { action: 'addToCart' }
+            });
+        } catch (error) {
+            console.error("Error in Add to Cart:", error);
+            toast.error("Failed to process your request. Please try again.");
+        } finally {
             setIsLoading(false);
-        }).catch((error) => {
-            setIsLoading(false);
-            console.log("Error", error);
-        });
+        }
     };
 
     const nextImage = () => {
