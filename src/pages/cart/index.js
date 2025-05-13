@@ -45,7 +45,7 @@ export default function index() {
             setIsLoading(false)
         };
 
-        if (CartData.length > 0) {
+        if (CartData?.length > 0) {
             fetchProductsOneByOne();
         }
     }, [CartData]);
@@ -88,7 +88,7 @@ export default function index() {
     useEffect(() => {
         getDeatail()
     }, [])
-    const totalAmount = CartData.reduce((acc, item) => {
+    const totalAmount = CartData?.reduce((acc, item) => {
         const itemPrice = Number(item.productID.price) || 0;
         const itemQuantity = Number(item.numberOfItems) || 1;
         return acc + (itemPrice * itemQuantity);
@@ -145,7 +145,7 @@ export default function index() {
 
     const handleClearCart = async () => {
         try {
-            const productIds = CartData.map(item => item._id);
+            const productIds = CartData?.map(item => item._id);
             console.log("Product IDs", productIds);
             const payload = {
                 ids: productIds
@@ -180,7 +180,7 @@ export default function index() {
                     </div>
                 </div>
                 <div className={styles.listContainer}>
-                    {CartData.length === 0 ? (
+                    {CartData?.length === 0 ? (
                         <div className={styles.emptyCart}>
                             <img src="/Images/empty-cart.svg" alt="Empty Cart" className={styles.emptyCartImage} />
                             <h2>Your Cart is Empty</h2>
@@ -204,7 +204,7 @@ export default function index() {
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {CartData.map((item) => {
+                                    {CartData?.map((item) => {
                                         const itemPrice = Number(item.productID.price) || 0;
                                         const itemQuantity = Number(item.numberOfItems) || 1;
                                         const itemTotal = itemPrice * itemQuantity;
@@ -221,7 +221,7 @@ export default function index() {
                                                     </div>
                                                 </td>
                                                 <td data-label="Price">
-                                                    <h2 style={{ fontSize: '14px' }}>{`₹${itemTotal.toLocaleString('en-IN')}`}</h2>
+                                                    <h2 style={{ fontSize: '14px' }}>{`₹${itemTotal?.toLocaleString('en-IN')}`}</h2>
                                                 </td>
                                                 <td data-label="Quantity">
                                                     <div className={styles.quantity}>
@@ -245,7 +245,7 @@ export default function index() {
                                     Clear Cart
                                 </button>
                                 <button onClick={handleProceedToCheckout} className={styles.button}>
-                                    {`Pay ₹${totalAmount.toLocaleString('en-IN')}`}
+                                    {`Pay ₹${totalAmount?.toLocaleString('en-IN')}`}
                                 </button>
                             </div>
                         </>

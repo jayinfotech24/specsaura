@@ -54,6 +54,8 @@
   margin: 2rem 0 1rem;
   position: relative;
   padding-left: 1rem;
+
+  font-size: 20px;
 }
 
 .content h2::before {

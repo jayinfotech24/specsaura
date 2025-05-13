@@ -10,6 +10,7 @@ import Preloader from '../../Component/Animated';
 import { ToastContainer, toast } from 'react-toastify';
 import { FaArrowLeft, FaArrowRight, FaShoppingCart, FaShoppingBag, FaExpand } from 'react-icons/fa';
 import { motion, AnimatePresence } from 'framer-motion';
+import { GetUser } from '../../store/authSlice';
 
 export default function Index() {
     const router = useRouter();
@@ -31,6 +32,19 @@ export default function Index() {
         });
     };
 
+
+    // Check User
+    const checkUserAuth = async () => {
+        try {
+            const response = await dispatch(GetUser()).unwrap();
+            return response.status === 200;
+        } catch (error) {
+            if (error.response?.status === 401) {
+                return false;
+            }
+            throw error;
+        }
+    };
     const { id } = router.query;
 
     useEffect(() => {
@@ -69,7 +83,7 @@ export default function Index() {
             }
         } catch (error) {
             console.error("Error in Buy Now:", error);
-            toast.error("Failed to process your request. Please try again.");
+            // toast.error("Failed to process your request. Please try again.");
         } finally {
             setIsLoading(false);
         }
@@ -78,7 +92,13 @@ export default function Index() {
     const AddInCart = async () => {
         try {
             setIsLoading(true);
+            const isAuthenticated = await checkUserAuth();
 
+            if (!isAuthenticated) {
+                toast.error("Please login to add items to cart");
+                router.push("/login");
+                return;
+            }
             // Store the selected product in localStorage for the specs progress form
             localStorage.setItem('selectedProduct', JSON.stringify({
                 id: id,
@@ -102,11 +122,23 @@ export default function Index() {
     };
 
     const nextImage = () => {
-        setCurrentImageIndex((prevIndex) => (prevIndex + 1) % (Data.images?.length || 1));
+        if (Data.images && Data.images.length > 0) {
+            setCurrentImageIndex((prevIndex) => (prevIndex + 1) % Data.images.length);
+            setData(prevData => ({
+                ...prevData,
+                url: Data.images[(currentImageIndex + 1) % Data.images.length]
+            }));
+        }
     };
 
     const prevImage = () => {
-        setCurrentImageIndex((prevIndex) => (prevIndex - 1 + (Data.images?.length || 1)) % (Data.images?.length || 1));
+        if (Data.images && Data.images.length > 0) {
+            setCurrentImageIndex((prevIndex) => (prevIndex - 1 + Data.images.length) % Data.images.length);
+            setData(prevData => ({
+                ...prevData,
+                url: Data.images[(currentImageIndex - 1 + Data.images.length) % Data.images.length]
+            }));
+        }
     };
 
     const toggleFullscreen = () => {
@@ -130,7 +162,7 @@ export default function Index() {
                         <AnimatePresence mode="wait">
                             <motion.img
                                 key={currentImageIndex}
-                                src={Data.url || "/Images/placeholder.webp"}
+                                src={Data.images && Data.images.length > 0 ? Data.images[currentImageIndex] : Data.url || "/Images/placeholder.webp"}
                                 alt={Data.name}
                                 className={styles.mainImage}
                                 initial={{ opacity: 0 }}
@@ -141,10 +173,18 @@ export default function Index() {
                         </AnimatePresence>
 
                         <div className={styles.imageControls}>
-                            <button className={styles.navButton} onClick={prevImage}>
+                            <button
+                                className={styles.navButton}
+                                onClick={prevImage}
+                                disabled={!Data.images || Data.images.length <= 1}
+                            >
                                 <FaArrowLeft />
                             </button>
-                            <button className={styles.navButton} onClick={nextImage}>
+                            <button
+                                className={styles.navButton}
+                                onClick={nextImage}
+                                disabled={!Data.images || Data.images.length <= 1}
+                            >
                                 <FaArrowRight />
                             </button>
                             <button className={styles.fullscreenButton} onClick={toggleFullscreen}>
@@ -153,25 +193,24 @@ export default function Index() {
                         </div>
 
                         <div className={styles.imageCounter}>
-                            {currentImageIndex + 1} / {(Data.images?.length || 1)}
+                            {Data.images && Data.images.length > 0 ? `${currentImageIndex + 1} / ${Data.images.length}` : '1 / 1'}
                         </div>
                     </div>
 
-                    {Data.images && (
+                    {Data.images && Data.images.length > 0 && (
                         <div className={styles.thumbnails}>
                             {Data.images.map((img, index) => (
                                 <motion.img
                                     key={index}
                                     src={img}
                                     alt={`${Data.name} - View ${index + 1}`}
-                                    className={styles.thumbnail}
+                                    className={`${styles.thumbnail} ${currentImageIndex === index ? styles.activeThumbnail : ''}`}
                                     onClick={() => {
-                                        const selectedImage = Data.images[index];
+                                        setCurrentImageIndex(index);
                                         setData(prevData => ({
                                             ...prevData,
-                                            url: selectedImage
+                                            url: img
                                         }));
-                                        setCurrentImageIndex(index);
                                     }}
                                     whileHover={{ scale: 1.05 }}
                                     whileTap={{ scale: 0.95 }}

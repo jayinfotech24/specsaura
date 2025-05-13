@@ -175,6 +175,10 @@ const OrderDetails = () => {
                             const orderRes = await dispatch(CreateOrder(orderPayload)).unwrap();
                             console.log("Order created successfully", orderRes);
                             alert("ORder Created")
+
+                            // Store cart items in localStorage before clearing
+                            localStorage.setItem('orderItems', JSON.stringify(orderData.items));
+
                             // Delete cart after successful order creation
                             const productIds = orderData.items.map(item => item._id);
                             const cartPayload = {
@@ -186,10 +190,13 @@ const OrderDetails = () => {
                                 console.log("Error clearing cart:", error);
                             });
 
+
                             toast.success("Payment successful!");
                             // Clear localStorage after successful payment
                             localStorage.removeItem('selectedProduct');
                             localStorage.removeItem('specsData');
+
+                            // localStorage.setItem()
                             router.push('/order-confirmation');
                         } catch (error) {
                             console.error("Error creating order:", error);

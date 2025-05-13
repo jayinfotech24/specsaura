@@ -2,13 +2,24 @@ import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axiosInstance from "./axiosInstance";
 import fileInstance from "./fileInstance"
 import Appapis from "./apiendpoints";
+import { useNavigate } from "react-router-dom";
+
 const initialState = {
     count: 0,
     loading: false,
     error: null
-
 };
 
+// Utility function to handle 401 responses
+const handleUnauthorized = (error) => {
+    if (error?.response?.status === 401 || error?.status === 401) {
+        // Clear any auth tokens/storage if needed
+        localStorage.removeItem('token');
+        // Redirect to login
+        window.location.href = '/login';
+    }
+    return error;
+};
 
 export const Login = createAsyncThunk("api/login", async (credentials, { rejectWithValue }) => {
 
@@ -283,7 +294,7 @@ const counterSlice = createSlice({
             })
             .addCase(Login.rejected, (state, action) => {
                 state.loading = false;
-                state.error = action.payload;
+                state.error = handleUnauthorized(action.payload);
             })
             .addCase(VerifyOtp.pending, (state, action) => {
                 state.loading = true
@@ -295,7 +306,7 @@ const counterSlice = createSlice({
             })
             .addCase(VerifyOtp.rejected, (state, action) => {
                 state.loading = false;
-                state.error = action.payload;
+                state.error = handleUnauthorized(action.payload);
             })
             .addCase(Contact.pending, (state, action) => {
                 state.loading = true
@@ -307,7 +318,7 @@ const counterSlice = createSlice({
             })
             .addCase(Contact.rejected, (state, action) => {
                 state.loading = false;
-                state.error = action.payload;
+                state.error = handleUnauthorized(action.payload);
             })
             .addCase(SavePrescription.pending, (state, action) => {
                 state.loading = true
@@ -319,7 +330,7 @@ const counterSlice = createSlice({
             })
             .addCase(SavePrescription.rejected, (state, action) => {
                 state.loading = false;
-                state.error = action.payload;
+                state.error = handleUnauthorized(action.payload);
             })
             .addCase(FileUpload.pending, (state, action) => {
                 state.loading = true
@@ -330,9 +341,8 @@ const counterSlice = createSlice({
 
             })
             .addCase(FileUpload.rejected, (state, action) => {
-                ////console.log("Acc", action)
                 state.loading = false;
-                state.error = action.payload;
+                state.error = handleUnauthorized(action.payload);
             })
             .addCase(CategoryList.pending, (state, action) => {
                 state.loading = true
@@ -343,9 +353,8 @@ const counterSlice = createSlice({
 
             })
             .addCase(CategoryList.rejected, (state, action) => {
-
                 state.loading = false;
-                state.error = action.payload;
+                state.error = handleUnauthorized(action.payload);
             })
             .addCase(WallPaperList.pending, (state, action) => {
                 state.loading = true
@@ -356,9 +365,8 @@ const counterSlice = createSlice({
 
             })
             .addCase(WallPaperList.rejected, (state, action) => {
-
                 state.loading = false;
-                state.error = action.payload;
+                state.error = handleUnauthorized(action.payload);
             })
             .addCase(ProductList.pending, (state, action) => {
                 state.loading = true
@@ -369,9 +377,8 @@ const counterSlice = createSlice({
 
             })
             .addCase(ProductList.rejected, (state, action) => {
-
                 state.loading = false;
-                state.error = action.payload;
+                state.error = handleUnauthorized(action.payload);
             })
             .addCase(AddCart.pending, (state, action) => {
                 state.loading = true
@@ -382,9 +389,8 @@ const counterSlice = createSlice({
 
             })
             .addCase(AddCart.rejected, (state, action) => {
-
                 state.loading = false;
-                state.error = action.payload;
+                state.error = handleUnauthorized(action.payload);
             })
             .addCase(getProductDetail.pending, (state, action) => {
                 state.loading = true
@@ -395,9 +401,8 @@ const counterSlice = createSlice({
 
             })
             .addCase(getProductDetail.rejected, (state, action) => {
-
                 state.loading = false;
-                state.error = action.payload;
+                state.error = handleUnauthorized(action.payload);
             })
             .addCase(MakePayment.pending, (state, action) => {
                 state.loading = true
@@ -408,9 +413,8 @@ const counterSlice = createSlice({
 
             })
             .addCase(MakePayment.rejected, (state, action) => {
-
                 state.loading = false;
-                state.error = action.payload;
+                state.error = handleUnauthorized(action.payload);
             })
             .addCase(VerifyPayment.pending, (state, action) => {
                 state.loading = true
@@ -421,9 +425,8 @@ const counterSlice = createSlice({
 
             })
             .addCase(VerifyPayment.rejected, (state, action) => {
-
                 state.loading = false;
-                state.error = action.payload;
+                state.error = handleUnauthorized(action.payload);
             })
             .addCase(getCartDetail.pending, (state, action) => {
                 state.loading = true
@@ -434,9 +437,8 @@ const counterSlice = createSlice({
 
             })
             .addCase(getCartDetail.rejected, (state, action) => {
-
                 state.loading = false;
-                state.error = action.payload;
+                state.error = handleUnauthorized(action.payload);
             })
             .addCase(DeleteCart.pending, (state, action) => {
                 state.loading = true
@@ -449,7 +451,7 @@ const counterSlice = createSlice({
             .addCase(DeleteCart.rejected, (state, action) => {
                 console.log("DeleteCart", action)
                 state.loading = false;
-                state.error = action.payload;
+                state.error = handleUnauthorized(action.payload);
             })
 
             .addCase(CreateOrder.pending, (state, action) => {
@@ -461,7 +463,7 @@ const counterSlice = createSlice({
             })
             .addCase(CreateOrder.rejected, (state, action) => {
                 state.loading = false;
-                state.error = action.payload;
+                state.error = handleUnauthorized(action.payload);
             })
             .addCase(GetUser.pending, (state, action) => {
                 state.loading = true
@@ -472,7 +474,7 @@ const counterSlice = createSlice({
             })
             .addCase(GetUser.rejected, (state, action) => {
                 state.loading = false;
-                state.error = action.payload;
+                state.error = handleUnauthorized(action.payload);
             })
             .addCase(GetOrderById.pending, (state, action) => {
                 state.loading = true
@@ -483,7 +485,7 @@ const counterSlice = createSlice({
             })
             .addCase(GetOrderById.rejected, (state, action) => {
                 state.loading = false;
-                state.error = action.payload;
+                state.error = handleUnauthorized(action.payload);
             })
             .addCase(UpdateUser.pending, (state, action) => {
                 state.loading = true
@@ -496,7 +498,7 @@ const counterSlice = createSlice({
             .addCase(UpdateUser.rejected, (state, action) => {
                 console.log("UpdateUserError", action)
                 state.loading = false;
-                state.error = action.payload;
+                state.error = handleUnauthorized(action.payload);
             })
             .addCase(DeleteFullCart.pending, (state, action) => {
                 state.loading = true
@@ -508,7 +510,7 @@ const counterSlice = createSlice({
             })
             .addCase(DeleteFullCart.rejected, (state, action) => {
                 state.loading = false;
-                state.error = action.payload;
+                state.error = handleUnauthorized(action.payload);
             })
             .addCase(GetCartMany.pending, (state, action) => {
                 state.loading = true
@@ -519,7 +521,7 @@ const counterSlice = createSlice({
             })
             .addCase(GetCartMany.rejected, (state, action) => {
                 state.loading = false;
-                state.error = action.payload;
+                state.error = handleUnauthorized(action.payload);
             })
 
 

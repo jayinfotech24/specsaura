@@ -27,23 +27,34 @@ const OrderConfirmation = () => {
     });
 
     useEffect(() => {
-        const fetchCartDetails = async () => {
+        const fetchOrderDetails = async () => {
             try {
-                const userId = localStorage.getItem("userId");
-                const response = await dispatch(getCartDetail(userId)).unwrap();
-                console.log("Response", response);
-                setOrderData(prev => ({
-                    ...prev,
-                    items: response.items || []
-                }));
+                // Get stored order items from localStorage
+                const storedItems = localStorage.getItem('orderItems');
+                if (storedItems) {
+                    const items = JSON.parse(storedItems);
+                    setOrderData(prev => ({
+                        ...prev,
+                        items: items || []
+                    }));
+                } else {
+                    // Fallback to fetching from cart if no stored items
+                    const userId = localStorage.getItem("userId");
+                    const response = await dispatch(getCartDetail(userId)).unwrap();
+                    console.log("Response", response);
+                    setOrderData(prev => ({
+                        ...prev,
+                        items: response.items || []
+                    }));
+                }
             } catch (error) {
-                console.error("Error fetching cart details:", error);
+                console.error("Error fetching order details:", error);
             } finally {
                 setIsLoading(false);
             }
         };
 
-        fetchCartDetails();
+        fetchOrderDetails();
     }, [dispatch]);
 
     useEffect(() => {

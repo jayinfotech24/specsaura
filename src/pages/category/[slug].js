@@ -7,6 +7,7 @@ import { Validate } from '../../store/commonFunction'
 import { useRouter } from 'next/router'
 import { useDispatch } from 'react-redux'
 import { ProductList } from '../../store/authSlice'
+import Preloader from '../../Component/Animated'
 
 export default function CategoryPage() {
     const router = useRouter();
@@ -87,7 +88,7 @@ export default function CategoryPage() {
                     </div>
                     <div className={styles.cardInner}>
                         {IsLoading ? (
-                            <div>Loading...</div>
+                            <div><Preloader /></div>
                         ) : FilteredProducts.length > 0 ? (
                             FilteredProducts.map((item, index) => (
                                 <CardComponent

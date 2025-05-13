@@ -17,6 +17,7 @@
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
   position: relative;
   overflow: hidden;
+  color: #333;
 }
 
 .content::before {
@@ -31,12 +32,11 @@
 
 .content h1 {
   text-align: center;
-
   position: relative;
   padding-bottom: 0.5rem;
   font-size: 20px;
   font-weight: 600;
-
+  color: #333;
 }
 
 .content h1::after {
@@ -52,9 +52,12 @@
 }
 
 .content h2 {
-  margin: 2rem 0 1rem;
+  margin: 1.5rem 0 0.75rem;
   position: relative;
   padding-left: 1rem;
+  color: #333;
+  font-size: 1.1rem;
+  font-weight: 600;
 }
 
 .content h2::before {
@@ -63,19 +66,21 @@
   left: 0;
   top: 50%;
   transform: translateY(-50%);
-  width: 4px;
-  height: 70%;
+  width: 3px;
+  height: 60%;
   background: #4f46e5;
   border-radius: 2px;
 }
 
 .content h3 {
   margin: 1.5rem 0 1rem;
+  color: #333;
 }
 
 .content p {
   line-height: 1.8;
   margin-bottom: 1.5rem;
+  color: #333;
 }
 
 .list {
@@ -90,6 +95,7 @@
   position: relative;
   line-height: 1.6;
   border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  color: #333;
 }
 
 .list li:last-child {
@@ -117,6 +123,7 @@
   border-radius: 6px;
   margin-top: 0.5rem;
   transition: all 0.3s ease;
+  color: #333;
 }
 
 .email:hover,

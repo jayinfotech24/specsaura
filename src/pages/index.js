@@ -177,22 +177,30 @@ export default function index() {
                 </div>
                 <div className={styles.cardComponent}>
                     <div className={styles.heading}>
-                        <h1>Our Best Seller</h1>
+                        <h1>Our Best Sellers</h1>
+
                     </div>
                     <div className={styles.cardInner}>
-                        {
-                            Procucts.map((item) => {
-                                return (<>
-
-                                    <CardComponent id={item._id} src={item.url} name={item.name} price={IncreasePrice(Number(item.price))} total={item.totalItems} available={item.availableItems} images={item.images} />
-                                </>
-                                )
-
-                            })
-                        }
-
-
-
+                        {Procucts.slice(0, 4).map((item) => (
+                            <CardComponent
+                                key={item._id}
+                                id={item._id}
+                                src={item.url}
+                                name={item.name}
+                                price={IncreasePrice(Number(item.price))}
+                                total={item.totalItems}
+                                available={item.availableItems}
+                                images={item.images}
+                            />
+                        ))}
+                    </div>
+                    <div className={styles.viewMoreSection}>
+                        <button
+                            className={styles.viewMoreButton}
+                            onClick={() => router.push('/category/f')}
+                        >
+                            <span>View All Products</span>
+                        </button>
                     </div>
                 </div>
 
