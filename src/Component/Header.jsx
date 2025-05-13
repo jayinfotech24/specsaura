@@ -167,60 +167,50 @@ export default function Header({ isHeaderVisible }) {
                 </div>
             </div>
 
-            <AnimatePresence>
-                {isSearchOpen && (
-                    <motion.div
-                        initial={{ opacity: 0, y: -20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: -20 }}
-                        transition={{ duration: 0.3 }}
-                        className={styles.searchContainer}
-                    >
-                        <form onSubmit={handleSearch} className={styles.searchForm}>
-                            <input
-                                type="text"
-                                placeholder="Search products..."
-                                value={searchQuery}
-                                onChange={(e) => setSearchQuery(e.target.value)}
-                                className={styles.searchInput}
-                                autoFocus
-                            />
-                            <button type="submit" className={styles.searchButton}>
-                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-search">
-                                    <circle cx="11" cy="11" r="8" />
-                                    <path d="m21 21-4.3-4.3" />
-                                </svg>
-                            </button>
-                        </form>
-                        {filteredProducts.length > 0 && (
-                            <div className={styles.searchResults}>
-                                {filteredProducts.map((product) => (
-                                    <div 
-                                        key={product._id} 
-                                        className={styles.searchResultItem}
-                                        onClick={() => {
-                                            router.push(`/detail?id=${product._id}`)
-                                            setIsSearchOpen(false)
-                                            setSearchQuery('')
-                                        }}
-                                    >
-                                        <img src={product.url} alt={product.name} />
-                                        <div className={styles.searchResultInfo}>
-                                            <h4>{product.name}</h4>
-                                            <p>₹{product.price}</p>
-                                        </div>
-                                    </div>
-                                ))}
+            <div className={`${styles.searchContainer} ${isSearchOpen ? styles.open : ''}`}>
+                <form onSubmit={handleSearch} className={styles.searchForm}>
+                    <input
+                        type="text"
+                        placeholder="Search products..."
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        className={styles.searchInput}
+                        autoFocus
+                    />
+                    <button type="submit" className={styles.searchButton}>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-search">
+                            <circle cx="11" cy="11" r="8" />
+                            <path d="m21 21-4.3-4.3" />
+                        </svg>
+                    </button>
+                </form>
+                {filteredProducts.length > 0 && (
+                    <div className={styles.searchResults}>
+                        {filteredProducts.map((product) => (
+                            <div 
+                                key={product._id} 
+                                className={styles.searchResultItem}
+                                onClick={() => {
+                                    router.push(`/detail?id=${product._id}`)
+                                    setIsSearchOpen(false)
+                                    setSearchQuery('')
+                                }}
+                            >
+                                <img src={product.url} alt={product.name} />
+                                <div className={styles.searchResultInfo}>
+                                    <h4>{product.name}</h4>
+                                    <p>₹{product.price}</p>
+                                </div>
                             </div>
-                        )}
-                        {searchQuery && filteredProducts.length === 0 && (
-                            <div className={styles.noResults}>
-                                <p>No products found</p>
-                            </div>
-                        )}
-                    </motion.div>
+                        ))}
+                    </div>
                 )}
-            </AnimatePresence>
+                {searchQuery && filteredProducts.length === 0 && (
+                    <div className={styles.noResults}>
+                        <p>No products found</p>
+                    </div>
+                )}
+            </div>
         </div>
     )
 }

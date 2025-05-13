@@ -95,6 +95,42 @@ export default function index() {
         ////console.log("Is", isFile)
     }, [isFile])
 
+
+    const HandleProceedToPayment = async () => {
+        try {
+            setIsLoading(true);
+            const userId = localStorage.getItem("userId");
+            const selectedProduct = JSON.parse(localStorage.getItem('selectedProduct') || '{}');
+            const specsData = JSON.parse(localStorage.getItem('specsData') || '{}');
+
+            const responseObject = {
+                userID: userId,
+                productID: selectedProduct.id,
+                numberOfItems: 1,
+                specs: specsData
+            };
+
+            const res = await dispatch(AddCart(responseObject)).unwrap();
+
+            if (res.status === 200) {
+                toast.success("Product added to cart successfully");
+                // Clear the stored data
+                localStorage.removeItem('selectedProduct');
+                localStorage.removeItem('specsData');
+                // Redirect to cart page
+                router.push('/order-details');
+            } else if (res.status === 401) {
+                toast.error("Please login to continue");
+            } else {
+                toast.error("Failed to add product to cart");
+            }
+        } catch (error) {
+            console.error("Error adding to cart:", error);
+            toast.error("Failed to add product to cart");
+        } finally {
+            setIsLoading(false);
+        }
+    }
     const FirstPage = () => {
         return (
             <motion.div

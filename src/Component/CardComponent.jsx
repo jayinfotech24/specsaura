@@ -68,11 +68,11 @@ export default function CardComponent({ id, src, name, price }) {
     const GetDetail = async () => {
         try {
             // Check user authentication before redirecting
-            const isAuthenticated = await checkUserAuth();
+            // const isAuthenticated = await checkUserAuth();
             
-            if (!isAuthenticated) {
-                return;
-            }
+            // if (!isAuthenticated) {
+            //     return;
+            // }
 
             // If authenticated, proceed with redirect
             router.push({

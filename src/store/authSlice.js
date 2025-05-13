@@ -19,8 +19,7 @@ const handleUnauthorized = (error) => {
         window.location.href = '/login';
     }
     return error;
-};
-
+}
 export const Login = createAsyncThunk("api/login", async (credentials, { rejectWithValue }) => {
 
     try {

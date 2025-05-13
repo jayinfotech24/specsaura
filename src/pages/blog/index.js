@@ -244,7 +244,7 @@ Remember, early detection of vision changes can help prevent more serious issues
 
             {/* Hero Section */}
             <div className={styles.hero}>
-                <div className={styles.heroContent}>
+                <div className={styles.heroContent} style={{ marginTop: "60px" }}>
                     <h1>Our Blog</h1>
                     <p>Discover insights about eye care, eyewear fashion, and vision health</p>
                 </div>

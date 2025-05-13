@@ -90,6 +90,8 @@ export default function Index() {
     };
 
     const AddInCart = async () => {
+
+
         try {
             setIsLoading(true);
             const isAuthenticated = await checkUserAuth();
