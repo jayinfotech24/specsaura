@@ -3,7 +3,7 @@ import { useRouter } from 'next/router';
 import styles from '../../styles/orderDetails.module.css';
 import Header from '../../Component/Header';
 import Footer from '../../Component/Footer';
-import { CreateOrder, getCartDetail, DeleteFullCart } from '../../store/authSlice';
+import { CreateOrder, getCartDetail, DeleteFullCart, GetOrderById, GetSingleCart } from '../../store/authSlice';
 import { useDispatch } from 'react-redux';
 import Preloader from '../../Component/Animated';
 import { handlePayment } from '../../store/commonFunction';
@@ -37,17 +37,19 @@ const OrderDetails = () => {
     });
 
     useEffect(() => {
-        // If coming from cart, fetch cart items
-        if (from === 'cart') {
-            const fetchCartDetails = async () => {
-                try {
+        const loadOrderData = async () => {
+            setIsLoading(true);
+            console.log("Effect ran, from:", from);
+
+            try {
+                if (from === 'cart') {
+                    console.log("Fetching from cart");
                     const userId = localStorage.getItem("userId");
                     const response = await dispatch(getCartDetail(userId)).unwrap();
                     console.log("Cart Response", response);
 
-                    // Calculate total from cart items
                     const total = response.items.reduce((acc, item) => {
-                        const itemPrice = Number(item.productID.price) || 0;
+                        const itemPrice = Number(item.productID?.price) || 0;
                         const itemQuantity = Number(item.numberOfItems) || 1;
                         return acc + (itemPrice * itemQuantity);
                     }, 0);
@@ -56,38 +58,48 @@ const OrderDetails = () => {
                         items: response.items || [],
                         total: total
                     });
-                } catch (error) {
-                    console.error("Error fetching cart details:", error);
-                } finally {
-                    setIsLoading(false);
-                }
-            };
+                } else {
+                    console.log("Fetching from buynow or default else block");
+                    const cartId = localStorage.getItem("cartId");
 
-            fetchCartDetails();
-        } else {
-            // If coming from Buy Now, get selected product and specs data
-            const selectedProduct = JSON.parse(localStorage.getItem('selectedProduct') || '{}');
-            const specsData = JSON.parse(localStorage.getItem('specsData') || '{}');
-            console.log("Selected Product", selectedProduct);
-            if (selectedProduct) {
-                const basePrice = Number(selectedProduct.price) || 0;
-                const additionalCost = Number(specsData.additionalCost) || 0;
-                const total = basePrice + additionalCost;
+                    if (cartId) {
+                        const res = await dispatch(GetSingleCart(cartId)).unwrap();
+                        console.log("Res", res)
+                        if (res) {
+                            const specsData = JSON.parse(localStorage.getItem('specsData') || '{}');
+                            const productFromApi = res.carts.productId;
+                            console.log("Prrr", productFromApi)
+                            const basePrice = Number(productFromApi.price) || 0;
+                            const additionalCost = Number(specsData.additionalCost) || 0;
+                            const total = basePrice + additionalCost;
 
-                setOrderData({
-                    items: [{
-                        productID: {
-                            _id: selectedProduct._id,
-                            ...selectedProduct,
-                            specs: specsData
+                            setOrderData({
+                                items: [{
+                                    productID: {
+                                        ...productFromApi,
+                                        specs: specsData
+                                    }
+                                }],
+                                total
+                            });
                         }
-                    }],
-                    total: total
-                });
+                    }
+                }
+            } catch (error) {
+                console.error("Error loading order data:", error);
+            } finally {
+                setIsLoading(false);
             }
-        }
+        };
+
+        loadOrderData();
     }, [dispatch, from]);
 
+
+
+    useEffect(() => {
+        console.log("Ord", orderData)
+    }, [orderData])
     useEffect(() => {
         if (amount) {
             setOrderData(prev => ({

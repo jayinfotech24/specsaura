@@ -103,16 +103,53 @@ export default function index() {
             const selectedProduct = JSON.parse(localStorage.getItem('selectedProduct') || '{}');
             const specsData = JSON.parse(localStorage.getItem('specsData') || '{}');
 
+            // First save the prescription data
+            // Get prescription data from localStorage
+            const prescriptionData = {
+                rightEye: {
+                    sphere: specsData.rightEye?.sphere || null,
+                    cylinder: specsData.rightEye?.cylinder || null,
+                    axis: specsData.rightEye?.axis || null,
+                    add: specsData.rightEye?.add || null,
+                    pd: specsData.rightEye?.pd || null
+                },
+                leftEye: {
+                    sphere: specsData.leftEye?.sphere || null,
+                    cylinder: specsData.leftEye?.cylinder || null,
+                    axis: specsData.leftEye?.axis || null,
+                    add: specsData.leftEye?.add || null,
+                    pd: specsData.leftEye?.pd || null
+                },
+                prescriptionURL: specsData.prescriptionURL || null
+            };
+
+            // Save prescription first
+            console.log("Saving prescription data:", prescriptionData);
+            const prescriptionRes = await dispatch(SavePrescription(prescriptionData)).unwrap();
+            console.log("ResSavePrescription", prescriptionRes);
+
+            if (prescriptionRes.status != 200) {
+                toast.error("Failed to save prescription data");
+                setIsLoading(false);
+                return;
+            }
+
+            toast.success("Prescription saved successfully");
+
+            // Then add to cart
             const responseObject = {
                 userID: userId,
                 productID: selectedProduct.id,
                 numberOfItems: 1,
-                specs: specsData
+                specs: prescriptionData  // Use the saved prescription data
             };
 
+            console.log("Adding to cart:", responseObject);
             const res = await dispatch(AddCart(responseObject)).unwrap();
-
+            console.log("ResCart", res);
             if (res.status === 200) {
+                localStorage.setItem("cartId", res.cart._id);
+                localStorage.setItem("productId", res.cart.productID);
                 toast.success("Product added to cart successfully");
                 // Clear the stored data
                 localStorage.removeItem('selectedProduct');
@@ -125,8 +162,8 @@ export default function index() {
                 toast.error("Failed to add product to cart");
             }
         } catch (error) {
-            console.error("Error adding to cart:", error);
-            toast.error("Failed to add product to cart");
+            console.error("Error processing order:", error);
+            toast.error("Failed to complete your order");
         } finally {
             setIsLoading(false);
         }
@@ -326,7 +363,43 @@ export default function index() {
                 setIsLoading(false);
             }
         };
+        const HandleProceedToPayment = async () => {
+            try {
+                setIsLoading(true);
+                const userId = localStorage.getItem("userId");
+                const selectedProduct = JSON.parse(localStorage.getItem('selectedProduct') || '{}');
+                const specsData = JSON.parse(localStorage.getItem('specsData') || '{}');
 
+                const responseObject = {
+                    userID: userId,
+                    productID: selectedProduct.id,
+                    numberOfItems: 1,
+                    specs: specsData
+                };
+
+                const res = await dispatch(AddCart(responseObject)).unwrap();
+                console.log("ResCart", res);
+                if (res.status === 200) {
+                    localStorage.setItem("cartId", res.cart._id);
+                    localStorage.setItem("productId", res.cart.productID);
+                    toast.success("Product added to cart successfully");
+                    // Clear the stored data
+                    localStorage.removeItem('selectedProduct');
+                    localStorage.removeItem('specsData');
+                    // Redirect to cart page
+                    router.push('/order-details');
+                } else if (res.status === 401) {
+                    toast.error("Please login to continue");
+                } else {
+                    toast.error("Failed to add product to cart");
+                }
+            } catch (error) {
+                console.error("Error adding to cart:", error);
+                toast.error("Failed to add product to cart");
+            } finally {
+                setIsLoading(false);
+            }
+        }
         return (
             <motion.div
                 className={styles.thiredMain}
@@ -379,10 +452,10 @@ export default function index() {
                                 ) : (
                                     <button
                                         className={styles.proceedButton}
-                                        onClick={() => router.push('/order-details')}
+                                        onClick={HandleProceedToPayment}
                                         disabled={IsLoading}
                                     >
-                                        Proceed to Payment
+                                        {IsLoading ? 'Processing...' : 'Proceed to Payment'}
                                     </button>
                                 )}
                             </div>
@@ -507,7 +580,10 @@ export default function index() {
                 }
 
                 const res = await dispatch(SavePrescription(responseObject)).unwrap();
-                if (res.status === 200) {
+                console.log("ResSavePrescription", res);
+                if (res.status == 200) {
+
+
                     toast.success("Details added successfully.");
                     setIsLoading(false);
                     Changepage(3);

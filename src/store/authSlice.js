@@ -233,6 +233,17 @@ export const UpdateUser = createAsyncThunk(
     }
 );
 
+export const GetSingleCart = createAsyncThunk(
+    "api/getSingleCart",
+    async (id, { rejectWithValue }) => {
+        try {
+            const response = await axiosInstance.get(`${Appapis.Basurl}${Appapis.getSingleCart(id)}`);
+            return response.data;
+        } catch (error) {
+            return rejectWithValue(error.response?.data || "Something went wrong");
+        }
+    }
+);
 
 export const DeleteFullCart = createAsyncThunk(
     "api/deleteFullCart",
@@ -522,7 +533,17 @@ const counterSlice = createSlice({
                 state.loading = false;
                 state.error = handleUnauthorized(action.payload);
             })
+            .addCase(GetSingleCart.pending, (state, action) => {
+                state.loading = true
 
+            })
+            .addCase(GetSingleCart.fulfilled, (state, action) => {
+                state.loading = false;
+            })
+            .addCase(GetSingleCart.rejected, (state, action) => {
+                state.loading = false;
+                state.error = handleUnauthorized(action.payload);
+            })
 
     }
 });

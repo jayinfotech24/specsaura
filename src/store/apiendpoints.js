@@ -20,7 +20,8 @@ const Appapis = {
     getOrder: (id) => `/orders/user/${id}`,
     updateUser: `/user/update/`,
     deleteFullCart: "/cart",
-    getCartMany: "/cart"
+    getCartMany: "/cart",
+    getSingleCart: (id) => `/cart/${id}`
 }
 
 export default Appapis
