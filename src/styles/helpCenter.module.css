@@ -4,7 +4,9 @@
 }
 
 .hero {
-    background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+    background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('https://help.asfinag.at/media/qh4nk43d/hero-image-helpcenter.jpg?format=webp&quality=80&v=1db98d086d42070');
+    background-size: cover;
+    background-position: center;
     padding: 6rem 2rem;
     text-align: center;
     color: white;
@@ -85,6 +87,7 @@
     text-align: center;
     font-size: 2rem;
     margin-bottom: 2rem;
+    padding-bottom: 1rem;
     color: #1f2937;
 }
 

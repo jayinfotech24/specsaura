@@ -139,7 +139,7 @@ export default function index() {
                         <div className={styles.detail}>
                             <h3>Have Any Question?</h3>
 
-                            <h2>+91 97140 37223</h2>
+                            <h2><a href='tel:+91 97140 37223'> +91 97140 37223</a></h2>
                         </div>
                     </div>
                     <div className={styles.contactContainer}>
@@ -150,7 +150,7 @@ export default function index() {
                         <div className={styles.detail}>
                             <h3>Send Email</h3>
 
-                            <h2>specsauraworks@gmail.com</h2>
+                            <h2><a href='mailto:specsauraworks@gmail.com'>specsauraworks@gmail.com</a></h2>
                         </div>
                     </div>
                     <div className={styles.contactContainer}>

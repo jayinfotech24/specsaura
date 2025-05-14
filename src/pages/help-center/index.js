@@ -111,11 +111,12 @@ const HelpCenter = () => {
                         <div className={styles.contactMethods}>
                             <div className={styles.contactMethod}>
                                 <h3>Email Us</h3>
-                                <p>support@specsaura.com</p>
+                                <p><a href='mailto:specsauraworks@gmail.com'>specsauraworks@gmail.com
+                                </a></p>
                             </div>
                             <div className={styles.contactMethod}>
                                 <h3>Call Us</h3>
-                                <p>+91 1234567890</p>
+                                <p><a href='tel:+91 1234567890'>+91 1234567890</a></p>
                             </div>
 
                         </div>

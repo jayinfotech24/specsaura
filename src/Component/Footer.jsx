@@ -57,8 +57,8 @@ export default function Footer() {
                         <ul>
                             <li onClick={() => handleCategoryClick('women')} style={{ cursor: 'pointer' }}>Women's Eyeglasses</li>
                             <li onClick={() => handleCategoryClick('men')} style={{ cursor: 'pointer' }}>Men's Eyeglasses</li>
-                            <li onClick={() => handleCategoryClick('rayban')} style={{ cursor: 'pointer' }}>Ray Ban Eyeglasses</li>
-                            <li onClick={() => handleCategoryClick('designer')} style={{ cursor: 'pointer' }}>Designer Eyelasses</li>
+                            {/* <li onClick={() => handleCategoryClick('rayban')} style={{ cursor: 'pointer' }}>Ray Ban Eyeglasses</li> */}
+                            {/* <li onClick={() => handleCategoryClick('designer')} style={{ cursor: 'pointer' }}>Designer Eyelasses</li> */}
                         </ul>
                     </div>
                 </div>

@@ -1,11 +1,12 @@
 .main {
   min-height: 100vh;
   background-color: #f8f9fa;
+  padding-top: 50px;
 }
 
 /* Hero Section */
 .hero {
-  background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('/Images/blog-hero.jpg');
+  background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('https://img.freepik.com/free-photo/impressed-startled-excited-cute-redhead-female-receive-big-gift-shaping-large-object-product_1258-130326.jpg?semt=ais_hybrid&w=740');
   background-size: cover;
   background-position: center;
   height: 300px;
@@ -19,7 +20,7 @@
 
 .heroContent h1 {
   font-size: 3rem;
-  margin-bottom: 1rem;
+  margin-bottom: 2rem;
   font-weight: 700;
 }
 
@@ -62,6 +63,7 @@
   border-radius: 30px;
   font-size: 1rem;
   transition: all 0.3s ease;
+  color: #333;
 }
 
 .searchBar input:focus {

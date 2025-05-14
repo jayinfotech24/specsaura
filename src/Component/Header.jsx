@@ -112,7 +112,7 @@ export default function Header({ isHeaderVisible }) {
                         <ul className={styles.manuList}>
                             <li onClick={() => { router.push("/") }}>Home</li>
                             <li onClick={() => { router.push("/category/f") }}>Shop</li>
-                            <li>Featured</li> <li>Pages</li>
+                            {/* <li>Featured</li> <li>Pages</li> */}
                             <li>Blogs</li>
                         </ul>
                     </motion.div>
@@ -131,7 +131,7 @@ export default function Header({ isHeaderVisible }) {
                     <ul>
                         <li onClick={() => { router.push("/") }}>Home</li>
                         <li onClick={() => { router.push("/category/f") }}>Shop</li>
-                        <li>Featured</li>
+                        {/* <li>Featured</li> */}
                         <li onClick={() => { router.push("/blog") }}>Blogs</li>
                     </ul>
                 </div>
