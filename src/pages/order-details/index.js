@@ -68,7 +68,7 @@ const OrderDetails = () => {
             // If coming from Buy Now, get selected product and specs data
             const selectedProduct = JSON.parse(localStorage.getItem('selectedProduct') || '{}');
             const specsData = JSON.parse(localStorage.getItem('specsData') || '{}');
-
+            console.log("Selected Product", selectedProduct);
             if (selectedProduct) {
                 const basePrice = Number(selectedProduct.price) || 0;
                 const additionalCost = Number(specsData.additionalCost) || 0;
@@ -77,6 +77,7 @@ const OrderDetails = () => {
                 setOrderData({
                     items: [{
                         productID: {
+                            _id: selectedProduct._id,
                             ...selectedProduct,
                             specs: specsData
                         }
@@ -160,9 +161,9 @@ const OrderDetails = () => {
                             user: localStorage.getItem("userId"),
                             items: orderData.items.map(item => ({
                                 product: item.productID._id,
-                                cart: item._id,
+                                cart: item._id || item.productID._id, // Use product ID as cart ID if not from cart
                                 prescription: item.productID.prescription || null,
-                                quantity: item.numberOfItems || 1
+                                quantity: from === 'cart' ? (item.numberOfItems || 1) : 1
                             })),
                             totalAmount: orderData.total,
                             status: "Pending",
@@ -171,10 +172,11 @@ const OrderDetails = () => {
                             shippingAddress: formData.shippingAddress
                         };
 
+                        console.log("Order Payload", orderPayload);
                         try {
                             const orderRes = await dispatch(CreateOrder(orderPayload)).unwrap();
                             console.log("Order created successfully", orderRes);
-                            alert("ORder Created")
+
                             // Delete cart after successful order creation
                             const productIds = orderData.items.map(item => item._id);
                             const cartPayload = {
@@ -186,12 +188,10 @@ const OrderDetails = () => {
                                 console.log("Error clearing cart:", error);
                             });
 
-
                             toast.success("Payment successful!");
                             // Clear localStorage after successful payment
                             localStorage.removeItem('selectedProduct');
                             localStorage.removeItem('specsData');
-
 
                             router.push('/order-confirmation');
                         } catch (error) {

@@ -66,7 +66,12 @@ export default function index() {
 
             }
             <div className={styles.inner}>
-
+                <button
+                    className={styles.backButton}
+                    onClick={() => router.push('/')}
+                >
+                    ← Back to Home
+                </button>
                 <div className={styles.logo}>
                     <img src="/Images/logo2 (1).png" />
                 </div>

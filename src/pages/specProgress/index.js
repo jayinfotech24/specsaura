@@ -459,68 +459,64 @@ export default function index() {
             resolver: yupResolver(isMobile ? MobileValidationSchema : validationSchema)
         });
         useEffect(() => {
-            //console.log("Err", errors)
             if (Object.keys(errors).length > 0) {
-                alert("Please  fill all detail")
+                setIsLoading(false); // Stop loader before showing alert
+                alert("Please fill all details");
             }
         }, [errors])
         const SubmitHandler = async (data) => {
-
-            setIsLoading(true)
-            let responseObject;
-            if (data?.pd) {
-                responseObject = {
-                    rightEye: {
-                        sphere: data.rightsph,
-                        cylinder: data.rightcyl,
-                        axis: data.axis,
-                        add: null,
-                        pd: data.pd
-                    },
-                    leftEye: {
-                        sphere: data.leftsph,
-                        cylinder: data.leftcyl,
-                        axis: data.leftaxis,
-                        add: null,
-                        pd: data.pd
-                    },
-                    prescriptionURL: FileUrl
+            try {
+                setIsLoading(true);
+                let responseObject;
+                if (data?.pd) {
+                    responseObject = {
+                        rightEye: {
+                            sphere: data.rightsph,
+                            cylinder: data.rightcyl,
+                            axis: data.axis,
+                            add: null,
+                            pd: data.pd
+                        },
+                        leftEye: {
+                            sphere: data.leftsph,
+                            cylinder: data.leftcyl,
+                            axis: data.leftaxis,
+                            add: null,
+                            pd: data.pd
+                        },
+                        prescriptionURL: FileUrl
+                    }
+                } else {
+                    responseObject = {
+                        rightEye: {
+                            sphere: data.rightsph,
+                            cylinder: data.rightcyl,
+                            axis: data.axis,
+                            add: null,
+                            pd: data.rightPd
+                        },
+                        leftEye: {
+                            sphere: data.leftsph,
+                            cylinder: data.leftcyl,
+                            axis: data.leftaxis,
+                            add: null,
+                            pd: data.leftPd
+                        },
+                        prescriptionURL: FileUrl
+                    }
                 }
+
+                const res = await dispatch(SavePrescription(responseObject)).unwrap();
+                if (res.status === 200) {
+                    toast.success("Details added successfully.");
+                    setIsLoading(false);
+                    Changepage(3);
+                }
+            } catch (error) {
+                console.error("Error saving prescription:", error);
+                toast.error("Failed to save prescription");
+                setIsLoading(false);
             }
-            else {
-                responseObject = {
-                    rightEye: {
-                        sphere: data.rightsph,
-                        cylinder: data.rightcyl,
-                        axis: data.axis,
-                        add: null,
-                        pd: data.rightPd
-                    },
-                    leftEye: {
-                        sphere: data.leftsph,
-                        cylinder: data.leftcyl,
-                        axis: data.leftaxis,
-                        add: null,
-                        pd: data.leftPd
-                    },
-
-                    prescriptionURL: FileUrl
-                }
-            }
-            ////console.log("Data", data)
-
-
-            dispatch(SavePrescription(responseObject)).then((res) => {
-                console.log("resSaveFile", res)
-                if (res.payload.status == 200) {
-                    toast.success("Detail added sucessfully.")
-                    setIsLoading(false)
-                    Changepage(3)
-                }
-            }).catch((errr) => {
-                setIsLoading(false)
-                console.log("Err", errr)
-            })
         }
         const handleClick = (e) => {
             e.preventDefault()
@@ -556,63 +552,56 @@ export default function index() {
             }
         }
         const HandleSaveFile = (e) => {
-            setIsLoading(true)
-            e.preventDefault()
-            // Get the first selected file
-            const formData = new FormData();
-            //console.log("File", selectedFile)
-
+            e.preventDefault();
             if (!selectedFile) {
+                setIsLoading(false); // Stop loader before showing alert
                 alert("Please upload a file before proceeding.");
                 return;
             }
+
+            setIsLoading(true);
+            const formData = new FormData();
             const uniqueFilename = Date.now() + "-" + selectedFile.name;
             formData.append("file", selectedFile, uniqueFilename);
 
-            dispatch(FileUpload(formData)).then((res) => {
-                console.log("Response", res.payload)
-                setFileUrl(res.payload.fileUrl)
-                setIsLoading(false)
+            dispatch(FileUpload(formData))
+                .then((res) => {
+                    if (res.payload && res.payload.fileUrl) {
+                        setFileUrl(res.payload.fileUrl);
+                        const responseObject = {
+                            rightEye: {
+                                sphere: null,
+                                cylinder: null,
+                                axis: null,
+                                add: null,
+                                pd: null
+                            },
+                            leftEye: {
+                                sphere: null,
+                                cylinder: null,
+                                axis: null,
+                                add: null,
+                                pd: null
+                            },
+                            prescriptionURL: res.payload.fileUrl
+                        };
 
-                const getFileUrl = res.payload.fileUrl
-                //console.log("Get", getFileUrl)
-
-                const responseObject = {
-                    rightEye: {
-                        sphere: null,
-                        cylinder: null,
-                        axis: null,
-                        add: null,
-                        pd: null
-                    },
-                    leftEye: {
-                        sphere: null,
-                        cylinder: null,
-                        axis: null,
-                        add: null,
-                        pd: null
-                    },
-                    prescriptionURL: getFileUrl
-                }
-                dispatch(SavePrescription(responseObject)).then((res) => {
-                    console.log("resSaveFile", res)
-                    if (res.payload.status == 200) {
-
-                        setIsLoading(false)
-                        Changepage(3)
-                        toast.success("Prescription added successfully!")
+                        return dispatch(SavePrescription(responseObject));
                     }
-                }).catch((errr) => {
-                    setIsLoading(false)
-                    //console.log("Err", errr)
                 })
-
-            }).catch((error) => {
-                setIsLoading(false)
-                //console.log("Error", error);
-            })
-
-        }
+                .then((res) => {
+                    if (res && res.payload && res.payload.status === 200) {
+                        toast.success("Prescription added successfully!");
+                        setIsLoading(false);
+                        Changepage(3);
+                    }
+                })
+                .catch((error) => {
+                    console.error("Error:", error);
+                    toast.error("Failed to upload prescription");
+                    setIsLoading(false);
+                });
+        };
         const handleCheckboxChange = (event) => {
             SetTwoPds(event.target.checked);
         }

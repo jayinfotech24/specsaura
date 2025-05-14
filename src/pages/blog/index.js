@@ -295,7 +295,7 @@ Remember, early detection of vision changes can help prevent more serious issues
                 <div className={styles.modalOverlay} onClick={handleCloseModal}>
                     <div className={styles.modal} onClick={e => e.stopPropagation()}>
                         <button className={styles.closeButton} onClick={handleCloseModal}>
-                            <FaTimes />
+                            <FaTimes color='#000' />
                         </button>
                         <div className={styles.modalContent}>
                             <div className={styles.modalHeader}>
