@@ -16,7 +16,19 @@
   margin-top: 80px;
   padding: 0 20px;
 }
-
+.buyButton {
+  background: #007bff;
+  color: white;
+  padding: 12px 24px;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  width: 100%;
+  max-width: 200px;
+}
 .poster {
   width: 100%;
   display: flex;
@@ -26,7 +38,8 @@
   position: relative;
   overflow: hidden;
   border-radius: 0 0 20px 20px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 6px
+    rgba(0, 0, 0, 0.1);
 }
 
 .poster img {
@@ -40,17 +53,22 @@
   position: absolute;
   top: 50%;
   left: 50%;
-  transform: translate(-50%, -50%);
+  transform: translate(
+    -50%,
+    -50%
+  );
   text-align: center;
   z-index: 1;
 }
 
 .poster .posterContent h1 {
   font-size: 48px;
-  font-family: 'Poppins', sans-serif;
+  font-family: 'Poppins',
+    sans-serif;
   font-weight: 600;
   color: #fff;
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+  text-shadow: 2px 2px 4px
+    rgba(0, 0, 0, 0.3);
 }
 
 .listContainer {
@@ -60,7 +78,8 @@
   padding: 20px;
   background: #fff;
   border-radius: 12px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 2px 10px
+    rgba(0, 0, 0, 0.05);
 }
 
 .listContainer table {
@@ -69,12 +88,19 @@
   border-spacing: 0;
 }
 
-.listContainer table thead tr {
+.listContainer
+  table
+  thead
+  tr {
   background: #f8f9fa;
   border-radius: 8px;
 }
 
-.listContainer table thead tr td {
+.listContainer
+  table
+  thead
+  tr
+  td {
   padding: 16px;
   font-weight: 600;
   color: #495057;
@@ -83,15 +109,23 @@
   letter-spacing: 0.5px;
 }
 
-.listContainer table tbody tr {
+.listContainer
+  table
+  tbody
+  tr {
   transition: all 0.3s ease;
-  border-bottom: 1px solid #e9ecef;
+  border-bottom: 1px solid
+    #e9ecef;
 }
 
-.listContainer table tbody tr:hover {
+.listContainer
+  table
+  tbody
+  tr:hover {
   background-color: #f8f9fa;
   transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 4px 8px
+    rgba(0, 0, 0, 0.05);
 }
 
 .product {
@@ -106,7 +140,8 @@
   height: 80px;
   object-fit: cover;
   border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 4px
+    rgba(0, 0, 0, 0.1);
 }
 
 .product .productContent h2 {
@@ -175,13 +210,15 @@
 .button:hover {
   background: #0056b3;
   transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 8px
+    rgba(0, 0, 0, 0.1);
 }
 
 .clearButton:hover {
   background: #c82333;
   transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 8px
+    rgba(0, 0, 0, 0.1);
 }
 
 .emptyCart {
@@ -200,7 +237,8 @@
   max-width: 250px;
   height: auto;
   margin-bottom: 30px;
-  animation: float 3s ease-in-out infinite;
+  animation: float 3s
+    ease-in-out infinite;
 }
 
 .emptyCart h2 {
@@ -235,20 +273,27 @@
 .shopNowButton:hover {
   background: #0056b3;
   transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 8px
+    rgba(0, 0, 0, 0.1);
 }
 
 @keyframes float {
   0% {
-    transform: translateY(0px);
+    transform: translateY(
+      0px
+    );
   }
 
   50% {
-    transform: translateY(-15px);
+    transform: translateY(
+      -15px
+    );
   }
 
   100% {
-    transform: translateY(0px);
+    transform: translateY(
+      0px
+    );
   }
 }
 
@@ -270,7 +315,10 @@
     display: none;
   }
 
-  .listContainer table tbody tr {
+  .listContainer
+    table
+    tbody
+    tr {
     display: flex;
     flex-direction: column;
     padding: 15px;
@@ -279,7 +327,11 @@
     border-radius: 8px;
   }
 
-  .listContainer table tbody tr td {
+  .listContainer
+    table
+    tbody
+    tr
+    td {
     width: 100% !important;
     padding: 8px 0;
     display: flex;
@@ -287,7 +339,11 @@
     align-items: center;
   }
 
-  .listContainer table tbody tr td:before {
+  .listContainer
+    table
+    tbody
+    tr
+    td:before {
     content: attr(data-label);
     font-weight: 600;
     color: #495057;

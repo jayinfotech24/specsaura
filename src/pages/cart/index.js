@@ -142,6 +142,13 @@ export default function index() {
             query: { from: 'cart' }
         });
     };
+    const handkeBuySingle = (id) => {
+        localStorage.setItem("cartId", id)
+        router.push({
+            pathname: '/order-details',
+            query: { from: 'buy' }
+        });
+    };
 
     const handleClearCart = async () => {
         try {
@@ -200,6 +207,7 @@ export default function index() {
                                         <td>Product name</td>
                                         <td>Price</td>
                                         <td>Quantity</td>
+                                        <td>Buy</td>
                                         <td></td>
                                     </tr>
                                 </thead>
@@ -227,6 +235,9 @@ export default function index() {
                                                     <div className={styles.quantity}>
                                                         <h2>{itemQuantity}</h2>
                                                     </div>
+                                                </td>
+                                                <td>
+                                                    <button onClick={() => handkeBuySingle(item._id)} className={styles.buyButton}>Buy Now</button>
                                                 </td>
                                                 <td>
                                                     <svg style={{ cursor: "pointer" }}

@@ -37,15 +37,16 @@ const OrderDetails = () => {
     });
 
     useEffect(() => {
-        // If coming from cart, fetch cart items
-        if (from === 'cart') {
-            const fetchCartDetails = async () => {
-                try {
-                    const userId = localStorage.getItem("userId");
+        const fetchOrderData = async () => {
+            setIsLoading(true);
+            try {
+                const userId = localStorage.getItem("userId");
+
+                // CASE 1: Coming from Cart
+                if (from === "cart") {
                     const response = await dispatch(getCartDetail(userId)).unwrap();
                     console.log("Cart Response", response);
 
-                    // Calculate total from cart items
                     const total = response.items.reduce((acc, item) => {
                         const itemPrice = Number(item.productID.price) || 0;
                         const itemQuantity = Number(item.numberOfItems) || 1;
@@ -56,43 +57,76 @@ const OrderDetails = () => {
                         items: response.items || [],
                         total: total
                     });
-                } catch (error) {
-                    console.error("Error fetching cart details:", error);
-                } finally {
-                    setIsLoading(false);
                 }
-            };
 
-            fetchCartDetails();
-        } else {
-            // If coming from Buy Now, get selected product and specs data
-            const selectedProduct = JSON.parse(localStorage.getItem('selectedProduct') || '{}');
-            const specsData = JSON.parse(localStorage.getItem('specsData') || '{}');
+                // CASE 2: Coming from Buy Now
+                else if (from === "buy") {
+                    const cartId = localStorage.getItem("cartId");
+                    const specsData = JSON.parse(localStorage.getItem("specsData") || "{}");
+                    const productId = localStorage.getItem("productId");
 
-            if (selectedProduct) {
-                const basePrice = Number(selectedProduct.price) || 0;
-                const additionalCost = Number(specsData.additionalCost) || 0;
-                const total = basePrice + additionalCost;
-                const productId = localStorage.getItem("productId")
-                const cartId = localStorage.getItem("cartId"
+                    if (!cartId) throw new Error("Cart ID missing from localStorage");
 
-                )
+                    const res = await dispatch(GetSingleCart(cartId)).unwrap();
+                    const selectedProduct = res?.carts?.productID;
 
-                setOrderData({
-                    items: [{
-                        productID: {
 
-                            ...selectedProduct,
-                            specs: specsData,
-                            productId: productId,
-                            cartId: cartId
-                        }
-                    }],
-                    total: total
-                });
+                    const basePrice = Number(selectedProduct.price) || 0;
+                    const additionalCost = Number(specsData.additionalCost) || 0;
+                    const total = basePrice + additionalCost;
+
+                    setOrderData({
+                        items: [
+                            {
+                                productID: {
+                                    ...selectedProduct,
+                                    specs: specsData,
+                                    productId: productId,
+                                    cartId: cartId
+                                }
+                            }
+                        ],
+                        total: total
+                    });
+                }
+
+                // CASE 3: Fallback — from selectedProduct manually
+                else {
+                    const selectedProduct = JSON.parse(localStorage.getItem("selectedProduct") || "{}");
+                    const specsData = JSON.parse(localStorage.getItem("specsData") || "{}");
+                    const productId = localStorage.getItem("productId");
+                    const cartId = localStorage.getItem("cartId");
+
+                    if (selectedProduct && selectedProduct.price) {
+                        const basePrice = Number(selectedProduct.price) || 0;
+                        const additionalCost = Number(specsData.additionalCost) || 0;
+                        const total = basePrice + additionalCost;
+
+                        setOrderData({
+                            items: [
+                                {
+                                    productID: {
+                                        ...selectedProduct,
+                                        specs: specsData,
+                                        productId: productId,
+                                        cartId: cartId
+                                    }
+                                }
+                            ],
+                            total: total
+                        });
+                    }
+                }
+            } catch (error) {
+                console.error("Error setting up order data:", error);
+            } finally {
+                setIsLoading(false);
             }
-        }
+        };
+
+        fetchOrderData();
     }, [dispatch, from]);
+
 
 
 
