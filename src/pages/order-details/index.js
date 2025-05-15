@@ -490,13 +490,7 @@ const OrderDetails = () => {
                         >
                             Back to Cart
                         </button>
-                        <button
-                            type="button"
-                            className={styles.clearButton}
-                            onClick={handleClearCart}
-                        >
-                            Clear Cart
-                        </button>
+
                         <button
                             type="submit"
                             className={styles.payButton}

@@ -31,6 +31,7 @@ export default function index() {
     const [isFile, setIsFile] = useState(false)
     const router = useRouter();
     const [IsBifocel, setIsBifocal] = useState(false)
+    const [IsSingle, setIsSingle] = useState(false)
     const [progress, setProgress] = useState(0);
     const [IsLoading, setIsLoading] = useState(false)
     const dispatch = useDispatch();
@@ -197,8 +198,13 @@ export default function index() {
                                 title: "Single Vision",
                                 description: "For distance or near vision (Thin, anti-glare, blue-cut options)",
                                 image: "/Images/single_vision.webp",
-                                onClick: () => Changepage(1)
+                                onClick: () => {
+                                    setIsSingle(true); // or "false" if Single Vision is not bifocal
+
+                                    Changepage(1);
+                                }
                             },
+
                             {
                                 title: "Bifocal/Progressive",
                                 description: "Bifocal and Progressives (For two powers in same lenses)",
@@ -219,6 +225,13 @@ export default function index() {
                                 description: "Buy Only Frame",
                                 image: "/Images/frame_only.webp",
                                 onClick: () => router.push("/cart")
+                            },
+
+                            {
+                                title: "Power Sunglasses",
+                                description: "Block 98% of harmful rays (Anti-glare and blue-cut options)",
+                                image: "/Images/frame_only.webp",
+                                onClick: () => Changepage(1)
                             }
                         ].map((card, index) => (
                             <motion.div
@@ -334,12 +347,13 @@ export default function index() {
                 const userId = localStorage.getItem("userId");
                 const selectedProduct = JSON.parse(localStorage.getItem('selectedProduct') || '{}');
                 const specsData = JSON.parse(localStorage.getItem('specsData') || '{}');
-
+                const prescriptionId = localStorage.getItem("PrescriptionId")
                 const responseObject = {
                     userID: userId,
                     productID: selectedProduct.id,
                     numberOfItems: 1,
-                    specs: specsData
+                    specs: specsData,
+                    prescriptionID: prescriptionId
                 };
 
                 const res = await dispatch(AddCart(responseObject)).unwrap();
@@ -371,12 +385,13 @@ export default function index() {
                 const userId = localStorage.getItem("userId");
                 const selectedProduct = JSON.parse(localStorage.getItem('selectedProduct') || '{}');
                 const specsData = JSON.parse(localStorage.getItem('specsData') || '{}');
-
+                const prescriptionId = localStorage.getItem("PrescriptionId")
                 const responseObject = {
                     userID: userId,
                     productID: selectedProduct.id,
                     numberOfItems: 1,
-                    specs: specsData
+                    specs: specsData,
+                    prescriptionID: prescriptionId
                 };
 
                 const res = await dispatch(AddCart(responseObject)).unwrap();
@@ -474,6 +489,11 @@ export default function index() {
 
         const axisValues = Array.from({ length: 181 }, (_, i) => i.toString());
         const pdValues = Array.from({ length: (79 - 35) * 2 + 1 }, (_, i) => (35 + i * 0.5).toFixed(1));
+        const powers = Array.from(
+            { length: ((3.00 - 0.75) / 0.25 + 1) },
+            (_, i) => `+${(0.75 + i * 0.25).toFixed(2)}`
+        );
+
         const useIsMobile = () => {
             const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
 
@@ -495,17 +515,24 @@ export default function index() {
             leftsph: yup.string().required("Left SPH is required"),
             leftcyl: yup.string().required("Left CYL is required"),
             leftaxis: yup.string().required("Left Axis is required"),
-            pd: !IsBifocel && !IsTwoPds
-                ? yup.string().required("Pupillary Distance is required")
-                : yup.string().notRequired(),
-            leftPd: !IsBifocel && IsTwoPds
-                ? yup.string().required("Pupillary Distance is required")
-                : yup.string().notRequired(),
-            rightPd: !IsBifocel && IsTwoPds
+
+            pd: (IsBifocel || IsSingle) && !IsTwoPds
                 ? yup.string().required("Pupillary Distance is required")
                 : yup.string().notRequired(),
 
+            leftPd: (IsBifocel || IsSingle) && IsTwoPds
+                ? yup.string().required("Left PD is required")
+                : yup.string().notRequired(),
+
+            rightPd: (IsBifocel || IsSingle) && IsTwoPds
+                ? yup.string().required("Right PD is required")
+                : yup.string().notRequired(),
+
+            powers: IsBifocel
+                ? yup.string().required("Power is required")
+                : yup.string().notRequired()
         });
+
 
         const MobileValidationSchema = yup.object().shape({
             rightsph: yup.string().required("Right SPH is required"),
@@ -514,15 +541,23 @@ export default function index() {
             leftsph: yup.string().required("Left SPH is required"),
             leftcyl: yup.string().required("Left CYL is required"),
             leftaxis: yup.string().required("Left Axis is required"),
-            pd: !IsBifocel && !IsTwoPds
+
+            pd: (IsBifocel || IsSingle) && !IsTwoPds
                 ? yup.string().required("Pupillary Distance is required")
                 : yup.string().notRequired(),
-            leftPd: !IsBifocel && IsTwoPds
-                ? yup.string().required("Pupillary Distance is required")
+
+            leftPd: (IsBifocel || IsSingle) && IsTwoPds
+                ? yup.string().required("Left PD is required")
                 : yup.string().notRequired(),
-            rightPd: !IsBifocel && IsTwoPds
-                ? yup.string().required("Pupillary Distance is required")
+
+            rightPd: (IsBifocel || IsSingle) && IsTwoPds
+                ? yup.string().required("Right PD is required")
                 : yup.string().notRequired(),
+
+            powers: IsBifocel
+                ? yup.string().required("Power is required")
+                : yup.string().notRequired()
+
 
         })
 
@@ -532,6 +567,7 @@ export default function index() {
         const { register, handleSubmit, formState: { errors } } = useForm({
             resolver: yupResolver(isMobile ? MobileValidationSchema : validationSchema)
         });
+        console.log("EEE", errors)
         useEffect(() => {
             if (Object.keys(errors).length > 0) {
                 setIsLoading(false); // Stop loader before showing alert
@@ -548,14 +584,14 @@ export default function index() {
                             sphere: data.rightsph,
                             cylinder: data.rightcyl,
                             axis: data.axis,
-                            add: null,
+                            add: data.powers,
                             pd: data.pd
                         },
                         leftEye: {
                             sphere: data.leftsph,
                             cylinder: data.leftcyl,
                             axis: data.leftaxis,
-                            add: null,
+                            add: data.powers,
                             pd: data.pd
                         },
                         prescriptionURL: FileUrl
@@ -764,7 +800,7 @@ export default function index() {
                                     <select {...register("rightaxis")}>
                                         <option value="" disabled selected>-- Select --</option> {/* Default option */}
                                         {axisValues.map((value, index) => (
-                                            <option key={index} value={value}>
+                                            <option key={value} value={value}>
                                                 {value}
                                             </option>
                                         ))}
@@ -799,6 +835,7 @@ export default function index() {
                                 <div className={styles.column}>
                                     <label>CYL</label>
                                     <select {...register("leftcyl")}>
+                                        <option value="" disabled selected>-- Select --</option>
                                         {[
                                             "-6.00", "-5.75", "-5.50", "-5.25", "-5.00", "-4.75", "-4.50", "-4.25", "-4.00",
                                             "-3.75", "-3.50", "-3.25", "-3.00", "-2.75", "-2.50", "-2.25", "-2.00", "-1.75",
@@ -830,7 +867,7 @@ export default function index() {
                         </div>
 
                         <div className={styles.devider}></div>
-                        <div className={styles.pupilDistance}>
+                        {(IsSingle || IsBifocel) && <div className={styles.pupilDistance}>
                             <h2>Pupil Distance</h2>
                             <div className={styles.innerPupil}><input checked={IsTwoPds}
                                 onChange={handleCheckboxChange} type="checkbox" /><span><p>Have two PDs</p></span></div>
@@ -872,7 +909,21 @@ export default function index() {
 
                                 </div>
                             )}
-                        </div>
+                        </div>}
+
+                        {IsBifocel &&
+                            <div className={styles.pupilDistance}>
+                                <h2>Additional Power</h2>
+                                <select {...register("powers")}>
+                                    <option value="" disabled selected>-- Select --</option>
+                                    {powers.map((value, index) => (
+                                        <option key={index} value={value}>
+                                            {value}
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
+                        }
 
                     </div>
                     <div className={styles.buttonWrapper}>

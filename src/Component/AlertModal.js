@@ -1,9 +1,16 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import styles from '../styles/alertModal.module.css';
 
 const AlertModal = ({ isOpen, onClose, title, message, type = 'info', onConfirm }) => {
     if (!isOpen) return null;
-
+    // useEffect(() => {
+    //     if (isOpen) {
+    //         const timer = setTimeout(() => {
+    //             onClose();
+    //         }, 1000); // Auto-close after 2 seconds
+    //         return () => clearTimeout(timer); // Clean up on unmount or isOpen change
+    //     }
+    // }, [isOpen, onClose]);
     return (
         <div className={styles.modalOverlay}>
             <div className={styles.modalContent}>

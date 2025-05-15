@@ -108,13 +108,20 @@ export default function index() {
                     setIsLoading(true);
                     const res = await dispatch(DeleteCart(id)).unwrap();
                     console.log("Delete successful:", res);
-                    setAlertState({
-                        isOpen: true,
+
+                    setAlertState(prev => ({
+                        ...prev,
                         type: 'success',
                         title: 'Success',
                         message: 'Item removed successfully!',
                         onConfirm: null
-                    });
+                    }));
+
+                    // Delay closing the modal by 1 second
+                    setTimeout(() => {
+                        setAlertState(prev => ({ ...prev, isOpen: false }));
+                    }, 1000);
+
                     getDeatail();
                 } catch (error) {
                     console.error("Error deleting item:", error);
@@ -125,12 +132,19 @@ export default function index() {
                         message: 'Failed to remove item. Please try again.',
                         onConfirm: null
                     });
+
+                    // Also auto-close error modal after 1 second
+                    setTimeout(() => {
+                        setAlertState(prev => ({ ...prev, isOpen: false }));
+                    }, 1000);
                 } finally {
                     setIsLoading(false);
                 }
             }
         });
-    }
+    };
+
+
 
     const closeAlert = () => {
         setAlertState(prev => ({ ...prev, isOpen: false }));
