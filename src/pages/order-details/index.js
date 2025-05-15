@@ -37,19 +37,17 @@ const OrderDetails = () => {
     });
 
     useEffect(() => {
-        const loadOrderData = async () => {
-            setIsLoading(true);
-            console.log("Effect ran, from:", from);
-
-            try {
-                if (from === 'cart') {
-                    console.log("Fetching from cart");
+        // If coming from cart, fetch cart items
+        if (from === 'cart') {
+            const fetchCartDetails = async () => {
+                try {
                     const userId = localStorage.getItem("userId");
                     const response = await dispatch(getCartDetail(userId)).unwrap();
                     console.log("Cart Response", response);
 
+                    // Calculate total from cart items
                     const total = response.items.reduce((acc, item) => {
-                        const itemPrice = Number(item.productID?.price) || 0;
+                        const itemPrice = Number(item.productID.price) || 0;
                         const itemQuantity = Number(item.numberOfItems) || 1;
                         return acc + (itemPrice * itemQuantity);
                     }, 0);
@@ -58,41 +56,42 @@ const OrderDetails = () => {
                         items: response.items || [],
                         total: total
                     });
-                } else {
-                    console.log("Fetching from buynow or default else block");
-                    const cartId = localStorage.getItem("cartId");
-
-                    if (cartId) {
-                        const res = await dispatch(GetSingleCart(cartId)).unwrap();
-                        console.log("Res", res)
-                        if (res) {
-                            const specsData = JSON.parse(localStorage.getItem('specsData') || '{}');
-                            const productFromApi = res.carts.productId;
-                            console.log("Prrr", productFromApi)
-                            const basePrice = Number(productFromApi.price) || 0;
-                            const additionalCost = Number(specsData.additionalCost) || 0;
-                            const total = basePrice + additionalCost;
-
-                            setOrderData({
-                                items: [{
-                                    productID: {
-                                        ...productFromApi,
-                                        specs: specsData
-                                    }
-                                }],
-                                total
-                            });
-                        }
-                    }
+                } catch (error) {
+                    console.error("Error fetching cart details:", error);
+                } finally {
+                    setIsLoading(false);
                 }
-            } catch (error) {
-                console.error("Error loading order data:", error);
-            } finally {
-                setIsLoading(false);
-            }
-        };
+            };
 
-        loadOrderData();
+            fetchCartDetails();
+        } else {
+            // If coming from Buy Now, get selected product and specs data
+            const selectedProduct = JSON.parse(localStorage.getItem('selectedProduct') || '{}');
+            const specsData = JSON.parse(localStorage.getItem('specsData') || '{}');
+
+            if (selectedProduct) {
+                const basePrice = Number(selectedProduct.price) || 0;
+                const additionalCost = Number(specsData.additionalCost) || 0;
+                const total = basePrice + additionalCost;
+                const productId = localStorage.getItem("productId")
+                const cartId = localStorage.getItem("cartId"
+
+                )
+
+                setOrderData({
+                    items: [{
+                        productID: {
+
+                            ...selectedProduct,
+                            specs: specsData,
+                            productId: productId,
+                            cartId: cartId
+                        }
+                    }],
+                    total: total
+                });
+            }
+        }
     }, [dispatch, from]);
 
 
@@ -132,6 +131,12 @@ const OrderDetails = () => {
         e.preventDefault();
         setIsLoading(true);
 
+        const productId = localStorage.getItem("productId")
+        const cartId = localStorage.getItem("cartId"
+
+        )
+        const prescriptionId = localStorage.getItem("PrescriptionId");
+
         try {
             if (!isRazorpayLoaded) {
                 toast.error("Payment system is not ready. Please try again.");
@@ -167,22 +172,42 @@ const OrderDetails = () => {
                     try {
                         const verifyRes = await dispatch(VerifyPayment(payload)).unwrap();
                         console.log("Verify Response", verifyRes);
+                        let orderPayload;
+                        if (from == "cart") {
+                            orderPayload = {
+                                user: localStorage.getItem("userId"),
+                                items: orderData.items.map(item => ({
+                                    product: item.productID._id,
+                                    cart: item._id || item.productID._id, // Use product ID as cart ID if not from cart
+                                    prescription: prescriptionId || null,
+                                    quantity: from === 'cart' ? (item.numberOfItems || 1) : 1
+                                })),
+                                totalAmount: orderData.total,
+                                status: "Pending",
+                                paymentStatus: "Completed",
+                                paymentMethod: "Online",
+                                shippingAddress: formData.shippingAddress
+                            }
 
+                        }
+                        else {
+                            orderPayload = {
+                                user: localStorage.getItem("userId"),
+                                items: orderData.items.map(item => ({
+                                    product: productId,
+                                    cart: cartId, // Use product ID as cart ID if not from cart
+                                    prescription: prescriptionId || null,
+                                    quantity: from === 'cart' ? (item.numberOfItems || 1) : 1
+                                })),
+                                totalAmount: orderData.total,
+                                status: "Pending",
+                                paymentStatus: "Completed",
+                                paymentMethod: "Online",
+                                shippingAddress: formData.shippingAddress
+                            }
+                        }
                         // Create order after successful payment verification
-                        const orderPayload = {
-                            user: localStorage.getItem("userId"),
-                            items: orderData.items.map(item => ({
-                                product: item.productID._id,
-                                cart: item._id || item.productID._id, // Use product ID as cart ID if not from cart
-                                prescription: item.productID.prescription || null,
-                                quantity: from === 'cart' ? (item.numberOfItems || 1) : 1
-                            })),
-                            totalAmount: orderData.total,
-                            status: "Pending",
-                            paymentStatus: "Completed",
-                            paymentMethod: "Online",
-                            shippingAddress: formData.shippingAddress
-                        };
+
 
                         console.log("Order Payload", orderPayload);
                         try {

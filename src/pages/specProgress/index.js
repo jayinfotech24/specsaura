@@ -363,7 +363,9 @@ export default function index() {
                 setIsLoading(false);
             }
         };
-        const HandleProceedToPayment = async () => {
+
+
+        const HandlePayment = async () => {
             try {
                 setIsLoading(true);
                 const userId = localStorage.getItem("userId");
@@ -378,14 +380,12 @@ export default function index() {
                 };
 
                 const res = await dispatch(AddCart(responseObject)).unwrap();
-                console.log("ResCart", res);
-                if (res.status === 200) {
-                    localStorage.setItem("cartId", res.cart._id);
-                    localStorage.setItem("productId", res.cart.productID);
+                console.log("Reeeeee", res)
+                console.log("CartId", res.cart._id)
+                if (res.status == 200) {
                     toast.success("Product added to cart successfully");
-                    // Clear the stored data
-                    localStorage.removeItem('selectedProduct');
-                    localStorage.removeItem('specsData');
+                    console.log("CartId", res.cart._id)
+                    localStorage.setItem("cartId", res.cart._id)
                     // Redirect to cart page
                     router.push('/order-details');
                 } else if (res.status === 401) {
@@ -400,6 +400,7 @@ export default function index() {
                 setIsLoading(false);
             }
         }
+
         return (
             <motion.div
                 className={styles.thiredMain}
@@ -452,10 +453,10 @@ export default function index() {
                                 ) : (
                                     <button
                                         className={styles.proceedButton}
-                                        onClick={HandleProceedToPayment}
+                                        onClick={() => HandlePayment()}
                                         disabled={IsLoading}
                                     >
-                                        {IsLoading ? 'Processing...' : 'Proceed to Payment'}
+                                        Proceed to Payment
                                     </button>
                                 )}
                             </div>
@@ -582,7 +583,8 @@ export default function index() {
                 const res = await dispatch(SavePrescription(responseObject)).unwrap();
                 console.log("ResSavePrescription", res);
                 if (res.status == 200) {
-
+                    console.log("ResSavePrescription2", res);
+                    localStorage.setItem("PrescriptionId", res.prescription._id)
 
                     toast.success("Details added successfully.");
                     setIsLoading(false);
@@ -666,7 +668,10 @@ export default function index() {
                     }
                 })
                 .then((res) => {
-                    if (res && res.payload && res.payload.status === 200) {
+                    console.log("PPPPPPP", res)
+                    if (res && res.payload && res.payload.status == 200) {
+                        console.log("PPPPPPP2", res.payload.prescription._id)
+                        localStorage.setItem("PrescriptionId", res.payload.prescription._id)
                         toast.success("Prescription added successfully!");
                         setIsLoading(false);
                         Changepage(3);
@@ -702,169 +707,11 @@ export default function index() {
                     </button>
                     <h1>Enter Your Prescription Manually</h1>
 
-                    <div className={styles.formContainer}>
+                    <div >
                         <form onSubmit={handleSubmit(SubmitHandler)}>
 
 
-                            <table>
-                                <thead>
-                                    <tr>
-                                        <td></td>
-                                        <td>SPH</td>
-                                        <td>CYL</td>
-                                        <td>Axis</td>
-                                    </tr>
 
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td>OD(Right)</td>
-                                        <td>
-                                            <select {...register("rightsph")}>
-                                                <option value="" disabled selected>-- Select --</option> {/* Default option */}
-
-                                                {[
-                                                    "-10.00", "-9.75", "-9.50", "-9.25", "-9.00", "-8.75", "-8.50", "-8.25", "-8.00",
-                                                    "-7.75", "-7.50", "-7.25", "-7.00", "-6.75", "-6.50", "-6.25", "-6.00",
-                                                    "-5.75", "-5.50", "-5.25", "-5.00", "-4.75", "-4.50", "-4.25", "-4.00",
-                                                    "-3.75", "-3.50", "-3.25", "-3.00", "-2.75", "-2.50", "-2.25", "-2.00",
-                                                    "-1.75", "-1.50", "-1.25", "-1.00", "-0.75", "-0.50", "-0.25", "0.00",
-                                                    "+0.25", "+0.50", "+0.75", "+1.00", "+1.25", "+1.50", "+1.75", "+2.00",
-                                                    "+2.25", "+2.50", "+2.75", "+3.00", "+3.25", "+3.50", "+3.75", "+4.00"
-                                                ].map((value) => (
-                                                    <option key={value} value={value}>{value}</option>
-                                                ))}
-                                            </select>
-                                        </td>
-                                        <td>
-                                            <select {...register("rightcyl")}>
-                                                <option value="" disabled selected>-- Select --</option> {/* Default option */}
-                                                {[
-                                                    "-6.00", "-5.75", "-5.50", "-5.25", "-5.00", "-4.75", "-4.50", "-4.25", "-4.00",
-                                                    "-3.75", "-3.50", "-3.25", "-3.00", "-2.75", "-2.50", "-2.25", "-2.00", "-1.75",
-                                                    "-1.50", "-1.25", "-1.00", "-0.75", "-0.50", "-0.25", "0.00",
-                                                    "0.25", "0.50", "0.75", "1.00", "1.25", "1.50", "1.75", "2.00",
-                                                    "2.25", "2.50", "2.75", "3.00", "3.25", "3.50", "3.75", "4.00",
-                                                    "4.25", "4.50", "4.75", "5.00", "5.25", "5.50", "5.75", "6.00"
-                                                ].map((value) => (
-                                                    <option key={value} value={value}>{value}</option>
-                                                ))}
-                                            </select>
-                                        </td>
-                                        <td>
-                                            <select {...register("rightaxis")}>
-                                                <option value="" disabled selected>-- Select --</option> {/* Default option */}
-                                                {axisValues.map((value, index) => (
-                                                    <option key={index} value={value}>
-                                                        {value}
-                                                    </option>
-                                                ))}
-                                            </select>
-                                        </td>
-
-                                    </tr>
-                                    <tr>
-                                        <td>OS (Left)</td>
-                                        <td >
-                                            <select {...register("leftsph")}>
-                                                <option value="" disabled selected>-- Select --</option> {/* Default option */}
-                                                {[
-                                                    "-10.00", "-9.75", "-9.50", "-9.25", "-9.00", "-8.75", "-8.50", "-8.25", "-8.00",
-                                                    "-7.75", "-7.50", "-7.25", "-7.00", "-6.75", "-6.50", "-6.25", "-6.00",
-                                                    "-5.75", "-5.50", "-5.25", "-5.00", "-4.75", "-4.50", "-4.25", "-4.00",
-                                                    "-3.75", "-3.50", "-3.25", "-3.00", "-2.75", "-2.50", "-2.25", "-2.00",
-                                                    "-1.75", "-1.50", "-1.25", "-1.00", "-0.75", "-0.50", "-0.25", "0.00",
-                                                    "+0.25", "+0.50", "+0.75", "+1.00", "+1.25", "+1.50", "+1.75", "+2.00",
-                                                    "+2.25", "+2.50", "+2.75", "+3.00", "+3.25", "+3.50", "+3.75", "+4.00"
-                                                ].map((value) => (
-                                                    <option key={value} value={value}>{value}</option>
-                                                ))}
-                                            </select>
-                                        </td>
-                                        <td >
-                                            <select {...register("leftcyl")}>
-                                                <option value="" disabled selected>-- Select --</option> {/* Default option */}
-                                                {[
-                                                    "-6.00", "-5.75", "-5.50", "-5.25", "-5.00", "-4.75", "-4.50", "-4.25", "-4.00",
-                                                    "-3.75", "-3.50", "-3.25", "-3.00", "-2.75", "-2.50", "-2.25", "-2.00", "-1.75",
-                                                    "-1.50", "-1.25", "-1.00", "-0.75", "-0.50", "-0.25", "0.00",
-                                                    "0.25", "0.50", "0.75", "1.00", "1.25", "1.50", "1.75", "2.00",
-                                                    "2.25", "2.50", "2.75", "3.00", "3.25", "3.50", "3.75", "4.00",
-                                                    "4.25", "4.50", "4.75", "5.00", "5.25", "5.50", "5.75", "6.00"
-                                                ].map((value) => (
-                                                    <option key={value} value={value}>{value}</option>
-                                                ))}
-                                            </select>
-                                        </td>
-                                        <td >
-                                            <select {...register("leftaxis")}>
-                                                <option value="" disabled selected>-- Select --</option> {/* Default option */}
-                                                {axisValues.map((value, index) => (
-                                                    <option key={index} value={value}>
-                                                        {value}
-                                                    </option>
-                                                ))}
-                                            </select>
-                                        </td>
-                                    </tr>
-                                    {!IsBifocel &&
-                                        <tr>
-                                            <td >Pupillary Distance (PD)</td>
-
-
-
-                                            <td className={styles.lastTd} colSpan="2">
-                                                {
-                                                    !IsTwoPds && (<select {...register("pd")}>
-                                                        <option value="" disabled selected>-- Select --</option>
-                                                        {pdValues.map((value, index) => (
-                                                            <option key={index} value={value}>
-                                                                {value}
-                                                            </option>
-                                                        ))}
-                                                    </select>)
-
-                                                }
-
-
-                                                {IsTwoPds && (
-                                                    <div className={styles.pdContainer}>
-                                                        <div className={styles.singlePd}>
-                                                            <label>Right</label>
-                                                            <select {...register("rightPd")}>
-                                                                <option value="" disabled selected>-- Select --</option>
-                                                                {pdValues.map((value, index) => (
-                                                                    <option key={index} value={value}>
-                                                                        {value}
-                                                                    </option>
-                                                                ))}
-                                                            </select>
-                                                        </div>
-                                                        <div className={styles.singlePd}>
-                                                            <label>Left</label>
-                                                            <select {...register("leftPd")}>
-                                                                <option value="" disabled selected>-- Select --</option>
-                                                                {pdValues.map((value, index) => (
-                                                                    <option key={index} value={value}>
-                                                                        {value}
-                                                                    </option>
-                                                                ))}
-                                                            </select>
-                                                        </div>
-
-                                                    </div>
-                                                )}
-                                            </td>
-
-
-                                            <td className={styles.checkBox}><input checked={IsTwoPds}
-                                                onChange={handleCheckboxChange} type="checkbox" /> <label>Have two PDs</label></td>
-                                        </tr>
-                                    }
-
-                                </tbody>
-
-                            </table>
                             <button type='submit' display="none" ref={buttonRef} onClick={handleHiddenButtonClick}>
 
                             </button>
