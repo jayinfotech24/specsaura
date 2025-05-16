@@ -3,7 +3,7 @@ import { useRouter } from 'next/router';
 import styles from '../../styles/orderDetails.module.css';
 import Header from '../../Component/Header';
 import Footer from '../../Component/Footer';
-import { CreateOrder, getCartDetail, DeleteFullCart, GetOrderById, GetSingleCart } from '../../store/authSlice';
+import { CreateOrder, getCartDetail, DeleteFullCart, GetOrderById, GetSingleCart, DeleteCart } from '../../store/authSlice';
 import { useDispatch } from 'react-redux';
 import Preloader from '../../Component/Animated';
 import { handlePayment } from '../../store/commonFunction';
@@ -68,6 +68,7 @@ const OrderDetails = () => {
                     if (!cartId) throw new Error("Cart ID missing from localStorage");
 
                     const res = await dispatch(GetSingleCart(cartId)).unwrap();
+                    console.log("Res", res)
                     const selectedProduct = res?.carts?.productID;
 
 
@@ -82,7 +83,8 @@ const OrderDetails = () => {
                                     ...selectedProduct,
                                     specs: specsData,
                                     productId: productId,
-                                    cartId: cartId
+                                    cartId: cartId,
+                                    prescription: res.carts.prescriptionID._id
                                 }
                             }
                         ],
@@ -92,11 +94,18 @@ const OrderDetails = () => {
 
                 // CASE 3: Fallback — from selectedProduct manually
                 else {
-                    const selectedProduct = JSON.parse(localStorage.getItem("selectedProduct") || "{}");
+
                     const specsData = JSON.parse(localStorage.getItem("specsData") || "{}");
                     const productId = localStorage.getItem("productId");
                     const cartId = localStorage.getItem("cartId");
+                    const res = await dispatch(GetSingleCart(cartId)).unwrap();
+                    console.log("Res", res)
+                    const selectedProduct = res?.carts?.productID;
 
+
+                    const basePrice = Number(selectedProduct.price) || 0;
+                    const additionalCost = Number(specsData.additionalCost) || 0;
+                    const total = basePrice + additionalCost;
                     if (selectedProduct && selectedProduct.price) {
                         const basePrice = Number(selectedProduct.price) || 0;
                         const additionalCost = Number(specsData.additionalCost) || 0;
@@ -109,7 +118,8 @@ const OrderDetails = () => {
                                         ...selectedProduct,
                                         specs: specsData,
                                         productId: productId,
-                                        cartId: cartId
+                                        cartId: cartId,
+                                        prescription: res.carts.prescriptionID._id
                                     }
                                 }
                             ],
@@ -230,7 +240,7 @@ const OrderDetails = () => {
                                 items: orderData.items.map(item => ({
                                     product: productId,
                                     cart: cartId, // Use product ID as cart ID if not from cart
-                                    prescription: prescriptionId || null,
+                                    prescription: item.productID.prescription || null,
                                     quantity: from === 'cart' ? (item.numberOfItems || 1) : 1
                                 })),
                                 totalAmount: orderData.total,
@@ -248,23 +258,37 @@ const OrderDetails = () => {
                             const orderRes = await dispatch(CreateOrder(orderPayload)).unwrap();
                             console.log("Order created successfully", orderRes);
 
-                            // Delete cart after successful order creation
-                            const productIds = orderData.items.map(item => item._id);
-                            const cartPayload = {
-                                ids: productIds
-                            };
-                            await dispatch(DeleteFullCart(cartPayload)).then((res) => {
-                                console.log("Cart cleared successfully", res);
-                            }).catch((error) => {
-                                console.log("Error clearing cart:", error);
-                            });
+                            if (from == "cart") {
+                                const productIds = orderData.items.map(item => item._id);
+                                const cartPayload = {
+                                    ids: productIds
+                                };
+                                await dispatch(DeleteFullCart(cartPayload)).then((res) => {
+                                    console.log("Cart cleared successfully", res);
+                                }).catch((error) => {
+                                    console.log("Error clearing cart:", error);
+                                });
 
-                            toast.success("Payment successful!");
-                            // Clear localStorage after successful payment
-                            localStorage.removeItem('selectedProduct');
-                            localStorage.removeItem('specsData');
+                                toast.success("Payment successful!");
+                                // Clear localStorage after successful payment
+                                localStorage.removeItem('selectedProduct');
+                                localStorage.removeItem('specsData');
 
-                            router.push('/order-confirmation');
+                                router.push('/order-confirmation');
+                            } else {
+                                const cartId = localStorage.getItem("cartId");
+                                const res = await dispatch(DeleteCart(cartId)).unwrap();
+
+                                console.log("Delelele", res)
+
+                                toast.success("Payment successful!");
+                                // Clear localStorage after successful payment
+                                localStorage.removeItem('selectedProduct');
+                                localStorage.removeItem('specsData');
+
+                                router.push('/order-confirmation');
+                            }
+
                         } catch (error) {
                             console.error("Error creating order:", error);
                             toast.error("Error creating order. Please contact support.");

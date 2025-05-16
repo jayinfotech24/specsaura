@@ -53,41 +53,7 @@ export default function Index() {
         }
     }, [id]);
 
-    const BuyNow = async () => {
-        const userId = localStorage.getItem("userId");
-        const responseObject = {
-            userID: userId,
-            productID: id,
-            numberOfItems: 1,
-        };
 
-        try {
-            setIsLoading(true);
-            const res = await dispatch(AddCart(responseObject)).unwrap();
-            console.log("Buy Now Response:", res);
-
-            if (Data.availableItems > 0 && res.status === 200) {
-                // Store the selected product in localStorage for the specs progress form
-                localStorage.setItem('selectedProduct', JSON.stringify({
-                    id: id,
-                    name: Data.name,
-                    price: Data.price,
-                    image: Data.images?.[0] || Data.url || '/Images/placeholder.webp',
-                    url: Data.url || '/Images/placeholder.webp'
-                }));
-
-                // Redirect to specs progress form
-                router.push('/specProgress');
-            } else {
-                toast.error("Product is out of stock");
-            }
-        } catch (error) {
-            console.error("Error in Buy Now:", error);
-            // toast.error("Failed to process your request. Please try again.");
-        } finally {
-            setIsLoading(false);
-        }
-    };
 
     const AddInCart = async () => {
 
@@ -277,7 +243,7 @@ export default function Index() {
                         </button>
                         <button
                             className={styles.buy}
-                            onClick={BuyNow}
+                            onClick={() => router.push('/specProgress')}
                             disabled={Data.availableItems <= 0}
                         >
                             <FaShoppingBag /> Buy Now

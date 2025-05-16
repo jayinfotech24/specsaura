@@ -1056,7 +1056,14 @@
 
   /* Fourth strp */
   .forthInner {
-    margin-top: 60px;
+    /* margin-top: 60px; */
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: start;
+    align-items: center;
+    margin: auto;
+    padding-top: 20px;
   }
 
   .forthInner .formContainer {

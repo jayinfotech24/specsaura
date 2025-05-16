@@ -97,78 +97,7 @@ export default function index() {
     }, [isFile])
 
 
-    const HandleProceedToPayment = async () => {
-        try {
-            setIsLoading(true);
-            const userId = localStorage.getItem("userId");
-            const selectedProduct = JSON.parse(localStorage.getItem('selectedProduct') || '{}');
-            const specsData = JSON.parse(localStorage.getItem('specsData') || '{}');
 
-            // First save the prescription data
-            // Get prescription data from localStorage
-            const prescriptionData = {
-                rightEye: {
-                    sphere: specsData.rightEye?.sphere || null,
-                    cylinder: specsData.rightEye?.cylinder || null,
-                    axis: specsData.rightEye?.axis || null,
-                    add: specsData.rightEye?.add || null,
-                    pd: specsData.rightEye?.pd || null
-                },
-                leftEye: {
-                    sphere: specsData.leftEye?.sphere || null,
-                    cylinder: specsData.leftEye?.cylinder || null,
-                    axis: specsData.leftEye?.axis || null,
-                    add: specsData.leftEye?.add || null,
-                    pd: specsData.leftEye?.pd || null
-                },
-                prescriptionURL: specsData.prescriptionURL || null
-            };
-
-            // Save prescription first
-            console.log("Saving prescription data:", prescriptionData);
-            const prescriptionRes = await dispatch(SavePrescription(prescriptionData)).unwrap();
-            console.log("ResSavePrescription", prescriptionRes);
-
-            if (prescriptionRes.status != 200) {
-                toast.error("Failed to save prescription data");
-                setIsLoading(false);
-                return;
-            }
-
-            toast.success("Prescription saved successfully");
-
-            // Then add to cart
-            const responseObject = {
-                userID: userId,
-                productID: selectedProduct.id,
-                numberOfItems: 1,
-                specs: prescriptionData  // Use the saved prescription data
-            };
-
-            console.log("Adding to cart:", responseObject);
-            const res = await dispatch(AddCart(responseObject)).unwrap();
-            console.log("ResCart", res);
-            if (res.status === 200) {
-                localStorage.setItem("cartId", res.cart._id);
-                localStorage.setItem("productId", res.cart.productID);
-                toast.success("Product added to cart successfully");
-                // Clear the stored data
-                localStorage.removeItem('selectedProduct');
-                localStorage.removeItem('specsData');
-                // Redirect to cart page
-                router.push('/order-details');
-            } else if (res.status === 401) {
-                toast.error("Please login to continue");
-            } else {
-                toast.error("Failed to add product to cart");
-            }
-        } catch (error) {
-            console.error("Error processing order:", error);
-            toast.error("Failed to complete your order");
-        } finally {
-            setIsLoading(false);
-        }
-    }
     const FirstPage = () => {
         return (
             <motion.div
@@ -357,7 +286,7 @@ export default function index() {
                 };
 
                 const res = await dispatch(AddCart(responseObject)).unwrap();
-
+                console.log("Res2", res)
                 if (res.status === 200) {
                     toast.success("Product added to cart successfully");
                     // Clear the stored data
@@ -391,7 +320,9 @@ export default function index() {
                     productID: selectedProduct.id,
                     numberOfItems: 1,
                     specs: specsData,
-                    prescriptionID: prescriptionId
+                    prescriptionID: prescriptionId,
+
+
                 };
 
                 const res = await dispatch(AddCart(responseObject)).unwrap();
@@ -948,7 +879,7 @@ export default function index() {
                 {
                     isFile && (
 
-                        <div className={styles.forthInner} style={{ height: "100vh" }} >
+                        <div className={styles.forthInner} style={{ height: "100vh", display: "flex", justifyContent: "start", flexDirection: "column", paddingTop: "20px", alignItems: "center" }}  >
                             <button className={styles.backButton} onClick={() => Changepage(1)}>
                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-left-icon lucide-arrow-left"><path d="m12 19-7-7 7-7" /><path d="M19 12H5" /></svg>
                             </button>
