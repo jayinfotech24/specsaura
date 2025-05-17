@@ -29,7 +29,7 @@ const UpdateProfileForm = ({ userData, onUpdate }) => {
         <div className={styles.profileForm}>
             <div className={styles.header}>
                 <h2>Profile Information</h2>
-                <button 
+                <button
                     className={styles.editButton}
                     onClick={() => setIsEditing(!isEditing)}
                 >
@@ -84,7 +84,7 @@ const UpdateProfileForm = ({ userData, onUpdate }) => {
                     </div>
 
                     <div className={styles.inputWrapper}>
-                        <FaMapMarkerAlt className={styles.icon} />
+                        <FaMapMarkerAlt style={{ top: "15%" }} className={styles.icon} />
                         <textarea
                             name="address"
                             value={formData.address}

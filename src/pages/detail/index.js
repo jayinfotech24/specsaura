@@ -89,6 +89,19 @@ export default function Index() {
         }
     };
 
+
+
+    const BuyNow = () => {
+        localStorage.setItem('selectedProduct', JSON.stringify({
+            id: id,
+            name: Data.name,
+            price: Data.price,
+            image: Data.images?.[0] || Data.url || '/Images/placeholder.webp',
+            url: Data.url || '/Images/placeholder.webp'
+        }));
+
+        router.push("/specProgress")
+    }
     const nextImage = () => {
         if (Data.images && Data.images.length > 0) {
             setCurrentImageIndex((prevIndex) => (prevIndex + 1) % Data.images.length);
@@ -243,7 +256,7 @@ export default function Index() {
                         </button>
                         <button
                             className={styles.buy}
-                            onClick={() => router.push('/specProgress')}
+                            onClick={() => BuyNow()}
                             disabled={Data.availableItems <= 0}
                         >
                             <FaShoppingBag /> Buy Now

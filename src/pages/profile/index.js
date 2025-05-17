@@ -29,7 +29,7 @@ const Profile = () => {
 
     const handleLogout = () => {
         localStorage.removeItem('userToken');
-        router.push('/login');
+        router.push('/');
     };
 
     const handleProfileUpdate = (updatedData) => {
@@ -46,7 +46,7 @@ const Profile = () => {
         dispatch(UpdateUser(updatePayload)).then((res) => {
             console.log("ResponseUpdate", res);
             if (res.payload.status === 200) {
-                setUserData(res.payload.mainUser);
+                setUserData(res.payload.user);
             }
         }).catch((error) => {
             console.error('Error updating user:', error);

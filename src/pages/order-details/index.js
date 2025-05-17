@@ -11,12 +11,13 @@ import axios from 'axios';
 import { toast } from 'react-toastify';
 import { MakePayment, VerifyPayment } from '../../store/authSlice';
 import Script from 'next/script';
+import { Toaster } from 'react-hot-toast';
 
 const OrderDetails = () => {
     const router = useRouter();
     const dispatch = useDispatch();
     const [isLoading, setIsLoading] = useState(false);
-    const { amount, from } = router.query;
+    const { from } = router.query;
     const [isRazorpayLoaded, setIsRazorpayLoaded] = useState(false);
 
     const [formData, setFormData] = useState({
@@ -42,8 +43,8 @@ const OrderDetails = () => {
             try {
                 const userId = localStorage.getItem("userId");
 
-                // CASE 1: Coming from Cart
-                if (from === "cart") {
+                if (from == "cart") {
+                    // CASE 1
                     const response = await dispatch(getCartDetail(userId)).unwrap();
                     console.log("Cart Response", response);
 
@@ -57,10 +58,9 @@ const OrderDetails = () => {
                         items: response.items || [],
                         total: total
                     });
-                }
 
-                // CASE 2: Coming from Buy Now
-                else if (from === "buy") {
+                } else if (from == "buy") {
+                    // CASE 2
                     const cartId = localStorage.getItem("cartId");
                     const specsData = JSON.parse(localStorage.getItem("specsData") || "{}");
                     const productId = localStorage.getItem("productId");
@@ -68,9 +68,7 @@ const OrderDetails = () => {
                     if (!cartId) throw new Error("Cart ID missing from localStorage");
 
                     const res = await dispatch(GetSingleCart(cartId)).unwrap();
-                    console.log("Res", res)
                     const selectedProduct = res?.carts?.productID;
-
 
                     const basePrice = Number(selectedProduct.price) || 0;
                     const additionalCost = Number(specsData.additionalCost) || 0;
@@ -90,22 +88,16 @@ const OrderDetails = () => {
                         ],
                         total: total
                     });
-                }
 
-                // CASE 3: Fallback — from selectedProduct manually
-                else {
-
+                } else {
+                    // CASE 3: fallback
                     const specsData = JSON.parse(localStorage.getItem("specsData") || "{}");
                     const productId = localStorage.getItem("productId");
                     const cartId = localStorage.getItem("cartId");
+
                     const res = await dispatch(GetSingleCart(cartId)).unwrap();
-                    console.log("Res", res)
                     const selectedProduct = res?.carts?.productID;
 
-
-                    const basePrice = Number(selectedProduct.price) || 0;
-                    const additionalCost = Number(specsData.additionalCost) || 0;
-                    const total = basePrice + additionalCost;
                     if (selectedProduct && selectedProduct.price) {
                         const basePrice = Number(selectedProduct.price) || 0;
                         const additionalCost = Number(specsData.additionalCost) || 0;
@@ -140,17 +132,11 @@ const OrderDetails = () => {
 
 
 
+
     useEffect(() => {
         console.log("Ord", orderData)
     }, [orderData])
-    useEffect(() => {
-        if (amount) {
-            setOrderData(prev => ({
-                ...prev,
-                total: parseFloat(amount)
-            }));
-        }
-    }, [amount]);
+
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
@@ -187,6 +173,8 @@ const OrderDetails = () => {
                 return;
             }
 
+
+            console.log("Is", isRazorpayLoaded)
             // Get the total amount from orderData
             const amount = orderData.total;
 
@@ -273,6 +261,7 @@ const OrderDetails = () => {
                                 // Clear localStorage after successful payment
                                 localStorage.removeItem('selectedProduct');
                                 localStorage.removeItem('specsData');
+                                localStorage.setItem("OrderData", JSON.stringify(orderData));
 
                                 router.push('/order-confirmation');
                             } else {
@@ -285,7 +274,7 @@ const OrderDetails = () => {
                                 // Clear localStorage after successful payment
                                 localStorage.removeItem('selectedProduct');
                                 localStorage.removeItem('specsData');
-
+                                localStorage.setItem("OrderData", JSON.stringify(orderData));
                                 router.push('/order-confirmation');
                             }
 
@@ -341,6 +330,13 @@ const OrderDetails = () => {
 
     return (
         <div className={styles.main}>
+            {
+                isLoading && <Preloader />
+            }
+            <Toaster
+                position="top-center"
+                reverseOrder={false}
+            />
             <Script
                 src="https://checkout.razorpay.com/v1/checkout.js"
                 onLoad={() => setIsRazorpayLoaded(true)}

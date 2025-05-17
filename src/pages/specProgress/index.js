@@ -113,6 +113,7 @@ export default function index() {
                 <div className={styles.firstInner}>
 
                     <motion.h1
+                        style={{ fontSize: "15px" }}
                         initial={{ opacity: 0, y: -20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.2 }}
@@ -144,7 +145,7 @@ export default function index() {
                                 }
                             },
                             {
-                                title: "Zero Power",
+                                title: " Contact lens",
                                 description: "Block 98% of harmful rays (Anti-glare and blue-cut options)",
                                 image: "/Images/zero_power.webp",
                                 onClick: () => Changepage(1)
@@ -153,7 +154,7 @@ export default function index() {
                                 title: "Frame Only",
                                 description: "Buy Only Frame",
                                 image: "/Images/frame_only.webp",
-                                onClick: () => router.push("/cart")
+                                onClick: () => Changepage(3)
                             },
 
                             {
@@ -214,6 +215,7 @@ export default function index() {
                 </motion.button>
                 <div className={styles.secondInner}>
                     <motion.h1
+                        style={{ fontSize: "15px" }}
                         initial={{ opacity: 0, y: -20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.2 }}
@@ -357,6 +359,7 @@ export default function index() {
             >
                 <div className={styles.thiredInner}>
                     <motion.h1
+                        style={{ fontSize: "15px" }}
                         initial={{ opacity: 0, y: -20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.2 }}
@@ -672,7 +675,7 @@ export default function index() {
                     <button className={styles.backButton} onClick={() => Changepage(1)}>
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-left-icon lucide-arrow-left"><path d="m12 19-7-7 7-7" /><path d="M19 12H5" /></svg>
                     </button>
-                    <h1>Enter Your Prescription Manually</h1>
+                    <h1 style={{ fontSize: "15px" }}>Enter Your Prescription Manually</h1>
 
                     <div >
                         <form onSubmit={handleSubmit(SubmitHandler)}>
@@ -883,7 +886,7 @@ export default function index() {
                             <button className={styles.backButton} onClick={() => Changepage(1)}>
                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-left-icon lucide-arrow-left"><path d="m12 19-7-7 7-7" /><path d="M19 12H5" /></svg>
                             </button>
-                            <h1>Upload Prescription</h1>
+                            <h1 style={{ fontSize: "15px" }}>Upload Prescription</h1>
                             <p>Please upload your prescription as a PNG, JPG or PDF file.</p>
                             <form >
                                 <div className={styles.buttonWrapper}>

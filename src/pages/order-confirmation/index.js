@@ -11,64 +11,95 @@ import { FaPrint } from 'react-icons/fa';
 const OrderConfirmation = () => {
     const router = useRouter();
     const dispatch = useDispatch();
-    const [isLoading, setIsLoading] = useState(true);
+    const [isLoading, setIsLoading] = useState(false);
     const { amount } = router.query;
 
     const [orderData, setOrderData] = useState({
-        items: [],
-        totalAmount: amount ? parseFloat(amount) : 0,
-        status: 'Pending',
-        orderId: `ORD-${Math.floor(Math.random() * 1000000).toString().padStart(6, '0')}`,
-        date: new Date().toLocaleDateString('en-IN', {
+        items: [],  // you can fill this with real item data from props or localStorage if needed
+        total: 0,
+        orderId: '',
+        date: ''
+    });
+
+
+    const getDetail = () => {
+        const data = localStorage.getItem("OrderData");
+        if (data) {
+            const parsed = JSON.parse(data);
+            setOrderData(prev => ({
+                ...prev,
+                ...parsed
+            }));
+        }
+    };
+
+
+    useEffect(() => {
+        const savedOrder = JSON.parse(localStorage.getItem("OrderData")); // your actual source
+        const generatedOrderId = `ORD-${Math.floor(Math.random() * 1000000).toString().padStart(6, '0')}`;
+        const currentDate = new Date().toLocaleDateString('en-IN', {
             year: 'numeric',
             month: 'long',
             day: 'numeric'
-        })
-    });
+        });
 
-    useEffect(() => {
-        const fetchOrderDetails = async () => {
-            try {
-                // Get stored order items from localStorage
-                const storedItems = localStorage.getItem('orderItems');
-                if (storedItems) {
-                    const items = JSON.parse(storedItems);
-                    setOrderData(prev => ({
-                        ...prev,
-                        items: items || []
-                    }));
-                } else {
-                    // Fallback to fetching from cart if no stored items
-                    const userId = localStorage.getItem("userId");
-                    const response = await dispatch(getCartDetail(userId)).unwrap();
-                    console.log("Response", response);
-                    setOrderData(prev => ({
-                        ...prev,
-                        items: response.items || []
-                    }));
-                }
-            } catch (error) {
-                console.error("Error fetching order details:", error);
-            } finally {
-                setIsLoading(false);
-            }
-        };
+        console.log("DD", savedOrder)
 
-        fetchOrderDetails();
-    }, [dispatch]);
-
-    useEffect(() => {
-        if (amount) {
-            setOrderData(prev => ({
-                ...prev,
-                totalAmount: parseFloat(amount)
-            }));
+        if (savedOrder) {
+            setOrderData({
+                ...savedOrder,
+                orderId: generatedOrderId,
+                date: currentDate
+            });
         }
-    }, [amount]);
+    }, []);
+    // useEffect(() => {
+    //     const fetchOrderDetails = async () => {
+    //         try {
+    //             // Get stored order items from localStorage
+    //             const storedItems = localStorage.getItem('orderItems');
+    //             if (storedItems) {
+    //                 const items = JSON.parse(storedItems);
+    //                 setOrderData(prev => ({
+    //                     ...prev,
+    //                     items: items || []
+    //                 }));
+    //             } else {
+    //                 // Fallback to fetching from cart if no stored items
+    //                 const userId = localStorage.getItem("userId");
+    //                 const response = await dispatch(getCartDetail(userId)).unwrap();
+    //                 console.log("Response", response);
+    //                 setOrderData(prev => ({
+    //                     ...prev,
+    //                     items: response.items || []
+    //                 }));
+    //             }
+    //         } catch (error) {
+    //             console.error("Error fetching order details:", error);
+    //         } finally {
+    //             setIsLoading(false);
+    //         }
+    //     };
+
+    //     fetchOrderDetails();
+    // }, [dispatch]);
+
+
+    useEffect(() => {
+        console.log("ORderData", orderData)
+    }, [orderData])
+    // useEffect(() => {
+    //     if (amount) {
+    //         setOrderData(prev => ({
+    //             ...prev,
+    //             totalAmount: parseFloat(amount)
+    //         }));
+    //     }
+    // }, [amount]);
 
     // Calculate subtotal from items
     const calculateSubtotal = () => {
-        return orderData.items.reduce((total, item) => {
+        return orderData?.items?.reduce((total, item) => {
             return total + (item.productID?.price || 0);
         }, 0);
     };
@@ -380,7 +411,7 @@ const OrderConfirmation = () => {
                             </div>
                             <div className={styles.infoItem}>
                                 <span className={styles.label}>Status</span>
-                                <span className={`${styles.value} ${styles.status} ${orderData.status.toLowerCase()}`}>
+                                <span className={`${styles.value} ${styles.status} ${orderData.status}`}>
                                     {orderData.status}
                                 </span>
                             </div>
