@@ -1,5 +1,5 @@
 const Appapis = {
-    Basurl: "https://specsauradataplazma.vercel.app/api",
+    Basurl: "http://api.specsaura.com/api",
     signIn: "/request",
     signOut: "/signOut",
     verifyOtp: "/verify",

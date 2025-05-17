@@ -19,16 +19,15 @@ export default function CustomCarousle() {
         GetData();
     }, [dispatch]);
 
-    // Auto-slide through images
-    // useEffect(() => {
-    //     if (Images.length === 0) return;
+    useEffect(() => {
+        if (Images.length === 0) return;
 
-    //     const interval = setInterval(() => {
-    //         setCurrentIndex((prevIndex) => (prevIndex + 1) % Images.length);
-    //     }, 5000); // Change slide every 5 seconds
+        const interval = setInterval(() => {
+            setCurrentIndex((prevIndex) => (prevIndex + 1) % Images.length);
+        }, 5000); // Change slide every 5 seconds
 
-    //     return () => clearInterval(interval);
-    // }, [Images]);
+        return () => clearInterval(interval);
+    }, [Images]);
 
     // Variants for motion animation
     const captionVariants = {
