@@ -1,23 +1,60 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import styles from "../../styles/progress.module.css"
 import ProgressHeader from '../../Component/ProgressHeader'
-import { motion } from 'framer-motion';
-
+import { motion, AnimatePresence } from 'framer-motion';
+import { useRouter } from 'next/router';
+import { Validate } from '../../store/commonFunction';
+import { useForm } from 'react-hook-form'
+import *as yup from "yup"
+import { yupResolver } from "@hookform/resolvers/yup";
+import { useRef } from 'react';
+import { useDispatch } from 'react-redux';
+import { FileUpload, SavePrescription, AddCart } from '../../store/authSlice';
+import { ToastContainer, toast } from 'react-toastify';
+import ProgressBar from "@ramonak/react-progress-bar";
+import Preloader from '../../Component/Animated';
 
 export default function index() {
 
     const [firstStep, setFirstStep] = useState(true);
     const [secondStep, setSecondStep] = useState(false);
     const [thiredStep, setThiredStep] = useState(false);
+    const [fourthStep, setFourtStep] = useState(false)
     const [isOneComplete, setIsOneComplete] = useState(false);
     const [isTwoComplete, setIsTwoComplete] = useState(false);
     const [isThiredComplete, setIsThiredComplete] = useState(false)
+    const [isFourthComplete, setIsFourthComplete] = useState(false)
+    const [selectedProduct, setSelectedProduct] = useState(null);
+    const [totalPrice, setTotalPrice] = useState(0);
+    const inputRef = useRef()
+    const [selectedFile, setSelectedFile] = useState(null);
+    const [isFile, setIsFile] = useState(false)
+    const router = useRouter();
+    const [IsBifocel, setIsBifocal] = useState(false)
+    const [IsSingle, setIsSingle] = useState(false)
+    const [progress, setProgress] = useState(0);
+    const [IsLoading, setIsLoading] = useState(false)
+    const dispatch = useDispatch();
+    const { action } = router.query;
 
-    const Changepage = (number) => {
+    useEffect(() => {
+        Validate(router)
+        // Load selected product from localStorage
+        const storedProduct = localStorage.getItem('selectedProduct');
+        if (storedProduct) {
+            const product = JSON.parse(storedProduct);
+            setSelectedProduct(product);
+            setTotalPrice(product.price);
+        }
+    }, [])
+
+    const Changepage = (number, IsFile) => {
         if (number == 0) {
             setFirstStep(true)
             setSecondStep(false);
             setThiredStep(false)
+            setIsFourthComplete(false)
+            setFourtStep(false)
 
         }
         if (number == 1) {
@@ -25,102 +62,135 @@ export default function index() {
             setSecondStep(true);
             setThiredStep(false)
             setIsOneComplete(true)
+            setIsFourthComplete(false)
+            setFourtStep(false)
         }
         if (number == 2) {
             setFirstStep(false)
             setSecondStep(false);
             setThiredStep(true);
             setIsTwoComplete(true)
+            setIsFourthComplete(false)
+            setFourtStep(false)
+
+
         }
         if (number == 3) {
             setIsThiredComplete(true)
+            setFirstStep(false)
+            setSecondStep(false);
+            setFourtStep(true)
+            setIsFourthComplete(false)
+            setThiredStep(false)
+
+
         }
+        // if (number == 4) {
+        //     setIsFourthComplete(true)
+
+        // }
     }
 
-    const FirstPage = () => {
 
+    useEffect(() => {
+        ////console.log("Is", isFile)
+    }, [isFile])
+
+
+
+    const FirstPage = () => {
         return (
             <motion.div
                 className={styles.firstMain}
-                initial={{ x: 500, opacity: 0 }}
-                animate={{ x: 0, opacity: 1 }}
-                exit={{ x: 100, opacity: 0 }}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
                 transition={{ duration: 0.5, ease: "easeOut" }}
             >
-
-
-
+                <button className={styles.backButton} onClick={() => router.push("/")}>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-left-icon lucide-arrow-left"><path d="m12 19-7-7 7-7" /><path d="M19 12H5" /></svg>
+                </button>
                 <div className={styles.firstInner}>
-                    <h1>Select your Power Type</h1>
+
+                    <motion.h1
+                        style={{ fontSize: "15px" }}
+                        initial={{ opacity: 0, y: -20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.2 }}
+                    >
+
+
+                        Select your Power Type
+                    </motion.h1>
                     <div className={styles.firstCardContainer}>
+                        {[
+                            {
+                                title: "Single Vision",
+                                description: "For distance or near vision (Thin, anti-glare, blue-cut options)",
+                                image: "/Images/single_vision.webp",
+                                onClick: () => {
+                                    setIsSingle(true); // or "false" if Single Vision is not bifocal
 
-                        <div className={styles.card} onClick={() => Changepage(1)}>
-                            <div className={styles.left}>
-                                <img src="/Images/single_vision.webp" />
-                            </div>
-                            <div className={styles.right}>
-                                <div className={styles.content}>
-                                    <button>
-                                        Single Vision
+                                    Changepage(1);
+                                }
+                            },
 
-                                    </button>
-                                    <p>For distance or near vision (Thin, anti-glare, blue-cut options)</p>
+                            {
+                                title: "Bifocal/Progressive",
+                                description: "Bifocal and Progressives (For two powers in same lenses)",
+                                image: "/Images/bifocal.webp",
+                                onClick: () => {
+                                    setIsBifocal(true)
+                                    Changepage(1)
+                                }
+                            },
+                            {
+                                title: " Contact lens",
+                                description: "Block 98% of harmful rays (Anti-glare and blue-cut options)",
+                                image: "/Images/zero_power.webp",
+                                onClick: () => Changepage(1)
+                            },
+                            {
+                                title: "Frame Only",
+                                description: "Buy Only Frame",
+                                image: "/Images/frame_only.webp",
+
+                                onClick: () => Changepage(3)
+
+                            },
+
+                            {
+                                title: "Power Sunglasses",
+                                description: "Block 98% of harmful rays (Anti-glare and blue-cut options)",
+                                image: "/Images/frame_only.webp",
+                                onClick: () => Changepage(1)
+                            }
+                        ].map((card, index) => (
+                            <motion.div
+                                key={index}
+                                className={styles.card}
+                                onClick={card.onClick}
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ delay: 0.3 + index * 0.1 }}
+                                whileHover={{ scale: 1.02, boxShadow: "0 8px 16px rgba(0,0,0,0.1)" }}
+                                whileTap={{ scale: 0.98 }}
+                            >
+                                <div className={styles.left}>
+                                    <img src={card.image} alt={card.title} />
                                 </div>
-                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-right"><path d="m9 18 6-6-6-6" /></svg>
-
-                            </div>
-                        </div>
-                        <div className={styles.card} onClick={() => Changepage(1)}>
-                            <div className={styles.left}>
-                                <img src="/Images/bifocal.webp" />
-                            </div>
-                            <div className={styles.right} onClick={() => Changepage(1)}>
-                                <div className={styles.content}>
-                                    <button>
-                                        Bifocal/Progressive
-
-                                    </button>
-                                    <p>Bifocal and Progressives (For two powers in same lenses)</p>
+                                <div className={styles.right}>
+                                    <div className={styles.content}>
+                                        <button>{card.title}</button>
+                                        <p>{card.description}</p>
+                                    </div>
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-chevron-right">
+                                        <path d="m9 18 6-6-6-6" />
+                                    </svg>
                                 </div>
-                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-right"><path d="m9 18 6-6-6-6" /></svg>
-
-                            </div>
-                        </div>
-                        <div className={styles.card} onClick={() => Changepage(1)}>
-                            <div className={styles.left}>
-                                <img src="/Images/zero_power.webp" />
-                            </div>
-                            <div className={styles.right}>
-                                <div className={styles.content}>
-                                    <button>
-                                        Zero Power
-
-                                    </button>
-                                    <p>Block 98% of harmful rays (Anti-glare and blue-cut options)</p>
-                                </div>
-                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-right"><path d="m9 18 6-6-6-6" /></svg>
-
-                            </div>
-                        </div>
-                        <div className={styles.card} onClick={() => Changepage(1)}>
-                            <div className={styles.left}>
-                                <img src="/Images/frame_only.webp" />
-                            </div>
-                            <div className={styles.right}>
-                                <div className={styles.content}>
-                                    <button>
-                                        Frame Only
-
-                                    </button>
-                                    <p>Buy Only Frame</p>
-                                </div>
-                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-right"><path d="m9 18 6-6-6-6" /></svg>
-
-                            </div>
-                        </div>
-
+                            </motion.div>
+                        ))}
                     </div>
-
                 </div>
             </motion.div>
         )
@@ -128,88 +198,729 @@ export default function index() {
     const SecondPage = () => {
         return (
             <motion.div
-
-                initial={{ x: 500, opacity: 0 }}
-                animate={{ x: 0, opacity: 1 }}
-                exit={{ x: 100, opacity: 0 }}
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -20 }}
                 transition={{ duration: 0.5, ease: "easeOut" }}
-                className={styles.secondMain}>
+                className={styles.secondMain}
+            >
+                <motion.button
+                    className={styles.backButton}
+                    onClick={() => Changepage(0)}
+                    whileHover={{ scale: 1.1 }}
+                    whileTap={{ scale: 0.9 }}
+                >
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="m12 19-7-7 7-7" />
+                        <path d="M19 12H5" />
+                    </svg>
+                </motion.button>
                 <div className={styles.secondInner}>
-                    <h1>Choose Lens Package</h1>
-                    <div className={styles.secondCardContainer}>
-                        <div className={styles.card}>
-                            <div className={styles.cardContent}>
-                                <div className={styles.buttonContainer}>
-                                    <p>Anti-Glare Premium</p>
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-right"><path d="m9 18 6-6-6-6" /></svg>
-                                </div>
-                                <div className={styles.contentList}>
-                                    <ul className={styles.list}>
-                                        <li>6 Months Warranty</li>
-                                        <li>Double Side Anti-Glare</li>
-                                        <li>6 Months Warranty</li>
-
-                                    </ul>
-                                </div>
-                                <div className={styles.total}>
-                                    <h2>Frame+Lens: Get it for ₹1500</h2>
-                                </div>
-                            </div>
-
-                        </div>
-                        <div className={styles.card}>
-                            <div className={styles.cardContent}>
-                                <div className={styles.buttonContainer}>
-                                    <p>Anti-Glare Premium</p>
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-right"><path d="m9 18 6-6-6-6" /></svg>
-                                </div>
-                                <div className={styles.contentList}>
-                                    <ul className={styles.list}>
-                                        <li>6 Months Warranty</li>
-                                        <li>Double Side Anti-Glare</li>
-                                        <li>6 Months Warranty</li>
-
-                                    </ul>
-                                </div>
-                                <div className={styles.total}>
-                                    <h2>Frame+Lens: Get it for ₹1500</h2>
-                                </div>
-                            </div>
-
-                        </div>
-                        <div className={styles.card}>
-                            <div className={styles.cardContent}>
-                                <div className={styles.buttonContainer}>
-                                    <p>Anti-Glare Premium</p>
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-right"><path d="m9 18 6-6-6-6" /></svg>
-                                </div>
-                                <div className={styles.contentList}>
-                                    <ul className={styles.list}>
-                                        <li>6 Months Warranty</li>
-                                        <li>Double Side Anti-Glare</li>
-                                        <li>6 Months Warranty</li>
-
-                                    </ul>
-                                </div>
-                                <div className={styles.total}>
-                                    <h2>Frame+Lens: Get it for ₹1500</h2>
-                                </div>
-                            </div>
-
-                        </div>
+                    <motion.h1
+                        style={{ fontSize: "15px" }}
+                        initial={{ opacity: 0, y: -20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.2 }}
+                    >
+                        Add Your Prescription
+                    </motion.h1>
+                    <div className={styles.OptionContainer}>
+                        {[
+                            {
+                                icon: "upload",
+                                title: "Upload File",
+                                onClick: () => {
+                                    setIsFile(true)
+                                    Changepage(2)
+                                }
+                            },
+                            {
+                                icon: "pen",
+                                title: "Enter Manually",
+                                onClick: () => {
+                                    setIsFile(false)
+                                    Changepage(2)
+                                }
+                            }
+                        ].map((option, index) => (
+                            <motion.div
+                                key={index}
+                                className={styles.optionCard}
+                                onClick={option.onClick}
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ delay: 0.3 + index * 0.1 }}
+                                whileHover={{ scale: 1.05, boxShadow: "0 8px 16px rgba(0,0,0,0.1)" }}
+                                whileTap={{ scale: 0.95 }}
+                            >
+                                <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                    {option.icon === "upload" ? (
+                                        <>
+                                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                                            <polyline points="17 8 12 3 7 8" />
+                                            <line x1="12" x2="12" y1="3" y2="15" />
+                                        </>
+                                    ) : (
+                                        <path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z" />
+                                    )}
+                                </svg>
+                                <h2>{option.title}</h2>
+                            </motion.div>
+                        ))}
                     </div>
                 </div>
-
             </motion.div>
         )
     }
 
     const ThiredPage = () => {
-        return (
-            <div className={styles.thiredMain}>
-                <div className={styles.thiredInner}>
+        const handleAddToCart = async () => {
+            try {
+                setIsLoading(true);
+                const userId = localStorage.getItem("userId");
+                const selectedProduct = JSON.parse(localStorage.getItem('selectedProduct') || '{}');
+                const specsData = JSON.parse(localStorage.getItem('specsData') || '{}');
+                const prescriptionId = localStorage.getItem("PrescriptionId")
+                const responseObject = {
+                    userID: userId,
+                    productID: selectedProduct.id,
+                    numberOfItems: 1,
+                    specs: specsData,
+                    prescriptionID: prescriptionId
+                };
 
+                const res = await dispatch(AddCart(responseObject)).unwrap();
+                console.log("Res2", res)
+                if (res.status === 200) {
+                    toast.success("Product added to cart successfully");
+                    // Clear the stored data
+                    localStorage.removeItem('selectedProduct');
+                    localStorage.removeItem('specsData');
+                    // Redirect to cart page
+                    router.push('/cart');
+                } else if (res.status === 401) {
+                    toast.error("Please login to continue");
+                } else {
+                    toast.error("Failed to add product to cart");
+                }
+            } catch (error) {
+                console.error("Error adding to cart:", error);
+                toast.error("Failed to add product to cart");
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+
+        const HandlePayment = async () => {
+            try {
+                setIsLoading(true);
+                const userId = localStorage.getItem("userId");
+                const selectedProduct = JSON.parse(localStorage.getItem('selectedProduct') || '{}');
+                const specsData = JSON.parse(localStorage.getItem('specsData') || '{}');
+                const prescriptionId = localStorage.getItem("PrescriptionId")
+                const responseObject = {
+                    userID: userId,
+                    productID: selectedProduct.id,
+                    numberOfItems: 1,
+                    specs: specsData,
+
+                    prescriptionID: prescriptionId,
+
+
+
+                };
+
+                const res = await dispatch(AddCart(responseObject)).unwrap();
+                console.log("Reeeeee", res)
+                console.log("CartId", res.cart._id)
+                if (res.status == 200) {
+                    toast.success("Product added to cart successfully");
+                    console.log("CartId", res.cart._id)
+                    localStorage.setItem("cartId", res.cart._id)
+                    // Redirect to cart page
+                    router.push('/order-details');
+                } else if (res.status === 401) {
+                    toast.error("Please login to continue");
+                } else {
+                    toast.error("Failed to add product to cart");
+                }
+            } catch (error) {
+                console.error("Error adding to cart:", error);
+                toast.error("Failed to add product to cart");
+            } finally {
+                setIsLoading(false);
+            }
+        }
+
+        return (
+            <motion.div
+                className={styles.thiredMain}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                transition={{ duration: 0.5, ease: "easeOut" }}
+            >
+                <div className={styles.thiredInner}>
+                    <motion.h1
+                        style={{ fontSize: "15px" }}
+                        initial={{ opacity: 0, y: -20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.2 }}
+                    >
+                        Review Your Order
+                    </motion.h1>
+
+                    {selectedProduct && (
+                        <div className={styles.orderSummary}>
+                            <div className={styles.productDetails}>
+                                <img src={selectedProduct.image} alt={selectedProduct.name} />
+                                <div className={styles.productInfo}>
+                                    <h2>{selectedProduct.name}</h2>
+                                    <p>Base Price: ₹{selectedProduct.price}</p>
+                                </div>
+                            </div>
+
+                            <div className={styles.priceBreakdown}>
+                                <h3>Price Breakdown</h3>
+                                <div className={styles.priceItem}>
+                                    <span>Base Frame</span>
+                                    <span>₹{selectedProduct.price}</span>
+                                </div>
+                                {/* Add more price breakdown items based on selections */}
+                                <div className={styles.totalPrice}>
+                                    <span>Total Amount</span>
+                                    <span>₹{totalPrice}</span>
+                                </div>
+                            </div>
+
+                            <div className={styles.buttonContainer}>
+                                {action === 'addToCart' ? (
+                                    <button
+                                        className={styles.proceedButton}
+                                        onClick={handleAddToCart}
+                                        disabled={IsLoading}
+                                    >
+                                        {IsLoading ? 'Adding to Cart...' : 'Add to Cart'}
+                                    </button>
+                                ) : (
+                                    <button
+                                        className={styles.proceedButton}
+                                        onClick={() => HandlePayment()}
+                                        disabled={IsLoading}
+                                    >
+                                        Proceed to Payment
+                                    </button>
+                                )}
+                            </div>
+                        </div>
+                    )}
                 </div>
+            </motion.div>
+        );
+    };
+
+    const FourtPage = () => {
+        const buttonRef = useRef(null)
+        const [IsTwoPds, SetTwoPds] = useState(false)
+        const [FileUrl, setFileUrl] = useState(null)
+
+        const axisValues = Array.from({ length: 181 }, (_, i) => i.toString());
+        const pdValues = Array.from({ length: (79 - 35) * 2 + 1 }, (_, i) => (35 + i * 0.5).toFixed(1));
+        const powers = Array.from(
+            { length: ((3.00 - 0.75) / 0.25 + 1) },
+            (_, i) => `+${(0.75 + i * 0.25).toFixed(2)}`
+        );
+
+        const useIsMobile = () => {
+            const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+
+            useEffect(() => {
+                const handleResize = () => setIsMobile(window.innerWidth < 768);
+                window.addEventListener("resize", handleResize);
+                return () => window.removeEventListener("resize", handleResize);
+            }, []);
+
+            return isMobile;
+        };
+        const isMobile = useIsMobile();
+
+        ////console.log("Is", isMobile)
+        const validationSchema = yup.object().shape({
+            rightsph: yup.string().required("Right SPH is required"),
+            rightcyl: yup.string().required("Right CYL is required"),
+            rightaxis: yup.string().required("Right Axis is required"),
+            leftsph: yup.string().required("Left SPH is required"),
+            leftcyl: yup.string().required("Left CYL is required"),
+            leftaxis: yup.string().required("Left Axis is required"),
+
+            pd: (IsBifocel || IsSingle) && !IsTwoPds
+                ? yup.string().required("Pupillary Distance is required")
+                : yup.string().notRequired(),
+
+            leftPd: (IsBifocel || IsSingle) && IsTwoPds
+                ? yup.string().required("Left PD is required")
+                : yup.string().notRequired(),
+
+            rightPd: (IsBifocel || IsSingle) && IsTwoPds
+                ? yup.string().required("Right PD is required")
+                : yup.string().notRequired(),
+
+            powers: IsBifocel
+                ? yup.string().required("Power is required")
+                : yup.string().notRequired()
+        });
+
+
+        const MobileValidationSchema = yup.object().shape({
+            rightsph: yup.string().required("Right SPH is required"),
+            rightcyl: yup.string().required("Right CYL is required"),
+            rightaxis: yup.string().required("Right Axis is required"),
+            leftsph: yup.string().required("Left SPH is required"),
+            leftcyl: yup.string().required("Left CYL is required"),
+            leftaxis: yup.string().required("Left Axis is required"),
+
+            pd: (IsBifocel || IsSingle) && !IsTwoPds
+                ? yup.string().required("Pupillary Distance is required")
+                : yup.string().notRequired(),
+
+            leftPd: (IsBifocel || IsSingle) && IsTwoPds
+                ? yup.string().required("Left PD is required")
+                : yup.string().notRequired(),
+
+            rightPd: (IsBifocel || IsSingle) && IsTwoPds
+                ? yup.string().required("Right PD is required")
+                : yup.string().notRequired(),
+
+            powers: IsBifocel
+                ? yup.string().required("Power is required")
+                : yup.string().notRequired()
+
+
+        })
+
+
+
+
+        const { register, handleSubmit, formState: { errors } } = useForm({
+            resolver: yupResolver(isMobile ? MobileValidationSchema : validationSchema)
+        });
+        console.log("EEE", errors)
+        useEffect(() => {
+            if (Object.keys(errors).length > 0) {
+                setIsLoading(false); // Stop loader before showing alert
+                alert("Please fill all details");
+            }
+        }, [errors])
+        const SubmitHandler = async (data) => {
+            try {
+                setIsLoading(true);
+                let responseObject;
+                if (data?.pd) {
+                    responseObject = {
+                        rightEye: {
+                            sphere: data.rightsph,
+                            cylinder: data.rightcyl,
+                            axis: data.axis,
+                            add: data.powers,
+                            pd: data.pd
+                        },
+                        leftEye: {
+                            sphere: data.leftsph,
+                            cylinder: data.leftcyl,
+                            axis: data.leftaxis,
+                            add: data.powers,
+                            pd: data.pd
+                        },
+                        prescriptionURL: FileUrl
+                    }
+                } else {
+                    responseObject = {
+                        rightEye: {
+                            sphere: data.rightsph,
+                            cylinder: data.rightcyl,
+                            axis: data.axis,
+                            add: null,
+                            pd: data.rightPd
+                        },
+                        leftEye: {
+                            sphere: data.leftsph,
+                            cylinder: data.leftcyl,
+                            axis: data.leftaxis,
+                            add: null,
+                            pd: data.leftPd
+                        },
+                        prescriptionURL: FileUrl
+                    }
+                }
+
+                const res = await dispatch(SavePrescription(responseObject)).unwrap();
+                console.log("ResSavePrescription", res);
+                if (res.status == 200) {
+                    console.log("ResSavePrescription2", res);
+                    localStorage.setItem("PrescriptionId", res.prescription._id)
+
+                    toast.success("Details added successfully.");
+                    setIsLoading(false);
+                    Changepage(3);
+                }
+            } catch (error) {
+                console.error("Error saving prescription:", error);
+                toast.error("Failed to save prescription");
+                setIsLoading(false);
+            }
+        }
+        const handleClick = (e) => {
+            e.preventDefault()
+            inputRef.current.click()
+        }
+        const handleFileChange = (event) => {
+            const file = event.target.files[0];
+
+            if (file) {
+                setProgress(20); // Show initial progress
+                setSelectedFile(file); // Set the selected file immediately
+
+                const reader = new FileReader();
+                reader.onloadstart = () => setProgress(50); // Midway progress when reading starts
+                reader.onloadend = () => {
+                    setProgress(100); // Complete progress
+                    setTimeout(() => setProgress(0), 500); // Reset progress after completion
+                };
+                reader.readAsDataURL(file); // Read file for preview or processing
+            }
+        };
+
+        const handleHiddenButtonClick = () => {
+            // ////console.log("Hidden button clicked!");
+            // alert("Hidden button was triggered!");
+        };
+        const handleUpload = () => {
+            if (buttonRef.current) {
+                //console.log("Triggering hidden button click..."); // Debugging log
+                buttonRef.current.click();
+            } else {
+                console.error("buttonRef is undefined!"); // Debugging log
+            }
+        }
+        const HandleSaveFile = (e) => {
+            e.preventDefault();
+            if (!selectedFile) {
+                setIsLoading(false); // Stop loader before showing alert
+                alert("Please upload a file before proceeding.");
+                return;
+            }
+
+            setIsLoading(true);
+            const formData = new FormData();
+            const uniqueFilename = Date.now() + "-" + selectedFile.name;
+            formData.append("file", selectedFile, uniqueFilename);
+
+            dispatch(FileUpload(formData))
+                .then((res) => {
+                    if (res.payload && res.payload.fileUrl) {
+                        setFileUrl(res.payload.fileUrl);
+                        const responseObject = {
+                            rightEye: {
+                                sphere: null,
+                                cylinder: null,
+                                axis: null,
+                                add: null,
+                                pd: null
+                            },
+                            leftEye: {
+                                sphere: null,
+                                cylinder: null,
+                                axis: null,
+                                add: null,
+                                pd: null
+                            },
+                            prescriptionURL: res.payload.fileUrl
+                        };
+
+                        return dispatch(SavePrescription(responseObject));
+                    }
+                })
+                .then((res) => {
+                    console.log("PPPPPPP", res)
+                    if (res && res.payload && res.payload.status == 200) {
+                        console.log("PPPPPPP2", res.payload.prescription._id)
+                        localStorage.setItem("PrescriptionId", res.payload.prescription._id)
+                        toast.success("Prescription added successfully!");
+                        setIsLoading(false);
+                        Changepage(3);
+                    }
+                })
+                .catch((error) => {
+                    console.error("Error:", error);
+                    toast.error("Failed to upload prescription");
+                    setIsLoading(false);
+                });
+        };
+        const handleCheckboxChange = (event) => {
+            SetTwoPds(event.target.checked);
+        }
+
+
+
+        useEffect(() => {
+            ////console.log("tw", IsTwoPds)
+        }, [IsTwoPds])
+        return (
+            <div
+                initial={{ x: 500, opacity: 0 }}
+                animate={{ x: 0, opacity: 1 }}
+                exit={{ x: 100, opacity: 0 }}
+                transition={{ duration: 0.5, ease: "easeOut" }}
+                className={styles.forthMain}>
+                <ToastContainer />
+
+                {!isFile && <div style={{ marginTop: "70px" }} className={styles.forthInner}>
+                    <button className={styles.backButton} onClick={() => Changepage(1)}>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-left-icon lucide-arrow-left"><path d="m12 19-7-7 7-7" /><path d="M19 12H5" /></svg>
+                    </button>
+                    <h1 style={{ fontSize: "15px" }}>Enter Your Prescription Manually</h1>
+
+                    <div >
+                        <form onSubmit={handleSubmit(SubmitHandler)}>
+
+
+
+                            <button type='submit' display="none" ref={buttonRef} onClick={handleHiddenButtonClick}>
+
+                            </button>
+                            <input type="file" style={{ display: "none" }} ref={inputRef} />
+                        </form>
+                    </div>
+
+                    <div className={styles.mobileFormContainer}>
+                        <ToastContainer />
+                        <div className={styles.row}>
+                            <h2>OD(Right Eye)</h2>
+                            <div className={styles.columnContainer}>
+                                <div className={styles.column}>
+                                    <label>SPH</label>
+                                    <select {...register("rightsph")}>
+                                        <option value="" disabled selected>-- Select --</option> {/* Default option */}
+                                        {[
+                                            "-10.00", "-9.75", "-9.50", "-9.25", "-9.00", "-8.75", "-8.50", "-8.25", "-8.00",
+                                            "-7.75", "-7.50", "-7.25", "-7.00", "-6.75", "-6.50", "-6.25", "-6.00",
+                                            "-5.75", "-5.50", "-5.25", "-5.00", "-4.75", "-4.50", "-4.25", "-4.00",
+                                            "-3.75", "-3.50", "-3.25", "-3.00", "-2.75", "-2.50", "-2.25", "-2.00",
+                                            "-1.75", "-1.50", "-1.25", "-1.00", "-0.75", "-0.50", "-0.25", "0.00",
+                                            "+0.25", "+0.50", "+0.75", "+1.00", "+1.25", "+1.50", "+1.75", "+2.00",
+                                            "+2.25", "+2.50", "+2.75", "+3.00", "+3.25", "+3.50", "+3.75", "+4.00"
+                                        ].map((value) => (
+                                            <option key={value} value={value}>{value}</option>
+                                        ))}
+                                    </select>
+
+                                </div>
+                                <div className={styles.column}>
+                                    <label>CYL</label>
+                                    <select {...register("rightcyl")}>
+                                        <option value="" disabled selected>-- Select --</option> {/* Default option */}
+                                        {[
+                                            "-6.00", "-5.75", "-5.50", "-5.25", "-5.00", "-4.75", "-4.50", "-4.25", "-4.00",
+                                            "-3.75", "-3.50", "-3.25", "-3.00", "-2.75", "-2.50", "-2.25", "-2.00", "-1.75",
+                                            "-1.50", "-1.25", "-1.00", "-0.75", "-0.50", "-0.25", "0.00",
+                                            "0.25", "0.50", "0.75", "1.00", "1.25", "1.50", "1.75", "2.00",
+                                            "2.25", "2.50", "2.75", "3.00", "3.25", "3.50", "3.75", "4.00",
+                                            "4.25", "4.50", "4.75", "5.00", "5.25", "5.50", "5.75", "6.00"
+                                        ].map((value) => (
+                                            <option key={value} value={value}>{value}</option>
+                                        ))}
+                                    </select>
+
+                                </div>
+                                <div className={styles.column}>
+                                    <label>AXIS</label>
+                                    <select {...register("rightaxis")}>
+                                        <option value="" disabled selected>-- Select --</option> {/* Default option */}
+                                        {axisValues.map((value, index) => (
+                                            <option key={value} value={value}>
+                                                {value}
+                                            </option>
+                                        ))}
+                                    </select>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+                        <div className={styles.row}>
+                            <h2>OS (Left Eye)</h2>
+                            <div className={styles.columnContainer}>
+                                <div className={styles.column}>
+                                    <label>SPH</label>
+                                    <select {...register("leftsph")}>
+                                        <option value="" disabled selected>-- Select --</option> {/* Default option */}
+                                        {[
+                                            "-10.00", "-9.75", "-9.50", "-9.25", "-9.00", "-8.75", "-8.50", "-8.25", "-8.00",
+                                            "-7.75", "-7.50", "-7.25", "-7.00", "-6.75", "-6.50", "-6.25", "-6.00",
+                                            "-5.75", "-5.50", "-5.25", "-5.00", "-4.75", "-4.50", "-4.25", "-4.00",
+                                            "-3.75", "-3.50", "-3.25", "-3.00", "-2.75", "-2.50", "-2.25", "-2.00",
+                                            "-1.75", "-1.50", "-1.25", "-1.00", "-0.75", "-0.50", "-0.25", "0.00",
+                                            "+0.25", "+0.50", "+0.75", "+1.00", "+1.25", "+1.50", "+1.75", "+2.00",
+                                            "+2.25", "+2.50", "+2.75", "+3.00", "+3.25", "+3.50", "+3.75", "+4.00"
+                                        ].map((value) => (
+                                            <option key={value} value={value}>{value}</option>
+                                        ))}
+                                    </select>
+
+                                </div>
+                                <div className={styles.column}>
+                                    <label>CYL</label>
+                                    <select {...register("leftcyl")}>
+                                        <option value="" disabled selected>-- Select --</option>
+                                        {[
+                                            "-6.00", "-5.75", "-5.50", "-5.25", "-5.00", "-4.75", "-4.50", "-4.25", "-4.00",
+                                            "-3.75", "-3.50", "-3.25", "-3.00", "-2.75", "-2.50", "-2.25", "-2.00", "-1.75",
+                                            "-1.50", "-1.25", "-1.00", "-0.75", "-0.50", "-0.25", "0.00",
+                                            "0.25", "0.50", "0.75", "1.00", "1.25", "1.50", "1.75", "2.00",
+                                            "2.25", "2.50", "2.75", "3.00", "3.25", "3.50", "3.75", "4.00",
+                                            "4.25", "4.50", "4.75", "5.00", "5.25", "5.50", "5.75", "6.00"
+                                        ].map((value) => (
+                                            <option key={value} value={value}>{value}</option>
+                                        ))}
+                                    </select>
+
+                                </div>
+                                <div className={styles.column}>
+                                    <label>AXIS</label>
+                                    <select {...register("leftaxis")}>
+                                        <option value="" disabled selected>-- Select --</option> {/* Default option */}
+                                        {axisValues.map((value, index) => (
+                                            <option key={index} value={value}>
+                                                {value}
+                                            </option>
+                                        ))}
+                                    </select>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                        <div className={styles.devider}></div>
+                        {(IsSingle || IsBifocel) && <div className={styles.pupilDistance}>
+                            <h2>Pupil Distance</h2>
+                            <div className={styles.innerPupil}><input checked={IsTwoPds}
+                                onChange={handleCheckboxChange} type="checkbox" /><span><p>Have two PDs</p></span></div>
+                            {
+                                !IsTwoPds && <select {...register("pd")}>
+                                    <option value="" disabled selected>-- Select --</option>
+                                    {pdValues.map((value, index) => (
+                                        <option key={index} value={value}>
+                                            {value}
+                                        </option>
+                                    ))}
+                                </select>
+                            }
+
+                            {IsTwoPds && (
+                                <div style={{ width: "100%" }} className={styles.pdContainer}>
+                                    <div className={styles.singlePd}>
+                                        <label>Left</label>
+                                        <select {...register("leftPd")}>
+                                            <option value="" disabled selected>-- Select --</option>
+                                            {pdValues.map((value, index) => (
+                                                <option key={index} value={value}>
+                                                    {value}
+                                                </option>
+                                            ))}
+                                        </select>
+                                    </div>
+                                    <div className={styles.singlePd}>
+                                        <label>Right</label>
+                                        <select {...register("rightPd")}>
+                                            <option value="" disabled selected>-- Select --</option>
+                                            {pdValues.map((value, index) => (
+                                                <option key={index} value={value}>
+                                                    {value}
+                                                </option>
+                                            ))}
+                                        </select>
+                                    </div>
+
+                                </div>
+                            )}
+                        </div>}
+
+                        {IsBifocel &&
+                            <div className={styles.pupilDistance}>
+                                <h2>Additional Power</h2>
+                                <select {...register("powers")}>
+                                    <option value="" disabled selected>-- Select --</option>
+                                    {powers.map((value, index) => (
+                                        <option key={index} value={value}>
+                                            {value}
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
+                        }
+
+                    </div>
+                    <div className={styles.buttonWrapper}>
+                        <p>Upload your prescription for us to confirm that you have entered it correctly (Optional).</p>
+                        <button onClick={(e) => handleClick(e)}    >
+                            <span><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-link"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" /><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" /></svg></span>
+                            Choose File
+                        </button>
+                        <input style={{ display: "none" }} type='file' ref={inputRef} onChange={handleFileChange} />
+                    </div>
+                    <div className={styles.filenameContainer}>
+                        {selectedFile && <p style={{ color: "#000" }}> {selectedFile.name}</p>}
+                    </div>
+
+                    <div className={styles.buttonContainer}>
+                        <button type='button' onClick={handleUpload}>
+                            Save and Continue
+                        </button>
+                    </div>
+
+                </div>}
+                {
+                    isFile && (
+
+                        <div className={styles.forthInner} style={{ height: "100vh", display: "flex", justifyContent: "start", flexDirection: "column", paddingTop: "20px", alignItems: "center" }}  >
+                            <button className={styles.backButton} onClick={() => Changepage(1)}>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-left-icon lucide-arrow-left"><path d="m12 19-7-7 7-7" /><path d="M19 12H5" /></svg>
+                            </button>
+                            <h1 style={{ fontSize: "15px" }}>Upload Prescription</h1>
+                            <p>Please upload your prescription as a PNG, JPG or PDF file.</p>
+                            <form >
+                                <div className={styles.buttonWrapper}>
+
+                                    <p>Upload your prescription for us to confirm that you have entered it correctly (Optional).</p>
+                                    <button onClick={(e) => handleClick(e)} >
+                                        <span><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-link"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" /><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" /></svg></span>
+                                        Choose File
+                                    </button>
+                                    <div style={{ width: "100%" }}>
+
+                                    </div>
+
+
+                                    <input type='file' ref={inputRef} style={{ display: "none" }} onChange={handleFileChange} />
+                                </div>
+                                <div style={{ width: "100%", padding: "0px 40px", height: "10px" }}>
+                                    <p style={{ color: "#000" }}> {selectedFile && selectedFile.fileName}</p>
+                                </div>
+                                {selectedFile && <p style={{ color: "#000" }}> {selectedFile.name}</p>}
+                                <div className={styles.buttonContainer}>
+                                    <button type='submit' onClick={(e) => HandleSaveFile(e)}>
+                                        Save and Continue
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+
+                    )
+                }
             </div>
         )
     }
@@ -217,16 +928,21 @@ export default function index() {
 
     return (
         <div className={styles.main}>
+            {IsLoading && <Preloader />}
             <div className={styles.inner}>
                 <ProgressHeader
                     Changepage={Changepage}
                     isOneComplete={isOneComplete}
                     isTwoComplete={isTwoComplete}
                     isThiredComplete={isThiredComplete}
+                    isFourthComplete={isFourthComplete}
                 />
-                {firstStep && <FirstPage />}
-                {secondStep && <SecondPage />}
-                {thiredStep && <ThiredPage />}
+                <AnimatePresence mode="wait">
+                    {firstStep && <FirstPage key="first" />}
+                    {secondStep && <SecondPage key="second" />}
+                    {thiredStep && <FourtPage key="third" />}
+                    {fourthStep && <ThiredPage key="fourth" />}
+                </AnimatePresence>
             </div>
         </div>
     )

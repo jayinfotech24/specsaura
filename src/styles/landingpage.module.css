@@ -463,14 +463,16 @@
   transform: translateX(-50%);
 }
 .cardComponent .cardInner {
-  display: grid;
-  grid-template-columns: repeat(
-    4,
-    1fr
-  ); /* 4 cards per row */
+  display: flex;
+  overflow-x: auto;
   gap: 10px;
-  justify-content: center;
-  align-items: center;
+  padding: 10px;
+  scroll-behavior: smooth;
+  width: 100%;
+}
+.cardComponent
+  .cardInner::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Edge */
 }
 
 /* Desktop responsive */

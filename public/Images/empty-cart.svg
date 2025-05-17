@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="400" height="400" viewBox="0 0 400 400" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <!-- Cart Body -->
+    <path d="M100 150 L300 150 L280 300 L120 300 L100 150" fill="#F8F9FA" stroke="#007BFF" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+    
+    <!-- Cart Wheels -->
+    <circle cx="130" cy="300" r="20" fill="#007BFF" opacity="0.2"/>
+    <circle cx="270" cy="300" r="20" fill="#007BFF" opacity="0.2"/>
+    
+    <!-- Cart Handle -->
+    <path d="M100 150 C80 120 80 100 100 80" stroke="#007BFF" stroke-width="8" stroke-linecap="round" fill="none"/>
+    
+    <!-- Sad Face -->
+    <circle cx="200" cy="200" r="40" fill="#F8F9FA" stroke="#007BFF" stroke-width="4"/>
+    <circle cx="185" cy="190" r="4" fill="#007BFF"/>
+    <circle cx="215" cy="190" r="4" fill="#007BFF"/>
+    <path d="M185 220 Q200 230 215 220" stroke="#007BFF" stroke-width="4" fill="none" stroke-linecap="round"/>
+    
+    <!-- Shopping Bag -->
+    <path d="M150 100 L250 100 L240 150 L160 150 L150 100" fill="#F8F9FA" stroke="#007BFF" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M170 100 L170 80" stroke="#007BFF" stroke-width="4" stroke-linecap="round"/>
+    <path d="M230 100 L230 80" stroke="#007BFF" stroke-width="4" stroke-linecap="round"/>
+    
+    <!-- Decorative Elements -->
+    <circle cx="200" cy="200" r="60" stroke="#007BFF" stroke-width="2" fill="none" opacity="0.1"/>
+    <circle cx="200" cy="200" r="80" stroke="#007BFF" stroke-width="2" fill="none" opacity="0.1"/>
+</svg> 

@@ -1,0 +1,306 @@
+.main {
+    min-height: 100vh;
+    background-color: #f8fafc;
+    margin-top: 80px;
+    padding-top: 10px;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+}
+
+.successMessage {
+    text-align: center;
+    padding: 2rem;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    margin-bottom: 2rem;
+}
+
+.checkmark {
+    width: 64px;
+    height: 64px;
+    margin: 0 auto 1.5rem;
+    background-color: #10B981;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    animation: scaleIn 0.3s ease-out;
+}
+
+.checkmark svg {
+    width: 32px;
+    height: 32px;
+}
+
+@keyframes scaleIn {
+    from {
+        transform: scale(0);
+        opacity: 0;
+    }
+
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+.successMessage h1 {
+    font-size: 2rem;
+    color: #1e293b;
+    margin-bottom: 0.5rem;
+}
+
+.successMessage p {
+    color: #64748b;
+    font-size: 1.125rem;
+}
+
+.orderDetails {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+    margin-bottom: 2rem;
+}
+
+.section {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+}
+
+.section h2 {
+    font-size: 1.25rem;
+    color: #1e293b;
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid #e2e8f0;
+}
+
+.infoGrid {
+    display: grid;
+    gap: 1rem;
+}
+
+.infoItem {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.label {
+    color: #64748b;
+    font-size: 0.875rem;
+}
+
+.value {
+    color: #1e293b;
+    font-weight: 500;
+}
+
+.status {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    border-radius: 9999px;
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+
+.status.pending {
+    background-color: #FEF3C7;
+    color: #92400E;
+}
+
+.status.completed {
+    background-color: #D1FAE5;
+    color: #065F46;
+}
+
+.itemsList {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.item {
+    display: flex;
+    gap: 1rem;
+    padding: 1rem;
+    background-color: #f8fafc;
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
+}
+
+.itemImage {
+    width: 80px;
+    height: 80px;
+    object-fit: cover;
+    border-radius: 8px;
+}
+
+.itemDetails {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.itemDetails h3 {
+    font-size: 1rem;
+    color: #1e293b;
+    margin-bottom: 0.5rem;
+}
+
+.itemInfo {
+    display: flex;
+    justify-content: space-between;
+    color: #475569;
+    font-size: 0.875rem;
+}
+
+.price {
+    font-weight: 600;
+    color: #1e293b;
+}
+
+.summary {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.summaryItem {
+    display: flex;
+    justify-content: space-between;
+    color: #475569;
+}
+
+.total {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 2px solid #e2e8f0;
+    font-weight: 600;
+    color: #1e293b;
+}
+
+.totalAmount {
+    font-size: 1.25rem;
+    color: #3b82f6;
+}
+
+.actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    margin-top: 2rem;
+    flex-wrap: wrap;
+}
+
+.trackButton,
+.continueButton {
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: none;
+}
+
+.trackButton {
+    background-color: #3b82f6;
+    color: white;
+}
+
+.trackButton:hover {
+    background-color: #2563eb;
+}
+
+.continueButton {
+    background-color: #f1f5f9;
+    color: #475569;
+}
+
+.continueButton:hover {
+    background-color: #e2e8f0;
+}
+
+.printButton {
+    background-color: #2c3e50;
+    color: white;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: background-color 0.3s ease;
+}
+
+.printButton:hover {
+    background-color: #1a252f;
+}
+
+.printButton svg {
+    font-size: 1.1rem;
+}
+
+@media (max-width: 768px) {
+    .container {
+        margin: 1rem auto;
+    }
+
+    .successMessage h1 {
+        font-size: 1.5rem;
+    }
+
+    .successMessage p {
+        font-size: 1rem;
+    }
+
+    .orderDetails {
+        grid-template-columns: 1fr;
+    }
+
+    .actions {
+        flex-direction: column;
+    }
+
+    .trackButton,
+    .continueButton {
+        width: 100%;
+    }
+}
+
+@media (max-width: 480px) {
+    .container {
+        padding: 0 0.75rem;
+    }
+
+    .section {
+        padding: 1rem;
+    }
+
+    .item {
+        flex-direction: column;
+    }
+
+    .itemImage {
+        width: 100%;
+        height: 200px;
+    }
+
+    .itemInfo {
+        flex-direction: column;
+        gap: 0.25rem;
+    }
+}

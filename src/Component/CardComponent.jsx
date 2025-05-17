@@ -1,16 +1,99 @@
-import React from "react";
+import React, { useState } from "react";
 import styles from "../styles/CardComponent.module.css";
+import { useRouter } from "next/router";
+import { useDispatch } from "react-redux";
+import { AddCart, GetUser } from "../store/authSlice";
+import { toast } from "react-hot-toast";
 
-export default function CardComponent({ src, name, price }) {
+
+export default function CardComponent({ id, src, name, price }) {
+    const dispatch = useDispatch();
+    const router = useRouter();
+    const [isLoading, setIsLoading] = useState(false);
+
+    const checkUserAuth = async () => {
+        try {
+            // First check if token exists
+            const token = localStorage.getItem('token');
+            if (!token) {
+                toast.error("Please login to continue");
+                router.push("/login");
+                return false;
+            }
+            
+            // Validate token through API
+            const response = await dispatch(GetUser()).unwrap();
+            return response.status === 200;
+        } catch (error) {
+            if (error.response?.status === 401) {
+                // Clear invalid token
+                localStorage.removeItem('token');
+                toast.error("Session expired. Please login again");
+                router.push("/login");
+                return false;
+            }
+            throw error;
+        }
+    };
+
+    const AddTocart = async () => {
+        try {
+            // First check user authentication
+            const isAuthenticated = await checkUserAuth();
+            
+            if (!isAuthenticated) {
+                return;
+            }
+
+            // Store the selected product in localStorage for the specs progress form
+            localStorage.setItem('selectedProduct', JSON.stringify({
+                id: id,
+                name: name,
+                price: price,
+                image: src
+            }));
+
+            // Redirect to specs progress form with a flag indicating it's for adding to cart
+            router.push({
+                pathname: '/specProgress',
+                query: { action: 'addToCart' }
+            });
+
+        } catch (error) {
+            console.error("Error checking authentication:", error);
+            toast.error("Something went wrong. Please try again.");
+        }
+    };
+
+    const GetDetail = async () => {
+        try {
+            // Check user authentication before redirecting
+            // const isAuthenticated = await checkUserAuth();
+            
+            // if (!isAuthenticated) {
+            //     return;
+            // }
+
+            // If authenticated, proceed with redirect
+            router.push({
+                pathname: "/detail",
+                query: { id: id },
+            });
+        } catch (error) {
+            console.error("Error checking authentication:", error);
+            toast.error("Something went wrong. Please try again.");
+        }
+    };
+
     return (
-        <div className={styles.main}>
+        <div className={styles.main} onClick={GetDetail}>
             <div className={styles.inner}>
                 <div className={styles.imageContainer}>
                     <img src={src} alt="Product" />
                 </div>
 
                 {/* Sidebar with CSS animation */}
-                <div className={styles.sidebar}>
+                {/* <div className={styles.sidebar}>
                     <div className={styles.icon}>
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
                             <circle cx="11" cy="11" r="8" />
@@ -26,16 +109,13 @@ export default function CardComponent({ src, name, price }) {
                         </svg>
                     </div>
 
-                    <div className={styles.icon}>
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
-                            <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z" />
-                        </svg>
-                    </div>
-                </div>
+                  
+                </div> */}
 
                 <div className={styles.content}>
                     <h3>{name}</h3>
-                    <h2>{price}</h2>
+                    <h2>{`₹ ${price}`} </h2>
+                    
                 </div>
             </div>
         </div>
