@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useRef } from 'react'
 import styles from "../styles/Header.module.css"
 import Hamburger from 'hamburger-react'
 import { AnimatePresence, motion } from 'framer-motion'
@@ -16,6 +16,7 @@ export default function Header({ isHeaderVisible }) {
     const [filteredProducts, setFilteredProducts] = useState([])
     const dispatch = useDispatch()
     const router = useRouter()
+    const searchContainerRef = useRef(null);
 
     const checkUserAuth = async () => {
         try {
@@ -75,6 +76,32 @@ export default function Header({ isHeaderVisible }) {
             setFilteredProducts([])
         }
     }, [searchQuery, products])
+
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (searchContainerRef.current && !searchContainerRef.current.contains(event.target)) {
+                setIsSearchOpen(false);
+                setSearchQuery('');
+            }
+        };
+
+        const handleEscapeKey = (event) => {
+            if (event.key === 'Escape') {
+                setIsSearchOpen(false);
+                setSearchQuery('');
+            }
+        };
+
+        if (isSearchOpen) {
+            document.addEventListener('mousedown', handleClickOutside);
+            document.addEventListener('keydown', handleEscapeKey);
+        }
+
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+            document.removeEventListener('keydown', handleEscapeKey);
+        };
+    }, [isSearchOpen]);
 
     const handleSearch = (e) => {
         e.preventDefault()
@@ -167,7 +194,7 @@ export default function Header({ isHeaderVisible }) {
                 </div>
             </div>
 
-            <div className={`${styles.searchContainer} ${isSearchOpen ? styles.open : ''}`}>
+            <div className={`${styles.searchContainer} ${isSearchOpen ? styles.open : ''}`} ref={searchContainerRef}>
                 <form onSubmit={handleSearch} className={styles.searchForm}>
                     <input
                         type="text"

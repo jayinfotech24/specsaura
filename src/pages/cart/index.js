@@ -5,7 +5,7 @@ import Footer from "../../Component/Footer"
 import { handlePayment, IncreasePrice, Validate } from '../../store/commonFunction'
 import { useRouter } from 'next/router'
 import { useDispatch } from 'react-redux'
-import { getCartDetail, getProductDetail, DeleteCart, DeleteFullCart } from '../../store/authSlice'
+import { getCartDetail, getProductDetail, DeleteCart, DeleteFullCart, GetUser } from '../../store/authSlice'
 import Preloader from '../../Component/Animated'
 import AlertModal from '../../Component/AlertModal'
 import { toast } from 'react-hot-toast'
@@ -156,12 +156,37 @@ export default function index() {
             query: { from: 'cart' }
         });
     };
-    const handkeBuySingle = (id) => {
-        localStorage.setItem("cartId", id)
-        router.push({
-            pathname: '/order-details',
-            query: { from: 'buy' }
-        });
+    const handkeBuySingle = async (id) => {
+        try {
+            const token = localStorage.getItem('userToken');
+            if (!token) {
+                toast.error("Please login to continue");
+                router.push("/login");
+                return;
+            }
+
+            const response = await dispatch(GetUser()).unwrap();
+            if (response.status !== 200) {
+                toast.error("Please login to continue");
+                router.push("/login");
+                return;
+            }
+
+            localStorage.setItem("cartId", id)
+            router.push({
+                pathname: '/order-details',
+                query: { from: 'buy' }
+            });
+        } catch (error) {
+            if (error.response?.status === 401) {
+                localStorage.removeItem('userToken');
+                toast.error("Session expired. Please login again");
+                router.push("/login");
+                return;
+            }
+            console.error("Error in Buy Now:", error);
+            toast.error("Something went wrong. Please try again.");
+        }
     };
 
     const handleClearCart = async () => {
