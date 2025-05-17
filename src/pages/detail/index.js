@@ -91,16 +91,28 @@ export default function Index() {
 
 
 
-    const BuyNow = () => {
-        localStorage.setItem('selectedProduct', JSON.stringify({
-            id: id,
-            name: Data.name,
-            price: Data.price,
-            image: Data.images?.[0] || Data.url || '/Images/placeholder.webp',
-            url: Data.url || '/Images/placeholder.webp'
-        }));
+    const BuyNow = async () => {
+        try {
+            const isAuthenticated = await checkUserAuth();
+            if (!isAuthenticated) {
+                toast.error("Please login to continue");
+                router.push("/login");
+                return;
+            }
 
-        router.push("/specProgress")
+            localStorage.setItem('selectedProduct', JSON.stringify({
+                id: id,
+                name: Data.name,
+                price: Data.price,
+                image: Data.images?.[0] || Data.url || '/Images/placeholder.webp',
+                url: Data.url || '/Images/placeholder.webp'
+            }));
+
+            router.push("/specProgress")
+        } catch (error) {
+            console.error("Error in Buy Now:", error);
+            toast.error("Something went wrong. Please try again.");
+        }
     }
     const nextImage = () => {
         if (Data.images && Data.images.length > 0) {

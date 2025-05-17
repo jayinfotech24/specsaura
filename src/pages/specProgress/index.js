@@ -9,7 +9,7 @@ import *as yup from "yup"
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useRef } from 'react';
 import { useDispatch } from 'react-redux';
-import { FileUpload, SavePrescription, AddCart } from '../../store/authSlice';
+import { FileUpload, SavePrescription, AddCart, GetUser } from '../../store/authSlice';
 import { ToastContainer, toast } from 'react-toastify';
 import ProgressBar from "@ramonak/react-progress-bar";
 import Preloader from '../../Component/Animated';
@@ -315,6 +315,20 @@ export default function index() {
         const HandlePayment = async () => {
             try {
                 setIsLoading(true);
+                const token = localStorage.getItem('userToken');
+                if (!token) {
+                    toast.error("Please login to continue");
+                    router.push("/login");
+                    return;
+                }
+
+                const response = await dispatch(GetUser()).unwrap();
+                if (response.status !== 200) {
+                    toast.error("Please login to continue");
+                    router.push("/login");
+                    return;
+                }
+
                 const userId = localStorage.getItem("userId");
                 const selectedProduct = JSON.parse(localStorage.getItem('selectedProduct') || '{}');
                 const specsData = JSON.parse(localStorage.getItem('specsData') || '{}');
@@ -324,28 +338,27 @@ export default function index() {
                     productID: selectedProduct.id,
                     numberOfItems: 1,
                     specs: specsData,
-
                     prescriptionID: prescriptionId,
-
-
-
                 };
 
                 const res = await dispatch(AddCart(responseObject)).unwrap();
-                console.log("Reeeeee", res)
-                console.log("CartId", res.cart._id)
                 if (res.status == 200) {
                     toast.success("Product added to cart successfully");
-                    console.log("CartId", res.cart._id)
                     localStorage.setItem("cartId", res.cart._id)
-                    // Redirect to cart page
                     router.push('/order-details');
                 } else if (res.status === 401) {
                     toast.error("Please login to continue");
+                    router.push("/login");
                 } else {
                     toast.error("Failed to add product to cart");
                 }
             } catch (error) {
+                if (error.response?.status === 401) {
+                    localStorage.removeItem('userToken');
+                    toast.error("Session expired. Please login again");
+                    router.push("/login");
+                    return;
+                }
                 console.error("Error adding to cart:", error);
                 toast.error("Failed to add product to cart");
             } finally {
