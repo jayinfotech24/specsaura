@@ -154,7 +154,9 @@ export default function index() {
                                 title: "Frame Only",
                                 description: "Buy Only Frame",
                                 image: "/Images/frame_only.webp",
+
                                 onClick: () => Changepage(3)
+
                             },
 
                             {
@@ -322,7 +324,9 @@ export default function index() {
                     productID: selectedProduct.id,
                     numberOfItems: 1,
                     specs: specsData,
+
                     prescriptionID: prescriptionId,
+
 
 
                 };
