@@ -128,7 +128,7 @@ export default function index() {
                 </div>
                 <div className={styles.right}>
                     <h2>Contact With Us</h2>
-                    <h1>Vision Plus – Lenses & Eye Care</h1>
+                    <h1>Specsaura – Lenses & Eye Care</h1>
 
                     <p>Explore our premium collection of lenses — designed for comfort, clarity, and style. From prescription eyewear to blue-light protection, we offer personalized vision solutions backed by expert support and innovative technology.</p>
                     <div className={styles.contactContainer}>

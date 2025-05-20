@@ -60,33 +60,69 @@ export default function Index() {
 
         try {
             setIsLoading(true);
-            const isAuthenticated = await checkUserAuth();
+            const userId = localStorage.getItem("userId");
+            // const selectedProduct = JSON.parse(localStorage.getItem('selectedProduct') || '{}');
+            // const specsData = JSON.parse(localStorage.getItem('specsData') || '{}');
+            // const prescriptionId = localStorage.getItem("PrescriptionId")
+            const responseObject = {
+                userID: userId,
+                productID: id,
+                numberOfItems: 1,
 
-            if (!isAuthenticated) {
-                toast.error("Please login to add items to cart");
-                router.push("/login");
-                return;
+                prescriptionID: null
+            };
+
+            const res = await dispatch(AddCart(responseObject)).unwrap();
+            console.log("Res2", res)
+            if (res.status === 200) {
+                toast.success("Product added to cart successfully");
+                // Clear the stored data
+                localStorage.removeItem('selectedProduct');
+                localStorage.removeItem('specsData');
+                // Redirect to cart page
+                router.push('/cart');
+            } else if (res.status === 401) {
+                toast.error("Please login to continue");
+            } else {
+                toast.error("Failed to add product to cart");
             }
-            // Store the selected product in localStorage for the specs progress form
-            localStorage.setItem('selectedProduct', JSON.stringify({
-                id: id,
-                name: Data.name,
-                price: Data.price,
-                image: Data.images?.[0] || Data.url || '/Images/placeholder.webp',
-                url: Data.url || '/Images/placeholder.webp'
-            }));
-
-            // Redirect to specs progress form with a flag indicating it's for adding to cart
-            router.push({
-                pathname: '/specProgress',
-                query: { action: 'addToCart' }
-            });
         } catch (error) {
-            console.error("Error in Add to Cart:", error);
-            toast.error("Failed to process your request. Please try again.");
+            console.error("Error adding to cart:", error);
+            toast.error("Failed to add product to cart");
         } finally {
             setIsLoading(false);
         }
+
+
+        // try {
+        //     setIsLoading(true);
+        //     const isAuthenticated = await checkUserAuth();
+
+        //     if (!isAuthenticated) {
+        //         toast.error("Please login to add items to cart");
+        //         router.push("/login");
+        //         return;
+        //     }
+        //     // Store the selected product in localStorage for the specs progress form
+        //     localStorage.setItem('selectedProduct', JSON.stringify({
+        //         id: id,
+        //         name: Data.name,
+        //         price: Data.price,
+        //         image: Data.images?.[0] || Data.url || '/Images/placeholder.webp',
+        //         url: Data.url || '/Images/placeholder.webp'
+        //     }));
+
+        //     // Redirect to specs progress form with a flag indicating it's for adding to cart
+        //     router.push({
+        //         pathname: '/specProgress',
+        //         query: { action: 'addToCart' }
+        //     });
+        // } catch (error) {
+        //     console.error("Error in Add to Cart:", error);
+        //     toast.error("Failed to process your request. Please try again.");
+        // } finally {
+        //     setIsLoading(false);
+        // }
     };
 
 
