@@ -9,7 +9,7 @@ import *as yup from "yup"
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useRef } from 'react';
 import { useDispatch } from 'react-redux';
-import { FileUpload, SavePrescription, AddCart, GetUser } from '../../store/authSlice';
+import { FileUpload, SavePrescription, AddCart, GetUser, UpdateCart } from '../../store/authSlice';
 import { ToastContainer, toast } from 'react-toastify';
 import ProgressBar from "@ramonak/react-progress-bar";
 import Preloader from '../../Component/Animated';
@@ -280,32 +280,43 @@ export default function index() {
                 const userId = localStorage.getItem("userId");
                 const selectedProduct = JSON.parse(localStorage.getItem('selectedProduct') || '{}');
                 const specsData = JSON.parse(localStorage.getItem('specsData') || '{}');
-                const prescriptionId = localStorage.getItem("PrescriptionId")
+                const prescriptionId = localStorage.getItem("PrescriptionId");
+                const cartId = localStorage.getItem("cartId"); // Get cart ID from localStorage
+
+                if (!cartId) {
+                    toast.error("Cart ID not found");
+                    return;
+                }
+
                 const responseObject = {
                     userID: userId,
                     productID: selectedProduct.id,
                     numberOfItems: 1,
                     specs: specsData,
-                    prescriptionID: prescriptionId
+                    prescriptionID: prescriptionId,
+                    isAllDataAdded: true // Add this flag to indicate prescription is added
                 };
 
-                const res = await dispatch(AddCart(responseObject)).unwrap();
-                console.log("Res2", res)
+                const res = await dispatch(UpdateCart(cartId, responseObject)).unwrap();
+                console.log("Update Cart Response:", res);
+
                 if (res.status === 200) {
-                    toast.success("Product added to cart successfully");
+                    toast.success("Prescription added successfully");
                     // Clear the stored data
                     localStorage.removeItem('selectedProduct');
                     localStorage.removeItem('specsData');
+                    localStorage.removeItem('cartId');
                     // Redirect to cart page
                     router.push('/cart');
                 } else if (res.status === 401) {
                     toast.error("Please login to continue");
+                    router.push("/login");
                 } else {
-                    toast.error("Failed to add product to cart");
+                    toast.error("Failed to update cart");
                 }
             } catch (error) {
-                console.error("Error adding to cart:", error);
-                toast.error("Failed to add product to cart");
+                console.error("Error updating cart:", error);
+                toast.error("Failed to update cart. Please try again.");
             } finally {
                 setIsLoading(false);
             }

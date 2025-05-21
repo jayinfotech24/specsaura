@@ -1,5 +1,5 @@
 const Appapis = {
-    Basurl: "https://api.specsaura.com/api",
+    Basurl: "https://specsauradataplazma.vercel.app/api",
     signIn: "/request",
     signOut: "/signOut",
     verifyOtp: "/verify",
@@ -21,7 +21,9 @@ const Appapis = {
     updateUser: `/user/update/`,
     deleteFullCart: "/cart",
     getCartMany: "/cart",
-    getSingleCart: (id) => `/cart/${id}`
+    getSingleCart: (id) => `/cart/${id}`,
+    updateCartFlag: (id) => `/cart/flag/${id}`,
+    updateCart: (id) => `/cart/${id}`
 }
 
 export default Appapis

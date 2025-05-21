@@ -24,6 +24,8 @@ export default function index() {
         message: '',
         onConfirm: null
     });
+    const [hasPrescriptionRequired, setHasPrescriptionRequired] = useState(false);
+    const [prescriptionItems, setPrescriptionItems] = useState([]);
 
     useEffect(() => {
 
@@ -96,6 +98,35 @@ export default function index() {
 
     console.log("Total Amount:", totalAmount);
 
+    useEffect(() => {
+        // Check if any items require prescription
+        const prescriptionNeeded = CartData?.some(item => !item.isAllDataAdded);
+        setHasPrescriptionRequired(prescriptionNeeded);
+
+        // Get items that need prescription
+        const itemsNeedingPrescription = CartData?.filter(item => !item.isAllDataAdded);
+        setPrescriptionItems(itemsNeedingPrescription);
+    }, [CartData]);
+
+    const handlePrescriptionClick = (item) => {
+        // Store the selected product in localStorage for the specs progress form
+        localStorage.setItem('selectedProduct', JSON.stringify({
+            id: item.productID._id,
+            name: item.productID.name,
+            price: item.productID.price,
+            image: item.productID.url || '/Images/placeholder.webp',
+            url: item.productID.url || '/Images/placeholder.webp'
+        }));
+
+        // Store cart ID for updating later
+        localStorage.setItem('cartId', item._id);
+
+        // Redirect to specs progress form
+        router.push({
+            pathname: '/specProgress',
+            query: { action: 'addToCart' }
+        });
+    };
 
     const handleDelete = async (id) => {
         setAlertState({
@@ -246,6 +277,7 @@ export default function index() {
                                         <td>Product name</td>
                                         <td>Price</td>
                                         <td>Quantity</td>
+                                        <td>Prescription</td>
                                         <td>Buy</td>
                                         <td></td>
                                     </tr>
@@ -255,6 +287,7 @@ export default function index() {
                                         const itemPrice = Number(item.productID.price) || 0;
                                         const itemQuantity = Number(item.numberOfItems) || 1;
                                         const itemTotal = itemPrice * itemQuantity;
+                                        const needsPrescription = !item.isAllDataAdded;
 
                                         return (
                                             <tr key={item._id}>
@@ -275,12 +308,43 @@ export default function index() {
                                                         <h2>{itemQuantity}</h2>
                                                     </div>
                                                 </td>
+                                                <td data-label="Prescription">
+                                                    {needsPrescription ? (
+                                                        <button
+                                                            onClick={() => handlePrescriptionClick(item)}
+                                                            className={styles.prescriptionButton}
+                                                        >
+                                                            Add Prescription
+                                                        </button>
+                                                    ) : (
+                                                        <span className={styles.prescriptionAdded}>
+                                                            ✓ Added
+                                                        </span>
+                                                    )}
+                                                </td>
                                                 <td>
-                                                    <button onClick={() => handkeBuySingle(item._id)} className={styles.buyButton}>Buy Now</button>
+                                                    <button
+                                                        onClick={() => handkeBuySingle(item._id)}
+                                                        className={styles.buyButton}
+                                                        disabled={needsPrescription}
+                                                    >
+                                                        Buy Now
+                                                    </button>
                                                 </td>
                                                 <td>
                                                     <svg style={{ cursor: "pointer" }}
-                                                        onClick={() => handleDelete(item._id)} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#000" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" className={styles.deleteIcon}>
+                                                        onClick={() => handleDelete(item._id)}
+                                                        xmlns="http://www.w3.org/2000/svg"
+                                                        width="24"
+                                                        height="24"
+                                                        viewBox="0 0 24 24"
+                                                        fill="none"
+                                                        stroke="#000"
+                                                        strokeWidth="1.75"
+                                                        strokeLinecap="round"
+                                                        strokeLinejoin="round"
+                                                        className={styles.deleteIcon}
+                                                    >
                                                         <path d="M18 6 6 18" />
                                                         <path d="m6 6 12 12" />
                                                     </svg>
@@ -294,10 +358,19 @@ export default function index() {
                                 <button onClick={handleClearCart} className={styles.clearButton}>
                                     Clear Cart
                                 </button>
-                                <button onClick={handleProceedToCheckout} className={styles.button}>
+                                <button
+                                    onClick={handleProceedToCheckout}
+                                    className={styles.button}
+                                    disabled={hasPrescriptionRequired}
+                                >
                                     {`Pay ₹${totalAmount?.toLocaleString('en-IN')}`}
                                 </button>
                             </div>
+                            {hasPrescriptionRequired && (
+                                <div className={styles.prescriptionWarning}>
+                                    <p>⚠️ Please add prescriptions for all required items before proceeding to checkout.</p>
+                                </div>
+                            )}
                         </>
                     )}
                 </div>

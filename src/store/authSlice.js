@@ -275,6 +275,32 @@ export const GetCartMany = createAsyncThunk(
         }
     }
 );
+export const UpdateCartFlag = createAsyncThunk(
+    "api/updateCartFlag",
+    async (credentials, { rejectWithValue }) => {
+        try {
+            const response = await axiosInstance.patch(`${Appapis.Basurl}${Appapis.updateCartFlag}`, credentials);
+            return response.data;
+        }
+        catch (error) {
+            return rejectWithValue(error.response?.data || "Something went wrong");
+        }
+    }
+);
+
+export const UpdateCart = createAsyncThunk(
+    "api/updateCart",
+    async (credentials, { rejectWithValue }) => {
+        try {
+            const response = await axiosInstance.patch(`${Appapis.Basurl}${Appapis.updateCart}`, credentials);
+            return response.data;
+        }
+        catch (error) {
+            return rejectWithValue(error.response?.data || "Something went wrong");
+        }
+    }
+);
+
 
 
 const counterSlice = createSlice({
@@ -541,6 +567,28 @@ const counterSlice = createSlice({
                 state.loading = false;
             })
             .addCase(GetSingleCart.rejected, (state, action) => {
+                state.loading = false;
+                state.error = handleUnauthorized(action.payload);
+            })
+            .addCase(UpdateCartFlag.pending, (state, action) => {
+                state.loading = true
+
+            })
+            .addCase(UpdateCartFlag.fulfilled, (state, action) => {
+                state.loading = false;
+            })
+            .addCase(UpdateCartFlag.rejected, (state, action) => {
+                state.loading = false;
+                state.error = handleUnauthorized(action.payload);
+            })
+            .addCase(UpdateCart.pending, (state, action) => {
+                state.loading = true
+
+            })
+            .addCase(UpdateCart.fulfilled, (state, action) => {
+                state.loading = false;
+            })
+            .addCase(UpdateCart.rejected, (state, action) => {
                 state.loading = false;
                 state.error = handleUnauthorized(action.payload);
             })

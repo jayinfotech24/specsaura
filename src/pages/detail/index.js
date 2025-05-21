@@ -143,7 +143,7 @@ export default function Index() {
                 image: Data.images?.[0] || Data.url || '/Images/placeholder.webp',
                 url: Data.url || '/Images/placeholder.webp'
             }));
-
+            localStorage.setItem("productId", id);
             router.push("/specProgress")
         } catch (error) {
             console.error("Error in Buy Now:", error);
