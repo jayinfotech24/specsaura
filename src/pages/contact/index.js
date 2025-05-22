@@ -139,7 +139,7 @@ export default function index() {
                         <div className={styles.detail}>
                             <h3>Have Any Question?</h3>
 
-                            <h2><a href='tel:+91 97140 37223'> +91 97140 37223</a></h2>
+                            <h2><a href='tel:+91 63559 90975'> +91 63559 90975</a></h2>
                         </div>
                     </div>
                     <div className={styles.contactContainer}>

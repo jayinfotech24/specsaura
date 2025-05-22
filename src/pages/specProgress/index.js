@@ -297,7 +297,7 @@ export default function index() {
                     isAllDataAdded: true // Add this flag to indicate prescription is added
                 };
 
-                const res = await dispatch(UpdateCart(cartId, responseObject)).unwrap();
+                const res = await dispatch(UpdateCart({ cartId, data: responseObject })).unwrap();
                 console.log("Update Cart Response:", res);
 
                 if (res.status === 200) {

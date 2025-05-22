@@ -4,7 +4,7 @@
 }
 
 .hero {
-    background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('https://help.asfinag.at/media/qh4nk43d/hero-image-helpcenter.jpg?format=webp&quality=80&v=1db98d086d42070');
+    background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('/Images/banner-contact.webp');
     background-size: cover;
     background-position: center;
     padding: 6rem 2rem;

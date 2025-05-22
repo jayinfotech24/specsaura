@@ -2,10 +2,20 @@ import styles from "../../styles/terms.module.css"
 import Header from "../../Component/Header"
 import Footer from '../../Component/Footer'
 import React from 'react'
+import Link from 'next/link'
+
 const TermsAndConditions = () => {
     return (
         <div className={styles.main}>
-            <Header isHeaderVisible={true} />
+            <div className={styles.hero}>
+                <Header isHeaderVisible={true} />
+                <div className={styles.heroContent}>
+                    <h1 className={styles.title}>Terms & Conditions</h1>
+                    <div className={styles.breadcrumb}>
+                        <Link href="/">Home</Link> &gt; <span>Terms & Conditions</span>
+                    </div>
+                </div>
+            </div>
             <div className={styles.inner}>
                 <div className={styles.content}>
                     <h1>Terms and Conditions</h1>

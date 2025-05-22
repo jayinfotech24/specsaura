@@ -6,7 +6,7 @@
 
 /* Hero Section */
 .hero {
-  background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('https://img.freepik.com/free-photo/impressed-startled-excited-cute-redhead-female-receive-big-gift-shaping-large-object-product_1258-130326.jpg?semt=ais_hybrid&w=740');
+  background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('/Images/banner-blog.avif');
   background-size: cover;
   background-position: center;
   height: 300px;

@@ -2,10 +2,19 @@ import React from 'react'
 import styles from "../../styles/privacy_policy.module.css"
 import Header from "../../Component/Header"
 import Footer from '../../Component/Footer'
+import Link from 'next/link'
 export default function index() {
     return (
         <div className={styles.main}>
-            <Header isHeaderVisible={true} />
+            <div className={styles.hero}>
+                <Header isHeaderVisible={true} />
+                <div className={styles.heroContent}>
+                    <h1 className={styles.title}>Privacy Policy</h1>
+                    <div className={styles.breadcrumb}>
+                        <Link href="/">Home</Link> &gt; <span>Privacy Policy</span>
+                    </div>
+                </div>
+            </div>
             <div className={styles.inner}>
                 <div className={styles.content}>
                     <h1>Privacy Policy</h1>

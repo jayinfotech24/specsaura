@@ -41,7 +41,7 @@ export default function Footer() {
                         <ul>
                             <li onClick={() => router.push("/terms_condition")}>Terms & Condition</li>
                             <li onClick={() => router.push("/contact")}>Contact</li>
-                            <li>Accesories</li>
+                         
                         </ul>
                     </div>
                     <div className={styles.container1}>
