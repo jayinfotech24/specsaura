@@ -314,7 +314,7 @@ export default function index() {
                                                             onClick={() => handlePrescriptionClick(item)}
                                                             className={styles.prescriptionButton}
                                                         >
-                                                            Add Prescription
+                                                            Eye Prescription Details
                                                         </button>
                                                     ) : (
                                                         <span className={styles.prescriptionAdded}>

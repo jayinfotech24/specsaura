@@ -164,3 +164,14 @@
     font-size: 1.3rem;
   }
 }
+
+.highlightLink {
+  color: #0070f3;
+  font-weight: 600;
+  text-decoration: underline;
+  transition: color 0.2s;
+}
+
+.highlightLink:hover {
+  color: #0051a3;
+}
