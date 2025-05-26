@@ -36,6 +36,9 @@ export default function index() {
     const [IsLoading, setIsLoading] = useState(false)
     const dispatch = useDispatch();
     const { action } = router.query;
+    const [lensStep, setLensStep] = useState(false);
+    const [selectedLens, setSelectedLens] = useState(null);
+    const [isLensComplete, setIsLensComplete] = useState(false);
 
     useEffect(() => {
         Validate(router)
@@ -51,44 +54,61 @@ export default function index() {
     const Changepage = (number, IsFile) => {
         if (number == 0) {
             setFirstStep(true)
+            setLensStep(false);
             setSecondStep(false);
             setThiredStep(false)
-            setIsFourthComplete(false)
             setFourtStep(false)
-
+            setIsOneComplete(false)
+            setIsLensComplete(false)
+            setIsTwoComplete(false)
+            setIsThiredComplete(false)
+            setIsFourthComplete(false)
         }
         if (number == 1) {
             setFirstStep(false)
-            setSecondStep(true);
+            setLensStep(true);
+            setSecondStep(false);
             setThiredStep(false)
-            setIsOneComplete(true)
-            setIsFourthComplete(false)
             setFourtStep(false)
+            setIsOneComplete(true)
+            setIsLensComplete(false)
+            setIsTwoComplete(false)
+            setIsThiredComplete(false)
+            setIsFourthComplete(false)
         }
         if (number == 2) {
+            setLensStep(false);
             setFirstStep(false)
-            setSecondStep(false);
-            setThiredStep(true);
-            setIsTwoComplete(true)
-            setIsFourthComplete(false)
+            setSecondStep(true);
+            setThiredStep(false)
             setFourtStep(false)
-
-
+            setIsLensComplete(true)
+            setIsTwoComplete(false)
+            setIsThiredComplete(false)
+            setIsFourthComplete(false)
         }
         if (number == 3) {
-            setIsThiredComplete(true)
             setFirstStep(false)
+            setLensStep(false);
             setSecondStep(false);
-            setFourtStep(true)
+            setThiredStep(true)
+            setFourtStep(false)
+            setIsLensComplete(true)
+            setIsTwoComplete(true)
+            setIsThiredComplete(false)
             setIsFourthComplete(false)
-            setThiredStep(false)
-
-
         }
-        // if (number == 4) {
-        //     setIsFourthComplete(true)
-
-        // }
+        if (number == 4) {
+            setFirstStep(false)
+            setLensStep(false);
+            setSecondStep(false);
+            setThiredStep(false)
+            setFourtStep(true)
+            setIsLensComplete(true)
+            setIsTwoComplete(true)
+            setIsThiredComplete(true)
+            setIsFourthComplete(true)
+        }
     }
 
 
@@ -99,6 +119,52 @@ export default function index() {
 
 
     const FirstPage = () => {
+        const powerTypes = [
+            {
+                title: "With Power",
+                subtitle: "Positive, Negative or Cylindrical",
+                image: "/Images/single_vision.webp",
+                badge: "Most common",
+                onClick: () => {
+                    setIsSingle(true);
+                    Changepage(1);
+                }
+            },
+            {
+                title: "Zero Power",
+                subtitle: "Blue light block for screen protection",
+                image: "/Images/zero_power.webp",
+                badge: "BLU Screen lenses",
+                onClick: () => {
+                    setIsSingle(false);
+                    Changepage(1);
+                }
+            },
+            {
+                title: "Reading Power",
+                subtitle: "With power for near vision only",
+                image: "/Images/single_vision.webp",
+                onClick: () => {
+                    setIsSingle(true);
+                    Changepage(1);
+                }
+            },
+            {
+                title: "Progressive/Bifocals",
+                subtitle: "Two powers in one eye",
+                image: "/Images/bifocal.webp",
+                onClick: () => {
+                    setIsBifocal(true);
+                    Changepage(1);
+                }
+            },
+            {
+                title: "Frame Only",
+                subtitle: "With no lenses",
+                image: "/Images/frame_only.webp",
+                onClick: () => Changepage(4)
+            }
+        ];
         return (
             <motion.div
                 className={styles.firstMain}
@@ -108,67 +174,22 @@ export default function index() {
                 transition={{ duration: 0.5, ease: "easeOut" }}
             >
                 <button className={styles.backButton} onClick={() => router.push("/")}>
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-left-icon lucide-arrow-left"><path d="m12 19-7-7 7-7" /><path d="M19 12H5" /></svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-arrow-left-icon lucide-arrow-left"><path d="m12 19-7-7 7-7" /><path d="M19 12H5" /></svg>
                 </button>
                 <div className={styles.firstInner}>
-
                     <motion.h1
-                        style={{ fontSize: "15px" }}
+                        style={{ fontSize: "18px" }}
                         initial={{ opacity: 0, y: -20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.2 }}
                     >
-
-
-                        Select your Power Type
+                        Select your Power Type:
                     </motion.h1>
-                    <div className={styles.firstCardContainer}>
-                        {[
-                            {
-                                title: "Single Vision",
-                                description: "For distance or near vision (Thin, anti-glare, blue-cut options)",
-                                image: "/Images/single_vision.webp",
-                                onClick: () => {
-                                    setIsSingle(true); // or "false" if Single Vision is not bifocal
-
-                                    Changepage(1);
-                                }
-                            },
-
-                            {
-                                title: "Bifocal/Progressive",
-                                description: "Bifocal and Progressives (For two powers in same lenses)",
-                                image: "/Images/bifocal.webp",
-                                onClick: () => {
-                                    setIsBifocal(true)
-                                    Changepage(1)
-                                }
-                            },
-                            {
-                                title: " Contact lens",
-                                description: "Block 98% of harmful rays (Anti-glare and blue-cut options)",
-                                image: "/Images/zero_power.webp",
-                                onClick: () => Changepage(1)
-                            },
-                            {
-                                title: "Frame Only",
-                                description: "Buy Only Frame",
-                                image: "/Images/frame_only.webp",
-
-                                onClick: () => Changepage(3)
-
-                            },
-
-                            {
-                                title: "Power Sunglasses",
-                                description: "Block 98% of harmful rays (Anti-glare and blue-cut options)",
-                                image: "/Images/frame_only.webp",
-                                onClick: () => Changepage(1)
-                            }
-                        ].map((card, index) => (
+                    <div className={styles.powerTypeList}>
+                        {powerTypes.map((card, index) => (
                             <motion.div
                                 key={index}
-                                className={styles.card}
+                                className={styles.powerTypeCard}
                                 onClick={card.onClick}
                                 initial={{ opacity: 0, y: 20 }}
                                 animate={{ opacity: 1, y: 0 }}
@@ -176,17 +197,20 @@ export default function index() {
                                 whileHover={{ scale: 1.02, boxShadow: "0 8px 16px rgba(0,0,0,0.1)" }}
                                 whileTap={{ scale: 0.98 }}
                             >
-                                <div className={styles.left}>
+                                <div className={styles.powerTypeLeft}>
                                     <img src={card.image} alt={card.title} />
                                 </div>
-                                <div className={styles.right}>
-                                    <div className={styles.content}>
-                                        <button>{card.title}</button>
-                                        <p>{card.description}</p>
+                                <div className={styles.powerTypeRight}>
+                                    <div className={styles.powerTypeContent}>
+                                        <div className={styles.powerTypeTitleRow}>
+                                            <span className={styles.powerTypeTitle}>{card.title}</span>
+                                            {card.badge && <span className={styles.powerTypeBadge}>{card.badge}</span>}
+                                        </div>
+                                        <span className={styles.powerTypeSubtitle}>{card.subtitle}</span>
                                     </div>
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-chevron-right">
-                                        <path d="m9 18 6-6-6-6" />
-                                    </svg>
+                                    <span className={styles.powerTypeArrow}>
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round"><path d="m9 18 6-6-6-6" /></svg>
+                                    </span>
                                 </div>
                             </motion.div>
                         ))}
@@ -231,7 +255,7 @@ export default function index() {
                                 title: "Upload File",
                                 onClick: () => {
                                     setIsFile(true)
-                                    Changepage(2)
+                                    Changepage(3)
                                 }
                             },
                             {
@@ -239,7 +263,7 @@ export default function index() {
                                 title: "Enter Manually",
                                 onClick: () => {
                                     setIsFile(false)
-                                    Changepage(2)
+                                    Changepage(3)
                                 }
                             }
                         ].map((option, index) => (
@@ -672,7 +696,7 @@ export default function index() {
                         localStorage.setItem("PrescriptionId", res.payload.prescription._id)
                         toast.success("Prescription added successfully!");
                         setIsLoading(false);
-                        Changepage(3);
+                        Changepage(4);
                     }
                 })
                 .catch((error) => {
@@ -949,6 +973,113 @@ export default function index() {
         )
     }
 
+    // Lens Selection Page UI
+    const lensOptions = [
+        {
+            tag: 'Bestseller',
+            title: 'Anti-Glare Premium',
+            features: ['Double Side Anti-Glare Lens', 'Scratch Resistant'],
+            warranty: '6 Months Warranty',
+            offer: 'Buy 1 Get 1 Free',
+            price: 2000,
+            details: 'Double side anti-glare, scratch resistant, premium quality.',
+            icon: '⚡',
+        },
+        {
+            tag: 'Screen Friendly',
+            title: 'BLU Screen Lenses',
+            features: ['Screen Protection', 'Minimizes Eyestrain', 'Scratch & Smudge Resistant'],
+            warranty: '1 Year Warranty',
+            offer: 'Buy 1 Get 1 Free',
+            price: 3200,
+            details: 'Screen protection, minimizes eyestrain, scratch & smudge resistant.',
+            icon: '🖥️',
+        },
+        {
+            tag: 'Screen Friendly',
+            title: 'Owndays Japan Clear Vision lenses',
+            features: ['Screen Protection', 'Minimizes Eyestrain', 'Scratch & Smudge Resistant'],
+            warranty: '1 Year Warranty',
+            offer: 'Buy 1 Get 1 Free',
+            price: 3200,
+            details: 'Screen protection, minimizes eyestrain, scratch & smudge resistant.',
+            icon: '🖥️',
+        },
+    ];
+
+    const LensSelectionPage = () => {
+        const [activeTab, setActiveTab] = useState('Bestsellers');
+        return (
+            <motion.div
+                className={styles.lensMain}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                transition={{ duration: 0.5, ease: "easeOut" }}
+            >
+                <button className={styles.backButton} onClick={() => Changepage(0)}>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-arrow-left-icon lucide-arrow-left"><path d="m12 19-7-7 7-7" /><path d="M19 12H5" /></svg>
+                </button>
+                <div className={styles.lensInner}>
+                    <motion.h1
+                        style={{ fontSize: "15px" }}
+                        initial={{ opacity: 0, y: -20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.2 }}
+                    >
+                        Choose your Lens:
+                    </motion.h1>
+
+                    <div className={styles.lensCardContainer}>
+                        {lensOptions.map((lens, idx) => (
+                            <motion.div
+                                key={idx}
+                                className={styles.lensCard + (selectedLens && selectedLens.title === lens.title ? ' ' + styles.selectedLens : '')}
+                                onClick={() => setSelectedLens(lens)}
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ delay: 0.3 + idx * 0.1 }}
+                                whileHover={{ scale: 1.02, boxShadow: "0 8px 16px rgba(0,0,0,0.1)" }}
+                                whileTap={{ scale: 0.98 }}
+                            >
+                                <div className={styles.lensLeft}>
+                                    <span style={{ fontSize: '2rem' }}>{lens.icon}</span>
+                                </div>
+                                <div className={styles.lensRight}>
+                                    <div className={styles.lensContent}>
+                                        <h2>{lens.title}</h2>
+                                        <ul>
+                                            {lens.features.map((f, i) => <li key={i}>{f}</li>)}
+                                        </ul>
+                                        <span className={styles.lensWarranty}>{lens.warranty}</span>
+                                        <span className={styles.lensOffer}>{lens.offer}</span>
+                                    </div>
+                                    <div className={styles.lensPrice}>
+                                        ₹{lens.price}
+                                    </div>
+                                </div>
+                            </motion.div>
+                        ))}
+                    </div>
+                    <div className={styles.lensButtonContainer}>
+                        <button
+                            className={styles.proceedButton}
+                            disabled={!selectedLens}
+                            onClick={() => {
+                                if (selectedLens) {
+                                    setIsLensComplete(true);
+                                    localStorage.setItem('selectedLens', JSON.stringify(selectedLens));
+                                    Changepage(2);
+                                }
+                            }}
+                        >
+                            {selectedLens ? `Select "${selectedLens.title}" and Continue` : 'Select a Lens to Continue'}
+                        </button>
+                    </div>
+                </div>
+            </motion.div>
+        );
+    };
 
     return (
         <div className={styles.main}>
@@ -957,12 +1088,14 @@ export default function index() {
                 <ProgressHeader
                     Changepage={Changepage}
                     isOneComplete={isOneComplete}
+                    isLensComplete={isLensComplete}
                     isTwoComplete={isTwoComplete}
                     isThiredComplete={isThiredComplete}
                     isFourthComplete={isFourthComplete}
                 />
                 <AnimatePresence mode="wait">
                     {firstStep && <FirstPage key="first" />}
+                    {lensStep && <LensSelectionPage key="lens" />}
                     {secondStep && <SecondPage key="second" />}
                     {thiredStep && <FourtPage key="third" />}
                     {fourthStep && <ThiredPage key="fourth" />}
