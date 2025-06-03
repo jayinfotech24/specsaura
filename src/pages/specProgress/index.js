@@ -9,7 +9,7 @@ import *as yup from "yup"
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useRef } from 'react';
 import { useDispatch } from 'react-redux';
-import { FileUpload, SavePrescription, AddCart, GetUser, UpdateCart } from '../../store/authSlice';
+import { FileUpload, SavePrescription, AddCart, GetUser, UpdateCart, GetLensType } from '../../store/authSlice';
 import { ToastContainer, toast } from 'react-toastify';
 import ProgressBar from "@ramonak/react-progress-bar";
 import Preloader from '../../Component/Animated';
@@ -39,6 +39,7 @@ export default function index() {
     const [lensStep, setLensStep] = useState(false);
     const [selectedLens, setSelectedLens] = useState(null);
     const [isLensComplete, setIsLensComplete] = useState(false);
+    const [lensTypeData, setLensTypeData] = useState(null);
 
     useEffect(() => {
         Validate(router)
@@ -119,32 +120,34 @@ export default function index() {
 
 
     const FirstPage = () => {
+        const getLensType = async (type) => {
+            try {
+                setIsLoading(true);
+                const response = await dispatch(GetLensType(type)).unwrap();
+                console.log("Response:", response);
+                if (response.status == 200) {
+                    setLensTypeData(response.data);
+                    // Store lens type data in localStorage for later use
+                    localStorage.setItem('lensTypeData', JSON.stringify(response.data));
+                } else {
+                    toast.error("Failed to get lens type data");
+                }
+            } catch (error) {
+                console.error("Error getting lens type:", error);
+                toast.error("Failed to get lens type data");
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
         const powerTypes = [
             {
-                title: "With Power",
+                title: "Single Vision",
                 subtitle: "Positive, Negative or Cylindrical",
                 image: "/Images/single_vision.webp",
                 badge: "Most common",
-                onClick: () => {
-                    setIsSingle(true);
-                    Changepage(1);
-                }
-            },
-            {
-                title: "Zero Power",
-                subtitle: "Blue light block for screen protection",
-                image: "/Images/zero_power.webp",
-                badge: "BLU Screen lenses",
-                onClick: () => {
-                    setIsSingle(false);
-                    Changepage(1);
-                }
-            },
-            {
-                title: "Reading Power",
-                subtitle: "With power for near vision only",
-                image: "/Images/single_vision.webp",
-                onClick: () => {
+                onClick: async () => {
+                    // await getLensType("singleVision");
                     setIsSingle(true);
                     Changepage(1);
                 }
@@ -153,7 +156,8 @@ export default function index() {
                 title: "Progressive/Bifocals",
                 subtitle: "Two powers in one eye",
                 image: "/Images/bifocal.webp",
-                onClick: () => {
+                onClick: async () => {
+                    // await getLensType("progressive");
                     setIsBifocal(true);
                     Changepage(1);
                 }
@@ -162,7 +166,10 @@ export default function index() {
                 title: "Frame Only",
                 subtitle: "With no lenses",
                 image: "/Images/frame_only.webp",
-                onClick: () => Changepage(4)
+                onClick: async () => {
+                    await getLensType("frameOnly");
+                    Changepage(4);
+                }
             }
         ];
         return (
@@ -610,7 +617,7 @@ export default function index() {
 
                     toast.success("Details added successfully.");
                     setIsLoading(false);
-                    Changepage(3);
+                    Changepage(4);
                 }
             } catch (error) {
                 console.error("Error saving prescription:", error);

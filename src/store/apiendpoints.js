@@ -23,7 +23,8 @@ const Appapis = {
     getCartMany: "/cart",
     getSingleCart: (id) => `/cart/${id}`,
     updateCartFlag: (id) => `/cart/flag/${id}`,
-    updateCart: (id) => `/cart/${id}`
+    updateCart: (id) => `/cart/${id}`,
+    lenseType: (name) => `/lenseType/${name}`
 }
 
 export default Appapis

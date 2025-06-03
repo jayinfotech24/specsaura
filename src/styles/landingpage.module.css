@@ -107,9 +107,9 @@
 
 .secondComponent .logoComponent {
   display: flex;
-  justify-content: center;
+  justify-content: space-between;
   align-items: center;
-  width: 100%;
+  width: 60%;
   flex-direction: row;
 }
 
@@ -117,7 +117,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 24%;
+  width: 18%;
 }
 
 .logoComponent .imageContainer img {
@@ -576,6 +576,14 @@
 
   .cardComponent .heading h1::before {
     top: 40px;
+  }
+
+  .secondComponent .logoComponent .imageContainer {
+    width: 25%;
+  }
+
+  .secondComponent .logoComponent {
+    width: 80%;
   }
 
   .footer {

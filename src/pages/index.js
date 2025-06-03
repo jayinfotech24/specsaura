@@ -132,20 +132,18 @@ export default function index() {
                 <div className={styles.secondComponent}>
                     <div className={styles.logoComponent}>
                         <div className={styles.imageContainer}>
-                            <img src="/Images/logo1.webp" />
+                            <img src="/Images/brand1.jpg" />
                         </div>
                         <div className={styles.imageContainer}>
-                            <img src="/Images/logo2.webp" />
+                            <img src="/Images/brand2.jpg" />
                         </div>
                         <div className={styles.imageContainer}>
-                            <img src="/Images/logo3.webp" />
+                            <img src="/Images/brand3.jpg" />
                         </div>
                         <div className={styles.imageContainer}>
-                            <img src="/Images/logo4.webp" />
+                            <img src="/Images/brand4.jpg" />
                         </div>
-                        <div className={styles.imageContainer}>
-                            <img src="/Images/logo5.webp" />
-                        </div>
+
                     </div>
                 </div>
                 <div className={styles.collection}>

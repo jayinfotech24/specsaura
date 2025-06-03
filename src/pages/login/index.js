@@ -36,13 +36,18 @@ export default function index() {
         ////console.log("Request Payload:", resObject);
         dispatch(Login(resObject))
             .then((res) => {
-                ////console.log("Response:", res);
+                console.log("Response:", res);
                 localStorage.setItem("email", data.email)
                 if (res.payload.status == 200) {
                     toast.success("OTP Sent succesfully")
                     localStorage.removeItem("otpExpiryTime")
                     setIsLoadning(false)
                     router.push("/otp")
+                }
+                if (res.payload.status == 403) {
+
+                    toast.error(res.payload.message)
+                    setIsLoadning(false)
                 }
                 setIsLoadning(false)
             })

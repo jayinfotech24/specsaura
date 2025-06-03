@@ -302,7 +302,17 @@ export const UpdateCart = createAsyncThunk(
 );
 
 
-
+export const GetLensType = createAsyncThunk(
+    "api/getLensType",
+    async (type, { rejectWithValue }) => {
+        try {
+            const response = await axiosInstance.get(`${Appapis.Basurl}${Appapis.lenseType(type)}`);
+            return response.data;
+        } catch (error) {
+            return rejectWithValue(error.response?.data || "Failed to get lens type data");
+        }
+    }
+);
 const counterSlice = createSlice({
     name: "counter",
     initialState,
@@ -589,6 +599,17 @@ const counterSlice = createSlice({
                 state.loading = false;
             })
             .addCase(UpdateCart.rejected, (state, action) => {
+                state.loading = false;
+                state.error = handleUnauthorized(action.payload);
+            })
+            .addCase(GetLensType.pending, (state, action) => {
+                state.loading = true
+
+            })
+            .addCase(GetLensType.fulfilled, (state, action) => {
+                state.loading = false;
+            })
+            .addCase(GetLensType.rejected, (state, action) => {
                 state.loading = false;
                 state.error = handleUnauthorized(action.payload);
             })
