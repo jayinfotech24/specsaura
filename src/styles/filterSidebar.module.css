@@ -1,0 +1,192 @@
+.sidebar {
+    width: 300px;
+    min-width: 300px;
+    height: 100%;
+    background-color: #fff;
+    padding: 25px;
+    border-radius: 15px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    position: sticky;
+    top: 100px;
+    overflow-y: auto;
+    max-height: calc(100vh - 120px);
+    flex-shrink: 0;
+}
+
+.sidebarHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+    padding-bottom: 15px;
+    border-bottom: 2px solid #f0f0f0;
+}
+
+.sidebarHeader h2 {
+    font-size: 20px;
+    font-weight: 600;
+    color: #1a1a1a;
+    margin: 0;
+}
+
+.clearAll {
+    background: none;
+    border: none;
+    color: #fd5b25;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    padding: 5px 10px;
+    border-radius: 6px;
+    transition: all 0.3s ease;
+}
+
+.clearAll:hover {
+    background-color: #fff5f2;
+    color: #ff8c42;
+}
+
+.filterSection {
+    margin-bottom: 20px;
+    border-bottom: 1px solid #f0f0f0;
+    padding-bottom: 15px;
+}
+
+.filterSection:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+    padding-bottom: 0;
+}
+
+.filterHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    padding: 10px 0;
+    transition: all 0.3s ease;
+}
+
+.filterHeader:hover {
+    color: #fd5b25;
+}
+
+.filterHeader h3 {
+    font-size: 16px;
+    font-weight: 500;
+    margin: 0;
+    color: #333;
+}
+
+.filterOptions {
+    margin-top: 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    max-height: 300px;
+    overflow-y: auto;
+    padding-right: 5px;
+}
+
+.filterOption {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    padding: 5px 0;
+    transition: all 0.2s ease;
+}
+
+.filterOption:hover {
+    color: #fd5b25;
+}
+
+.filterOption input[type="checkbox"] {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 18px;
+    height: 18px;
+    border: 2px solid #ddd;
+    border-radius: 4px;
+    cursor: pointer;
+    position: relative;
+    transition: all 0.2s ease;
+}
+
+.filterOption input[type="checkbox"]:checked {
+    background-color: #fd5b25;
+    border-color: #fd5b25;
+}
+
+.filterOption input[type="checkbox"]:checked::after {
+    content: '✓';
+    position: absolute;
+    color: white;
+    font-size: 12px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.filterOption label {
+    font-size: 14px;
+    color: #666;
+    cursor: pointer;
+    flex: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Custom scrollbar styles */
+.filterOptions::-webkit-scrollbar {
+    width: 6px;
+}
+
+.filterOptions::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 3px;
+}
+
+.filterOptions::-webkit-scrollbar-thumb {
+    background: #ddd;
+    border-radius: 3px;
+}
+
+.filterOptions::-webkit-scrollbar-thumb:hover {
+    background: #ccc;
+}
+
+@media (max-width: 992px) {
+    .sidebar {
+        width: 100%;
+        min-width: 100%;
+        position: relative;
+        top: 0;
+        max-height: none;
+        margin-bottom: 30px;
+        border-radius: 10px;
+    }
+
+    .filterOptions {
+        max-height: 200px;
+    }
+}
+
+@media (max-width: 768px) {
+    .sidebar {
+        padding: 20px;
+    }
+
+    .sidebarHeader h2 {
+        font-size: 18px;
+    }
+
+    .filterHeader h3 {
+        font-size: 15px;
+    }
+
+    .filterOption label {
+        font-size: 13px;
+    }
+}

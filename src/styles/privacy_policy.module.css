@@ -84,12 +84,14 @@
   margin-top: 1.5em;
   margin-bottom: 0.5em;
   text-align: left;
+  color: #000;
 }
 
 .content h1 {
   font-size: 1.5rem;
   font-weight: 700;
   margin-top: 0;
+  color: #000;
 }
 
 .content h2 {
@@ -97,6 +99,7 @@
   font-weight: 600;
   margin-top: 5px !important;
   margin-bottom: 5px !important;
+  color: #000;
 }
 
 .content h3 {
@@ -104,6 +107,7 @@
   font-weight: 600;
   margin-top: 5px !important;
   margin-bottom: 5px !important;
+  color: #000;
 }
 
 .content p {
@@ -111,6 +115,7 @@
   line-height: 1.7;
   text-align: left;
   margin-bottom: 0.5em;
+  color: #000;
 }
 
 .content li {
@@ -118,6 +123,7 @@
   line-height: 20px;
   text-align: left;
   margin-bottom: 15px;
+  color: #000;
 }
 
 .list {

@@ -7,6 +7,7 @@
   align-items: start;
   background-color: #fff;
 }
+
 .inner {
   display: flex;
   justify-content: space-between;
@@ -16,96 +17,202 @@
   width: 100%;
   margin-top: 80px;
 }
+
 .inner .poster {
   width: 100%;
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 115px;
+  height: 180px;
   position: relative;
+  overflow: hidden;
 }
+
 .inner .poster img {
   width: 100%;
   object-fit: cover;
   height: 100%;
+  transform: scale(1.1);
+  transition: transform 0.5s ease;
 }
+
+.inner .poster:hover img {
+  transform: scale(1);
+}
+
 .inner .poster .imageContent {
   position: absolute;
   top: 50%;
   left: 50%;
-  transform: translate(
-    -52%,
-    -50%
-  );
+  transform: translate(-52%, -50%);
   width: 40%;
   display: flex;
   justify-content: center;
   align-items: center;
+  text-align: center;
+  background: rgba(0, 0, 0, 0.4);
+  padding: 20px 40px;
+  border-radius: 15px;
+  backdrop-filter: blur(5px);
 }
-.inner
-  .poster
-  .imageContent
-  h1 {
-  font-size: 30px;
+
+.inner .poster .imageContent h1 {
+  font-size: 36px;
   color: #fff;
-  font-weight: 600;
-  font-family: Lato;
+  font-weight: 700;
+  font-family: 'Lato', sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  margin: 0;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
 }
-.cardComponent {
-  width: 100%;
+
+.contentWrapper {
   display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-direction: column;
-  padding: 0px 20px;
-  gap: 40px;
+  width: 100%;
+  gap: 30px;
+  padding: 0 30px;
+  margin-top: 20px;
+  min-height: 500px;
 }
+
+.cardComponent {
+  flex: 1;
+  display: flex;
+  justify-content: flex-start;
+  align-items: flex-start;
+  flex-direction: column;
+  gap: 40px;
+  min-width: 0;
+}
+
 .cardComponent .heading {
   width: 100%;
   display: flex;
   justify-content: center;
   align-items: center;
+  position: relative;
+  padding: 20px 0;
 }
+
 .cardComponent .heading h1 {
-  font-family: Lato;
-  font-size: 40px;
-  font-weight: 600;
+  font-family: 'Lato', sans-serif;
+  font-size: 42px;
+  font-weight: 700;
   line-height: 1.2;
-  color: #000;
+  color: #1a1a1a;
   letter-spacing: -1px;
   text-transform: none;
   position: relative;
+  margin: 0;
 }
-.cardComponent
-  .heading
-  h1::before {
+
+.cardComponent .heading h1::before {
   content: '';
-  background-color: #fd5b25;
-  height: 2px;
-  width: 50%;
+  background: linear-gradient(90deg, #fd5b25, #ff8c42);
+  height: 3px;
+  width: 60%;
   position: absolute;
-  top: 60px;
+  top: 70px;
   left: 50%;
   transform: translateX(-50%);
+  border-radius: 3px;
 }
+
 .cardComponent .cardInner {
   display: grid;
-  grid-template-columns: repeat(
-    4,
-    1fr
-  ); /* 4 cards per row */
-  gap: 10px;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 25px;
+  width: 100%;
+  min-height: 300px;
+}
+
+.noProducts {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 60px 40px;
+  font-size: 1.4rem;
+  color: #666;
+  background: #f8f9fa;
+  border-radius: 15px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+  margin: 20px 0;
+  min-height: 300px;
+  display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
 }
 
-@media (max-width: 992px) {
+.noProducts::before {
+  content: '🔍';
+  font-size: 2rem;
+  display: block;
+  margin-bottom: 15px;
 }
-@media (max-width: 768px) {
+
+@media (max-width: 1200px) {
   .cardComponent .cardInner {
-    grid-template-columns: repeat(
-      2,
-      1fr
-    );
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+  }
+
+  .inner .poster .imageContent h1 {
+    font-size: 32px;
+  }
+
+  .contentWrapper {
+    padding: 0 20px;
+  }
+}
+
+@media (max-width: 992px) {
+  .cardComponent .cardInner {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .contentWrapper {
+    flex-direction: column;
+    padding: 0 20px;
+  }
+
+  .cardComponent .heading h1 {
+    font-size: 36px;
+  }
+
+  .cardComponent .heading h1::before {
+    top: 55px;
+  }
+}
+
+@media (max-width: 768px) {
+  .inner .poster {
+    height: 150px;
+  }
+
+  .inner .poster .imageContent {
+    width: 80%;
+    padding: 15px 30px;
+  }
+
+  .inner .poster .imageContent h1 {
+    font-size: 28px;
+  }
+
+  .cardComponent .heading h1 {
+    font-size: 32px;
+  }
+
+  .contentWrapper {
+    padding: 0 15px;
+  }
+
+  .cardComponent .cardInner {
+    gap: 15px;
+  }
+
+  .noProducts {
+    padding: 40px 20px;
+    font-size: 1.2rem;
   }
 }
