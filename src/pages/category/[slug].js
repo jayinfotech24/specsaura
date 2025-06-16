@@ -64,6 +64,19 @@ export default function CategoryPage() {
     useEffect(() => {
         if (Products) {
             let filtered = [...Products];
+            console.log("All Products:", Products);
+            console.log("Current Category ID (slug):", router.query.slug);
+
+            // Filter by category ID if slug is present
+            if (router.query.slug) {
+                filtered = filtered.filter(product => {
+                    console.log("Checking product:", {
+                        product
+                    });
+                    return product.category._id == router.query.slug;
+                });
+                console.log("Filtered Products by Category:", filtered);
+            }
 
             // Apply active filters
             Object.entries(activeFilters).forEach(([category, values]) => {
@@ -133,8 +146,10 @@ export default function CategoryPage() {
                     />
                     <div className={styles.cardComponent}>
                         <div className={styles.heading}>
-                            {router.query.gender && (
+                            {router.query.gender ? (
                                 <h1>{router.query.gender.charAt(0).toUpperCase() + router.query.gender.slice(1)}'s Collection</h1>
+                            ) : (
+                                <h1>Category Products</h1>
                             )}
                         </div>
                         <div className={styles.cardInner}>
