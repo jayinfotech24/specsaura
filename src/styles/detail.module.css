@@ -91,6 +91,11 @@
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
+.navButton svg,
+.fullscreenButton svg {
+  color: #000;
+}
+
 .navButton:hover {
   background: white;
   transform: scale(1.1);

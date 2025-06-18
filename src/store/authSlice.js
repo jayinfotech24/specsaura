@@ -313,6 +313,20 @@ export const GetLensType = createAsyncThunk(
         }
     }
 );
+export const GetBlog = createAsyncThunk(
+    "api/getBlog",
+    async (credentials, { rejectWithValue }) => {
+        try {
+            const response = await axiosInstance.get(`${Appapis.Basurl}${Appapis.getBlog}`);
+            return response.data;
+        } catch (error) {
+            return rejectWithValue(error.response?.data || "Failed to get blog data");
+        }
+    }
+);
+
+
+
 const counterSlice = createSlice({
     name: "counter",
     initialState,
@@ -610,6 +624,16 @@ const counterSlice = createSlice({
                 state.loading = false;
             })
             .addCase(GetLensType.rejected, (state, action) => {
+                state.loading = false;
+                state.error = handleUnauthorized(action.payload);
+            })
+            .addCase(GetBlog.pending, (state, action) => {
+                state.loading = true
+            })
+            .addCase(GetBlog.fulfilled, (state, action) => {
+                state.loading = false;
+            })
+            .addCase(GetBlog.rejected, (state, action) => {
                 state.loading = false;
                 state.error = handleUnauthorized(action.payload);
             })
