@@ -25,7 +25,8 @@ const Appapis = {
     updateCartFlag: (id) => `/cart/flag/${id}`,
     updateCart: (id) => `/cart/${id}`,
     lenseType: (name) => `/lenseType/${name}`,
-    getBlog: `/blog`
+    getBlog: `/blog`,
+    lensDetail: (name) => `/lens/${name}`
 }
 
 export default Appapis

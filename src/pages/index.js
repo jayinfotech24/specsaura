@@ -195,7 +195,7 @@ export default function index() {
                     <div className={styles.viewMoreSection}>
                         <button
                             className={styles.viewMoreButton}
-                            onClick={() => router.push('/category/f')}
+                            onClick={() => router.push('/category')}
                         >
                             <span>View All Products</span>
                         </button>

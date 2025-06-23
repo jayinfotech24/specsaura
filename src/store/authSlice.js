@@ -324,7 +324,17 @@ export const GetBlog = createAsyncThunk(
         }
     }
 );
-
+export const GetLensDeatil = createAsyncThunk(
+    "api/getLensDetail",
+    async (type, { rejectWithValue }) => {
+        try {
+            const response = await axiosInstance.get(`${Appapis.Basurl}${Appapis.lensDetail(type)}`);
+            return response.data;
+        } catch (error) {
+            return rejectWithValue(error.response?.data || "Failed to get lens type data");
+        }
+    }
+);
 
 
 const counterSlice = createSlice({
@@ -634,6 +644,16 @@ const counterSlice = createSlice({
                 state.loading = false;
             })
             .addCase(GetBlog.rejected, (state, action) => {
+                state.loading = false;
+                state.error = handleUnauthorized(action.payload);
+            })
+            .addCase(GetLensDeatil.pending, (state, action) => {
+                state.loading = true
+            })
+            .addCase(GetLensDeatil.fulfilled, (state, action) => {
+                state.loading = false;
+            })
+            .addCase(GetLensDeatil.rejected, (state, action) => {
                 state.loading = false;
                 state.error = handleUnauthorized(action.payload);
             })

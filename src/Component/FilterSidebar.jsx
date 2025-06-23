@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 import styles from '../styles/filterSidebar.module.css';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useRouter } from 'next/router';
 
-const FilterSidebar = ({ onFilterChange, activeFilters }) => {
+const FilterSidebar = ({ onFilterChange, activeFilters, isSunglasses }) => {
     const [expandedSections, setExpandedSections] = useState({});
+    const router = useRouter();
 
     const filterCategories = {
         material: {
@@ -24,6 +26,24 @@ const FilterSidebar = ({ onFilterChange, activeFilters }) => {
         }
     };
 
+    // Add Glass Color filter only for sunglasses
+    const glassColorFilter = {
+        lensColor: {
+            title: 'Glass Color',
+            options: [
+                'Black',
+                'Blue',
+                'Green',
+                'Yellow',
+                'Pink'
+            ]
+        }
+    };
+
+    const categoriesToRender = isSunglasses
+        ? { ...filterCategories, ...glassColorFilter }
+        : filterCategories;
+
     const toggleSection = (section) => {
         setExpandedSections(prev => ({
             ...prev,
@@ -42,20 +62,28 @@ const FilterSidebar = ({ onFilterChange, activeFilters }) => {
                 <button 
                     className={styles.clearAll}
                     onClick={() => {
-                        Object.keys(filterCategories).forEach(category => {
+                        Object.keys(categoriesToRender).forEach(category => {
                             if (activeFilters[category]) {
                                 activeFilters[category].forEach(value => {
                                     handleFilterChange(category, value);
                                 });
                             }
                         });
+                        // Remove 'gender' from query params if present
+                        if (router.query.gender) {
+                            const { gender, ...rest } = router.query;
+                            router.replace({
+                                pathname: router.pathname,
+                                query: rest
+                            }, undefined, { shallow: true });
+                        }
                     }}
                 >
                     Clear All
                 </button>
             </div>
 
-            {Object.entries(filterCategories).map(([category, { title, options }]) => (
+            {Object.entries(categoriesToRender).map(([category, { title, options }]) => (
                 <div key={category} className={styles.filterSection}>
                     <div 
                         className={styles.filterHeader}

@@ -1,16 +1,16 @@
-import React, { useEffect, useState } from 'react'
-import styles from "../../styles/category.module.css"
-import Footer from '../../Component/Footer'
-import Header from "../../Component/Header"
-import CardComponent from '../../Component/CardComponent'
-import { Validate } from '../../store/commonFunction'
-import { useRouter } from 'next/router'
-import { useDispatch } from 'react-redux'
-import { ProductList } from '../../store/authSlice'
-import Preloader from '../../Component/Animated'
-import FilterSidebar from '../../Component/FilterSidebar'
+import React, { useEffect, useState } from 'react';
+import styles from "../../styles/category.module.css";
+import Footer from '../../Component/Footer';
+import Header from "../../Component/Header";
+import CardComponent from '../../Component/CardComponent';
+import { Validate } from '../../store/commonFunction';
+import { useRouter } from 'next/router';
+import { useDispatch } from 'react-redux';
+import { ProductList } from '../../store/authSlice';
+import Preloader from '../../Component/Animated';
+import FilterSidebar from '../../Component/FilterSidebar';
 
-export default function CategoryPage() {
+export default function CategoryIndexPage() {
     const router = useRouter();
     const dispatch = useDispatch();
     const [Products, setProducts] = useState([]);
@@ -64,19 +64,8 @@ export default function CategoryPage() {
     useEffect(() => {
         if (Products) {
             let filtered = [...Products];
-            console.log("All Products:", Products);
-            console.log("Current Category ID (slug):", router.query.slug);
 
-            // Filter by category ID if slug is present and not empty
-            if (router.query.slug && router.query.slug !== '' && router.query.slug !== undefined) {
-                filtered = filtered.filter(product => {
-                    console.log("Checking product:", {
-                        product
-                    });
-                    return product.category._id == router.query.slug;
-                });
-                console.log("Filtered Products by Category:", filtered);
-            }
+            // Do NOT filter by category id here!
 
             // Apply active filters
             Object.entries(activeFilters).forEach(([category, values]) => {
@@ -138,21 +127,21 @@ export default function CategoryPage() {
                 <div className={styles.poster}>
                     <img src="/Images/bg_poster.webp" />
                     <div className={styles.imageContent}>
-                        <h1>Products</h1>
+                        <h1>All Products</h1>
                     </div>
                 </div>
                 <div className={styles.contentWrapper}>
                     <FilterSidebar
                         onFilterChange={handleFilterChange}
                         activeFilters={activeFilters}
-                        isSunglasses={router.query.slug === '67ec193b4c7e05897cf5586e'}
+                        isSunglasses={false}
                     />
                     <div className={styles.cardComponent}>
                         <div className={styles.heading}>
                             {router.query.gender ? (
                                 <h1>{router.query.gender.charAt(0).toUpperCase() + router.query.gender.slice(1)}'s Collection</h1>
                             ) : (
-                                <h1>Category Products</h1>
+                                <h1>All Products</h1>
                             )}
                         </div>
                         <div className={styles.cardInner}>
@@ -181,4 +170,4 @@ export default function CategoryPage() {
             <Footer />
         </div>
     )
-}
+} 

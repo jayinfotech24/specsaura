@@ -9,7 +9,7 @@ import *as yup from "yup"
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useRef } from 'react';
 import { useDispatch } from 'react-redux';
-import { FileUpload, SavePrescription, AddCart, GetUser, UpdateCart, GetLensType } from '../../store/authSlice';
+import { FileUpload, SavePrescription, AddCart, GetUser, UpdateCart, GetLensType, GetLensDeatil } from '../../store/authSlice';
 import { ToastContainer, toast } from 'react-toastify';
 import ProgressBar from "@ramonak/react-progress-bar";
 import Preloader from '../../Component/Animated';
@@ -40,6 +40,7 @@ export default function index() {
     const [selectedLens, setSelectedLens] = useState(null);
     const [isLensComplete, setIsLensComplete] = useState(false);
     const [lensTypeData, setLensTypeData] = useState(null);
+    const [LensName, setLensName] = useState("")
 
     useEffect(() => {
         Validate(router)
@@ -147,6 +148,7 @@ export default function index() {
                 image: "/Images/single_vision.webp",
                 badge: "Most common",
                 onClick: async () => {
+                    setLensName("Single Vision")
                     // await getLensType("singleVision");
                     setIsSingle(true);
                     Changepage(1);
@@ -157,6 +159,7 @@ export default function index() {
                 subtitle: "Two powers in one eye",
                 image: "/Images/bifocal.webp",
                 onClick: async () => {
+                    setLensName("Progressive")
                     // await getLensType("progressive");
                     setIsBifocal(true);
                     Changepage(1);
@@ -167,6 +170,7 @@ export default function index() {
                 subtitle: "With no lenses",
                 image: "/Images/frame_only.webp",
                 onClick: async () => {
+                    setLensName("Frame Only")
                     await getLensType("frameOnly");
                     Changepage(4);
                 }
@@ -981,41 +985,23 @@ export default function index() {
     }
 
     // Lens Selection Page UI
-    const lensOptions = [
-        {
-            tag: 'Bestseller',
-            title: 'Anti-Glare Premium',
-            features: ['Double Side Anti-Glare Lens', 'Scratch Resistant'],
-            warranty: '6 Months Warranty',
-            offer: 'Buy 1 Get 1 Free',
-            price: 2000,
-            details: 'Double side anti-glare, scratch resistant, premium quality.',
-            icon: '⚡',
-        },
-        {
-            tag: 'Screen Friendly',
-            title: 'BLU Screen Lenses',
-            features: ['Screen Protection', 'Minimizes Eyestrain', 'Scratch & Smudge Resistant'],
-            warranty: '1 Year Warranty',
-            offer: 'Buy 1 Get 1 Free',
-            price: 3200,
-            details: 'Screen protection, minimizes eyestrain, scratch & smudge resistant.',
-            icon: '🖥️',
-        },
-        {
-            tag: 'Screen Friendly',
-            title: 'Owndays Japan Clear Vision lenses',
-            features: ['Screen Protection', 'Minimizes Eyestrain', 'Scratch & Smudge Resistant'],
-            warranty: '1 Year Warranty',
-            offer: 'Buy 1 Get 1 Free',
-            price: 3200,
-            details: 'Screen protection, minimizes eyestrain, scratch & smudge resistant.',
-            icon: '🖥️',
-        },
-    ];
-
     const LensSelectionPage = () => {
+        const [Data, setData] = useState([])
+        // Fallback lensTypes array for demonstration
+        const GetData = () => {
+            dispatch(GetLensDeatil(LensName)).then((res) => {
+                console.log("Res", res)
+                if (res.payload.status == 200) {
+                    setData(res.payload.lensTypes)
+                }
+            })
+        }
+        useEffect(() => {
+            GetData()
+        }, [])
         const [activeTab, setActiveTab] = useState('Bestsellers');
+        // Use lensTypeData if available, otherwise fallback to the provided array
+        const lensList = Array.isArray(lensTypeData) && lensTypeData.length > 0 ? lensTypeData : Data;
         return (
             <motion.div
                 className={styles.lensMain}
@@ -1038,10 +1024,10 @@ export default function index() {
                     </motion.h1>
 
                     <div className={styles.lensCardContainer}>
-                        {lensOptions.map((lens, idx) => (
+                        {lensList.map((lens, idx) => (
                             <motion.div
-                                key={idx}
-                                className={styles.lensCard + (selectedLens && selectedLens.title === lens.title ? ' ' + styles.selectedLens : '')}
+                                key={lens._id}
+                                className={styles.lensCard + (selectedLens && selectedLens._id === lens._id ? ' ' + styles.selectedLens : '')}
                                 onClick={() => setSelectedLens(lens)}
                                 initial={{ opacity: 0, y: 20 }}
                                 animate={{ opacity: 1, y: 0 }}
@@ -1049,17 +1035,14 @@ export default function index() {
                                 whileHover={{ scale: 1.02, boxShadow: "0 8px 16px rgba(0,0,0,0.1)" }}
                                 whileTap={{ scale: 0.98 }}
                             >
-                                <div className={styles.lensLeft}>
-                                    <span style={{ fontSize: '2rem' }}>{lens.icon}</span>
-                                </div>
+
                                 <div className={styles.lensRight}>
                                     <div className={styles.lensContent}>
-                                        <h2>{lens.title}</h2>
+                                        <h2>{lens.name}</h2>
                                         <ul>
-                                            {lens.features.map((f, i) => <li key={i}>{f}</li>)}
+                                            {lens.description.split(',').map((desc, i) => <li key={i}>{desc.trim()}</li>)}
                                         </ul>
-                                        <span className={styles.lensWarranty}>{lens.warranty}</span>
-                                        <span className={styles.lensOffer}>{lens.offer}</span>
+                                        <span className={styles.lensWarranty}>{lens.warranty} Months Warranty</span>
                                     </div>
                                     <div className={styles.lensPrice}>
                                         ₹{lens.price}
@@ -1080,7 +1063,7 @@ export default function index() {
                                 }
                             }}
                         >
-                            {selectedLens ? `Select "${selectedLens.title}" and Continue` : 'Select a Lens to Continue'}
+                            {selectedLens ? `Select "${selectedLens.name}" and Continue` : 'Select a Lens to Continue'}
                         </button>
                     </div>
                 </div>

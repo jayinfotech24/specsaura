@@ -6,6 +6,7 @@ import { FaThreads } from "react-icons/fa6";
 import { FaFacebookF } from "react-icons/fa";
 import { useRouter } from 'next/router';
 
+
 export default function Footer() {
     const router = useRouter()
 
@@ -15,9 +16,16 @@ export default function Footer() {
         window.open(`https://www.google.com/maps/search/?api=1&query=${encodedAddress}`, '_blank');
     }
 
-    const handleCategoryClick = (gender) => {
-        router.push(`/category/f?gender=${gender}`);
-    }
+    const handleGenderClick = (gender) => {
+    const categoryId = router.query.categoryId || "67ec193b4c7e05897cf5586e";
+
+    router.push({
+        pathname: `/category/${categoryId}`,
+        query: { gender }
+    });
+};
+
+
 
     return (
         <div className={styles.footer}>
@@ -55,10 +63,8 @@ export default function Footer() {
                     <div className={styles.container1}>
                         <h3>Categories</h3>
                         <ul>
-                            <li onClick={() => handleCategoryClick('women')} style={{ cursor: 'pointer' }}>Women's Eyeglasses</li>
-                            <li onClick={() => handleCategoryClick('men')} style={{ cursor: 'pointer' }}>Men's Eyeglasses</li>
-                            {/* <li onClick={() => handleCategoryClick('rayban')} style={{ cursor: 'pointer' }}>Ray Ban Eyeglasses</li> */}
-                            {/* <li onClick={() => handleCategoryClick('designer')} style={{ cursor: 'pointer' }}>Designer Eyelasses</li> */}
+                            <li onClick={() => handleGenderClick('Female')} style={{ cursor: 'pointer' }}>Women's Eyeglasses</li>
+                            <li onClick={() => handleGenderClick('Male')} style={{ cursor: 'pointer' }}>Men's Eyeglasses</li>
                         </ul>
                     </div>
                 </div>
