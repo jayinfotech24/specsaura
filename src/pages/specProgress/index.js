@@ -32,6 +32,7 @@ export default function index() {
     const router = useRouter();
     const [IsBifocel, setIsBifocal] = useState(false)
     const [IsSingle, setIsSingle] = useState(false)
+    const [IsProgressive, setIsProgressive] = useState(false)
     const [progress, setProgress] = useState(0);
     const [IsLoading, setIsLoading] = useState(false)
     const dispatch = useDispatch();
@@ -41,6 +42,7 @@ export default function index() {
     const [isLensComplete, setIsLensComplete] = useState(false);
     const [lensTypeData, setLensTypeData] = useState(null);
     const [LensName, setLensName] = useState("")
+    const [selectedCoatings, setSelectedCoatings] = useState({});
 
     useEffect(() => {
         Validate(router)
@@ -52,7 +54,29 @@ export default function index() {
             setTotalPrice(product.price);
         }
     }, [])
+    const [Data, setData] = useState([])
+    // Fallback lensTypes array for demonstration
+    const GetData = () => {
+        setIsLoading(true)
+        dispatch(GetLensDeatil(LensName)).then((res) => {
 
+            console.log("Res", res)
+            if (res.payload.status == 200) {
+                setData(res.payload.lensTypes)
+                setIsLoading(false)
+            }
+            setIsLoading(false)
+        }).catch((error) => {
+            console.log("Error", error)
+            setIsLoading(false)
+        })
+    }
+    useEffect(() => {
+        if (LensName) {
+            GetData();
+        }
+        // eslint-disable-next-line
+    }, [LensName]);
     const Changepage = (number, IsFile) => {
         if (number == 0) {
             setFirstStep(true)
@@ -128,7 +152,6 @@ export default function index() {
                 console.log("Response:", response);
                 if (response.status == 200) {
                     setLensTypeData(response.data);
-                    // Store lens type data in localStorage for later use
                     localStorage.setItem('lensTypeData', JSON.stringify(response.data));
                 } else {
                     toast.error("Failed to get lens type data");
@@ -149,19 +172,33 @@ export default function index() {
                 badge: "Most common",
                 onClick: async () => {
                     setLensName("Single Vision")
-                    // await getLensType("singleVision");
                     setIsSingle(true);
+                    setIsBifocal(false);
+                    setIsProgressive(false);
                     Changepage(1);
                 }
             },
             {
-                title: "Progressive/Bifocals",
-                subtitle: "Two powers in one eye",
+                title: "Bifocal",
+                subtitle: "Two powers in one eye (Distance & Near)",
+                image: "/Images/bifocal.webp",
+                onClick: async () => {
+                    setLensName("Bifocal")
+                    setIsBifocal(true);
+                    setIsSingle(false);
+                    setIsProgressive(false);
+                    Changepage(1);
+                }
+            },
+            {
+                title: "Progressive",
+                subtitle: "Seamless vision for Distance, Intermediate & Near",
                 image: "/Images/bifocal.webp",
                 onClick: async () => {
                     setLensName("Progressive")
-                    // await getLensType("progressive");
-                    setIsBifocal(true);
+                    setIsProgressive(true);
+                    setIsBifocal(false);
+                    setIsSingle(false);
                     Changepage(1);
                 }
             },
@@ -986,22 +1023,16 @@ export default function index() {
 
     // Lens Selection Page UI
     const LensSelectionPage = () => {
-        const [Data, setData] = useState([])
-        // Fallback lensTypes array for demonstration
-        const GetData = () => {
-            dispatch(GetLensDeatil(LensName)).then((res) => {
-                console.log("Res", res)
-                if (res.payload.status == 200) {
-                    setData(res.payload.lensTypes)
-                }
-            })
-        }
-        useEffect(() => {
-            GetData()
-        }, [])
+
         const [activeTab, setActiveTab] = useState('Bestsellers');
         // Use lensTypeData if available, otherwise fallback to the provided array
         const lensList = Array.isArray(lensTypeData) && lensTypeData.length > 0 ? lensTypeData : Data;
+        const handleCoatingSelect = (lensId, coating) => {
+            setSelectedCoatings(prev => ({
+                ...prev,
+                [lensId]: coating
+            }));
+        };
         return (
             <motion.div
                 className={styles.lensMain}
@@ -1010,6 +1041,7 @@ export default function index() {
                 exit={{ opacity: 0, y: -20 }}
                 transition={{ duration: 0.5, ease: "easeOut" }}
             >
+                {IsLoading && <Preloader />}
                 <button className={styles.backButton} onClick={() => Changepage(0)}>
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-arrow-left-icon lucide-arrow-left"><path d="m12 19-7-7 7-7" /><path d="M19 12H5" /></svg>
                 </button>
@@ -1035,7 +1067,6 @@ export default function index() {
                                 whileHover={{ scale: 1.02, boxShadow: "0 8px 16px rgba(0,0,0,0.1)" }}
                                 whileTap={{ scale: 0.98 }}
                             >
-
                                 <div className={styles.lensRight}>
                                     <div className={styles.lensContent}>
                                         <h2>{lens.name}</h2>
@@ -1048,6 +1079,19 @@ export default function index() {
                                         ₹{lens.price}
                                     </div>
                                 </div>
+                                {Array.isArray(lens.coatings) && lens.coatings.length > 0 && (
+                                    <div className={styles.coatingSection}>
+                                        <h4>Available Coatings:</h4>
+                                        <div className={styles.coatingInfoList}>
+                                            {lens.coatings.map(coating => (
+                                                <div key={coating._id} className={styles.coatingInfoItem}>
+                                                    <span className={styles.coatingTitle}>{coating.title}</span>
+                                                    <span className={styles.coatingDesc}>{coating.description}</span>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                )}
                             </motion.div>
                         ))}
                     </div>
@@ -1059,6 +1103,9 @@ export default function index() {
                                 if (selectedLens) {
                                     setIsLensComplete(true);
                                     localStorage.setItem('selectedLens', JSON.stringify(selectedLens));
+                                    if (selectedCoatings[selectedLens._id]) {
+                                        localStorage.setItem('selectedCoating', JSON.stringify(selectedCoatings[selectedLens._id]));
+                                    }
                                     Changepage(2);
                                 }
                             }}

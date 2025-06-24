@@ -1749,6 +1749,8 @@
   border: 2px solid transparent;
   transition: box-shadow 0.3s, border 0.3s, transform 0.2s;
   min-height: 180px;
+  display: flex;
+  flex-direction: column;
 }
 
 .lensCard:hover {
@@ -1760,6 +1762,8 @@
 .selectedLens {
   border: 2.5px solid #5855eb !important;
   box-shadow: 0 8px 32px rgba(88, 85, 235, 0.18);
+  display: flex;
+  flex-direction: column;
 }
 
 .lensLeft {
@@ -1773,11 +1777,11 @@
 }
 
 .lensRight {
-  flex: 1;
+  flex: 1 1;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  padding: 18px 22px 18px 18px;
+  padding: 18px 22px 0px 18px;
 }
 
 .lensContent h2 {
@@ -2090,4 +2094,138 @@
     width: 18px;
     height: 18px;
   }
+}
+
+.coatingSection {
+  /* margin-top: 16px; */
+  padding: x;
+  padding: 0px 22px 22px 18px;
+}
+
+.coatingSection h4 {
+  color: #000;
+  font-size: 15px;
+  font-weight: 500;
+}
+
+.coatingOptions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.coatingCard {
+  display: flex;
+  align-items: center;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 12px 16px;
+  background: #fafbfc;
+  cursor: pointer;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  min-width: 220px;
+  position: relative;
+  outline: none;
+}
+
+.coatingCard:hover,
+.coatingCard:focus {
+  border-color: #0070f3;
+  box-shadow: 0 2px 8px rgba(0, 112, 243, 0.08);
+}
+
+.selectedCoating {
+  border-color: #0070f3;
+  background: #e6f0fa;
+}
+
+.coatingInfo {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.coatingTitle {
+  font-weight: 600;
+  font-size: 1rem;
+  color: #222;
+}
+
+.coatingDesc {
+  font-size: 0.92rem;
+  color: #555;
+  margin-top: 2px;
+}
+
+.checkmark {
+  color: #0070f3;
+  font-size: 1.3rem;
+  margin-left: 10px;
+  font-weight: bold;
+}
+
+.coatingDropdownWrapper {
+  margin-top: 8px;
+  margin-bottom: 8px;
+}
+
+.coatingDropdown {
+  width: 100%;
+  max-width: 350px;
+  padding: 12px 16px;
+  border-radius: 8px;
+  border: 2px solid #e0e0e0;
+  background: #fafbfc;
+  font-size: 1rem;
+  color: #222;
+  box-shadow: 0 2px 8px rgba(0, 112, 243, 0.04);
+  transition: border-color 0.2s, box-shadow 0.2s;
+  outline: none;
+  font-size: 14px;
+}
+
+.coatingDropdown:focus,
+.coatingDropdown:hover {
+  border-color: #0070f3;
+  box-shadow: 0 2px 12px rgba(0, 112, 243, 0.10);
+}
+
+.selectedCoatingInfo {
+  margin-top: 10px;
+  background: #e6f0fa;
+  border-radius: 8px;
+  padding: 10px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  box-shadow: 0 1px 4px rgba(0, 112, 243, 0.04);
+}
+
+.coatingInfoList {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 8px;
+}
+
+.coatingInfoItem {
+  background: #f6f7ff;
+  border-radius: 8px;
+  padding: 10px 14px;
+  box-shadow: 0 1px 4px rgba(88, 85, 235, 0.06);
+  display: flex;
+  flex-direction: column;
+  border: 1.5px solid #ececec;
+}
+
+.coatingInfoItem .coatingTitle {
+  font-weight: 600;
+  color: #222;
+  font-size: 15px;
+}
+
+.coatingInfoItem .coatingDesc {
+  color: #5855eb;
+  font-size: 12px;
+  margin-top: 2px;
 }
