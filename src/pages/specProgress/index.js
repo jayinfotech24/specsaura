@@ -43,6 +43,9 @@ export default function index() {
     const [lensTypeData, setLensTypeData] = useState(null);
     const [LensName, setLensName] = useState("")
     const [selectedCoatings, setSelectedCoatings] = useState({});
+    const [coatingStep, setCoatingStep] = useState(false);
+    const [selectedCoating, setSelectedCoating] = useState(null);
+    const [isCoatingComplete, setIsCoatingComplete] = useState(false);
 
     useEffect(() => {
         Validate(router)
@@ -81,11 +84,13 @@ export default function index() {
         if (number == 0) {
             setFirstStep(true)
             setLensStep(false);
+            setCoatingStep(false);
             setSecondStep(false);
             setThiredStep(false)
             setFourtStep(false)
             setIsOneComplete(false)
             setIsLensComplete(false)
+            setIsCoatingComplete(false)
             setIsTwoComplete(false)
             setIsThiredComplete(false)
             setIsFourthComplete(false)
@@ -93,22 +98,26 @@ export default function index() {
         if (number == 1) {
             setFirstStep(false)
             setLensStep(true);
+            setCoatingStep(false);
             setSecondStep(false);
             setThiredStep(false)
             setFourtStep(false)
             setIsOneComplete(true)
             setIsLensComplete(false)
+            setIsCoatingComplete(false)
             setIsTwoComplete(false)
             setIsThiredComplete(false)
             setIsFourthComplete(false)
         }
         if (number == 2) {
             setLensStep(false);
+            setCoatingStep(true);
             setFirstStep(false)
-            setSecondStep(true);
+            setSecondStep(false);
             setThiredStep(false)
             setFourtStep(false)
             setIsLensComplete(true)
+            setIsCoatingComplete(false)
             setIsTwoComplete(false)
             setIsThiredComplete(false)
             setIsFourthComplete(false)
@@ -116,21 +125,38 @@ export default function index() {
         if (number == 3) {
             setFirstStep(false)
             setLensStep(false);
-            setSecondStep(false);
-            setThiredStep(true)
+            setCoatingStep(false);
+            setSecondStep(true);
+            setThiredStep(false)
             setFourtStep(false)
             setIsLensComplete(true)
-            setIsTwoComplete(true)
+            setIsCoatingComplete(true)
+            setIsTwoComplete(false)
             setIsThiredComplete(false)
             setIsFourthComplete(false)
         }
         if (number == 4) {
             setFirstStep(false)
             setLensStep(false);
+            setCoatingStep(false);
+            setSecondStep(false);
+            setThiredStep(true)
+            setFourtStep(false)
+            setIsLensComplete(true)
+            setIsCoatingComplete(true)
+            setIsTwoComplete(true)
+            setIsThiredComplete(true)
+            setIsFourthComplete(false)
+        }
+        if (number == 5) {
+            setFirstStep(false)
+            setLensStep(false);
+            setCoatingStep(false);
             setSecondStep(false);
             setThiredStep(false)
             setFourtStep(true)
             setIsLensComplete(true)
+            setIsCoatingComplete(true)
             setIsTwoComplete(true)
             setIsThiredComplete(true)
             setIsFourthComplete(true)
@@ -303,7 +329,7 @@ export default function index() {
                                 title: "Upload File",
                                 onClick: () => {
                                     setIsFile(true)
-                                    Changepage(3)
+                                    Changepage(4)
                                 }
                             },
                             {
@@ -311,7 +337,7 @@ export default function index() {
                                 title: "Enter Manually",
                                 onClick: () => {
                                     setIsFile(false)
-                                    Changepage(3)
+                                    Changepage(4)
                                 }
                             }
                         ].map((option, index) => (
@@ -366,6 +392,8 @@ export default function index() {
                     numberOfItems: 1,
                     specs: specsData,
                     prescriptionID: prescriptionId,
+                    lensType: selectedLens && selectedLens._id ? selectedLens._id : null,
+                    lensCoating: selectedCoating && selectedCoating._id ? selectedCoating._id : null,
                     isAllDataAdded: true // Add this flag to indicate prescription is added
                 };
 
@@ -420,11 +448,16 @@ export default function index() {
                     userID: userId,
                     productID: selectedProduct.id,
                     numberOfItems: 1,
-                    specs: specsData,
+                    // specs: specsData,
                     prescriptionID: prescriptionId,
+                    lensType: selectedLens && selectedLens._id ? selectedLens._id : null,
+                    lensCoating: selectedCoating && selectedCoating._id ? selectedCoating._id : null,
                 };
 
+                console.log("ResJson", responseObject)
+
                 const res = await dispatch(AddCart(responseObject)).unwrap();
+                console.log("CartAdd", res)
                 if (res.status == 200) {
                     toast.success("Product added to cart successfully");
                     localStorage.setItem("cartId", res.cart._id)
@@ -434,6 +467,7 @@ export default function index() {
                     router.push("/login");
                 } else {
                     toast.error("Failed to add product to cart");
+
                 }
             } catch (error) {
                 if (error.response?.status === 401) {
@@ -448,6 +482,13 @@ export default function index() {
                 setIsLoading(false);
             }
         }
+
+        useEffect(() => {
+            let productPrice = selectedProduct ? selectedProduct.price : 0;
+            let lensPrice = selectedLens ? selectedLens.price : 0;
+            let coatingPrice = selectedCoating ? selectedCoating.price : 0;
+            setTotalPrice(productPrice + lensPrice + coatingPrice);
+        }, [selectedProduct, selectedLens, selectedCoating]);
 
         return (
             <motion.div
@@ -483,7 +524,18 @@ export default function index() {
                                     <span>Base Frame</span>
                                     <span>₹{selectedProduct.price}</span>
                                 </div>
-                                {/* Add more price breakdown items based on selections */}
+                                {selectedLens && (
+                                    <div className={styles.priceItem}>
+                                        <span>Lens</span>
+                                        <span>₹{selectedLens.price}</span>
+                                    </div>
+                                )}
+                                {selectedCoating && (
+                                    <div className={styles.priceItem}>
+                                        <span>Coating</span>
+                                        <span>₹{selectedCoating.price}</span>
+                                    </div>
+                                )}
                                 <div className={styles.totalPrice}>
                                     <span>Total Amount</span>
                                     <span>₹{totalPrice}</span>
@@ -658,7 +710,7 @@ export default function index() {
 
                     toast.success("Details added successfully.");
                     setIsLoading(false);
-                    Changepage(4);
+                    Changepage(5);
                 }
             } catch (error) {
                 console.error("Error saving prescription:", error);
@@ -744,7 +796,7 @@ export default function index() {
                         localStorage.setItem("PrescriptionId", res.payload.prescription._id)
                         toast.success("Prescription added successfully!");
                         setIsLoading(false);
-                        Changepage(4);
+                        Changepage(5);
                     }
                 })
                 .catch((error) => {
@@ -1023,16 +1075,9 @@ export default function index() {
 
     // Lens Selection Page UI
     const LensSelectionPage = () => {
-
         const [activeTab, setActiveTab] = useState('Bestsellers');
         // Use lensTypeData if available, otherwise fallback to the provided array
         const lensList = Array.isArray(lensTypeData) && lensTypeData.length > 0 ? lensTypeData : Data;
-        const handleCoatingSelect = (lensId, coating) => {
-            setSelectedCoatings(prev => ({
-                ...prev,
-                [lensId]: coating
-            }));
-        };
         return (
             <motion.div
                 className={styles.lensMain}
@@ -1054,7 +1099,6 @@ export default function index() {
                     >
                         Choose your Lens:
                     </motion.h1>
-
                     <div className={styles.lensCardContainer}>
                         {lensList.map((lens, idx) => (
                             <motion.div
@@ -1079,19 +1123,6 @@ export default function index() {
                                         ₹{lens.price}
                                     </div>
                                 </div>
-                                {Array.isArray(lens.coatings) && lens.coatings.length > 0 && (
-                                    <div className={styles.coatingSection}>
-                                        <h4>Available Coatings:</h4>
-                                        <div className={styles.coatingInfoList}>
-                                            {lens.coatings.map(coating => (
-                                                <div key={coating._id} className={styles.coatingInfoItem}>
-                                                    <span className={styles.coatingTitle}>{coating.title}</span>
-                                                    <span className={styles.coatingDesc}>{coating.description}</span>
-                                                </div>
-                                            ))}
-                                        </div>
-                                    </div>
-                                )}
                             </motion.div>
                         ))}
                     </div>
@@ -1103,14 +1134,91 @@ export default function index() {
                                 if (selectedLens) {
                                     setIsLensComplete(true);
                                     localStorage.setItem('selectedLens', JSON.stringify(selectedLens));
-                                    if (selectedCoatings[selectedLens._id]) {
-                                        localStorage.setItem('selectedCoating', JSON.stringify(selectedCoatings[selectedLens._id]));
-                                    }
                                     Changepage(2);
                                 }
                             }}
                         >
                             {selectedLens ? `Select "${selectedLens.name}" and Continue` : 'Select a Lens to Continue'}
+                        </button>
+                    </div>
+                </div>
+            </motion.div>
+        );
+    };
+
+    // NEW: Coating Selection Page
+    const CoatingSelectionPage = () => {
+        const lens = selectedLens ? selectedLens : (typeof window !== 'undefined' ? JSON.parse(localStorage.getItem('selectedLens')) : null);
+        const coatings = lens && Array.isArray(lens.coatings) ? lens.coatings : [];
+        // Sample icons for demo (could be replaced with SVGs or images)
+        const icons = ["✨", "🛡️", "🌈", "💧", "🔆", "🦾", "👓"];
+        React.useEffect(() => {
+            if (coatings.length === 0) {
+                setIsCoatingComplete(true);
+                Changepage(3);
+            }
+            // eslint-disable-next-line
+        }, [coatings]);
+        return (
+            <motion.div
+                className={styles.lensMain}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                transition={{ duration: 0.5, ease: "easeOut" }}
+                style={{ background: "linear-gradient(135deg, #e6f0fa 0%, #f5f7fa 100%)", minHeight: '100vh', borderRadius: 18 }}
+            >
+                <button className={styles.backButton} onClick={() => Changepage(1)}>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-arrow-left-icon lucide-arrow-left"><path d="m12 19-7-7 7-7" /><path d="M19 12H5" /></svg>
+                </button>
+                <div className={styles.lensInner}>
+                    <motion.h1
+                        style={{ fontSize: "20px", fontWeight: 700, background: "linear-gradient(90deg, #5855eb, #7a78f0)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", marginBottom: 24 }}
+                        initial={{ opacity: 0, y: -20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.2 }}
+                    >
+                        Select Your Coating
+                    </motion.h1>
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 24, justifyContent: 'center', marginTop: 24 }}>
+                        {coatings.length === 0 && <div style={{ padding: '2rem', textAlign: 'center' }}>No coatings available for this lens.</div>}
+                        {coatings.map((coating, idx) => (
+                            <motion.div
+                                key={coating._id}
+                                className={styles.coatingCard + (selectedCoating && selectedCoating._id === coating._id ? ' ' + styles.selectedCoating : '')}
+                                onClick={() => setSelectedCoating(coating)}
+                                initial={{ opacity: 0, scale: 0.95 }}
+                                animate={{ opacity: 1, scale: 1 }}
+                                transition={{ delay: 0.2 + idx * 0.08, type: 'spring', stiffness: 180 }}
+                                whileHover={{ scale: 1.04, boxShadow: "0 8px 24px rgba(88,85,235,0.13)" }}
+                                whileTap={{ scale: 0.97 }}
+                                style={{ minWidth: 240, maxWidth: 320, background: selectedCoating && selectedCoating._id === coating._id ? 'linear-gradient(120deg, #e6f0fa 60%, #dbeafe 100%)' : '#fafbfc', border: selectedCoating && selectedCoating._id === coating._id ? '2.5px solid #5855eb' : '2px solid #e0e0e0', position: 'relative', cursor: 'pointer', transition: 'all 0.3s' }}
+                            >
+                                <div style={{ fontSize: 32, marginRight: 18, marginBottom: 8, textAlign: 'center' }}>{icons[idx % icons.length]}</div>
+                                <div className={styles.coatingInfo} style={{ flex: 1 }}>
+                                    <div className={styles.coatingTitle} style={{ fontSize: '1.08rem', fontWeight: 700 }}>{coating.title}</div>
+                                    <div style={{ fontWeight: 700, color: '#5855eb', fontSize: '1.1rem', margin: '4px 0 2px 0' }}>₹{coating.price}</div>
+                                    <div className={styles.coatingDesc} style={{ fontSize: '0.97rem', color: '#5855eb', marginTop: 4 }}>{coating.description}</div>
+                                </div>
+                                {selectedCoating && selectedCoating._id === coating._id && (
+                                    <span className={styles.checkmark} style={{ position: 'absolute', top: 10, right: 16, fontSize: 22, color: '#5855eb' }}>✔</span>
+                                )}
+                            </motion.div>
+                        ))}
+                    </div>
+                    <div className={styles.lensButtonContainer} style={{ marginTop: 32 }}>
+                        <button
+                            className={styles.proceedButton}
+                            disabled={!selectedCoating && coatings.length > 0}
+                            onClick={() => {
+                                if (selectedCoating) {
+                                    localStorage.setItem('selectedCoating', JSON.stringify(selectedCoating));
+                                    setIsCoatingComplete(true);
+                                    Changepage(3);
+                                }
+                            }}
+                        >
+                            {selectedCoating ? `Select "${selectedCoating.title}" and Continue` : 'Select a Coating to Continue'}
                         </button>
                     </div>
                 </div>
@@ -1126,6 +1234,7 @@ export default function index() {
                     Changepage={Changepage}
                     isOneComplete={isOneComplete}
                     isLensComplete={isLensComplete}
+                    isCoatingComplete={isCoatingComplete}
                     isTwoComplete={isTwoComplete}
                     isThiredComplete={isThiredComplete}
                     isFourthComplete={isFourthComplete}
@@ -1133,6 +1242,7 @@ export default function index() {
                 <AnimatePresence mode="wait">
                     {firstStep && <FirstPage key="first" />}
                     {lensStep && <LensSelectionPage key="lens" />}
+                    {coatingStep && <CoatingSelectionPage key="coating" />}
                     {secondStep && <SecondPage key="second" />}
                     {thiredStep && <FourtPage key="third" />}
                     {fourthStep && <ThiredPage key="fourth" />}

@@ -50,8 +50,10 @@ const OrderDetails = () => {
 
                     const total = response.items.reduce((acc, item) => {
                         const itemPrice = Number(item.productID.price) || 0;
+                        const lensTypePrice = item.lensType && item.lensType.price ? Number(item.lensType.price) : 0;
+                        const lensCoatingPrice = item.lensCoating && item.lensCoating.price ? Number(item.lensCoating.price) : 0;
                         const itemQuantity = Number(item.numberOfItems) || 1;
-                        return acc + (itemPrice * itemQuantity);
+                        return acc + ((itemPrice + lensTypePrice + lensCoatingPrice) * itemQuantity);
                     }, 0);
 
                     setOrderData({
@@ -68,11 +70,14 @@ const OrderDetails = () => {
                     if (!cartId) throw new Error("Cart ID missing from localStorage");
 
                     const res = await dispatch(GetSingleCart(cartId)).unwrap();
+                    console.log("Res", res)
                     const selectedProduct = res?.carts?.productID;
 
                     const basePrice = Number(selectedProduct.price) || 0;
+                    const lensTypePrice = res.carts.lensType && res.carts.lensType.price ? Number(res.carts.lensType.price) : 0;
+                    const lensCoatingPrice = res.carts.lensCoating && res.carts.lensCoating.price ? Number(res.carts.lensCoating.price) : 0;
                     const additionalCost = Number(specsData.additionalCost) || 0;
-                    const total = basePrice + additionalCost;
+                    const total = basePrice + lensTypePrice + lensCoatingPrice + additionalCost;
 
                     setOrderData({
                         items: [
@@ -83,7 +88,9 @@ const OrderDetails = () => {
                                     productId: productId,
                                     cartId: cartId,
                                     prescription: res.carts.prescriptionID._id
-                                }
+                                },
+                                lensType: res.carts.lensType,
+                                lensCoating: res.carts.lensCoating
                             }
                         ],
                         total: total
@@ -96,12 +103,15 @@ const OrderDetails = () => {
                     const cartId = localStorage.getItem("cartId");
 
                     const res = await dispatch(GetSingleCart(cartId)).unwrap();
+                    console.log("Res", res)
                     const selectedProduct = res?.carts?.productID;
 
                     if (selectedProduct && selectedProduct.price) {
                         const basePrice = Number(selectedProduct.price) || 0;
+                        const lensTypePrice = res.carts.lensType && res.carts.lensType.price ? Number(res.carts.lensType.price) : 0;
+                        const lensCoatingPrice = res.carts.lensCoating && res.carts.lensCoating.price ? Number(res.carts.lensCoating.price) : 0;
                         const additionalCost = Number(specsData.additionalCost) || 0;
-                        const total = basePrice + additionalCost;
+                        const total = basePrice + lensTypePrice + lensCoatingPrice + additionalCost;
 
                         setOrderData({
                             items: [
@@ -112,7 +122,9 @@ const OrderDetails = () => {
                                         productId: productId,
                                         cartId: cartId,
                                         prescription: res.carts.prescriptionID._id
-                                    }
+                                    },
+                                    lensType: res.carts.lensType,
+                                    lensCoating: res.carts.lensCoating
                                 }
                             ],
                             total: total
@@ -480,10 +492,26 @@ const OrderDetails = () => {
                         <div className={styles.section}>
                             <h2>Order Summary</h2>
                             <div className={styles.summary}>
-                                <div className={styles.summaryItem}>
-                                    <span>Subtotal</span>
-                                    <span>₹{orderData.total.toLocaleString('en-IN')}</span>
-                                </div>
+                                {orderData.items.length > 0 && (
+                                    <>
+                                        <div className={styles.summaryItem}>
+                                            <span>Product Price</span>
+                                            <span>₹{(orderData.items[0].productID.price || 0).toLocaleString('en-IN')}</span>
+                                        </div>
+                                        {orderData.items[0].lensType && orderData.items[0].lensType.price && (
+                                            <div className={styles.summaryItem}>
+                                                <span>Lens Price</span>
+                                                <span>₹{orderData.items[0].lensType.price.toLocaleString('en-IN')}</span>
+                                            </div>
+                                        )}
+                                        {orderData.items[0].lensCoating && orderData.items[0].lensCoating.price && (
+                                            <div className={styles.summaryItem}>
+                                                <span>Coating Price</span>
+                                                <span>₹{orderData.items[0].lensCoating.price.toLocaleString('en-IN')}</span>
+                                            </div>
+                                        )}
+                                    </>
+                                )}
                                 <div className={styles.summaryItem}>
                                     <span>Shipping</span>
                                     <span>Free</span>

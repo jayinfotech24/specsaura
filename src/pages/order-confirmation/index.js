@@ -100,7 +100,10 @@ const OrderConfirmation = () => {
     // Calculate subtotal from items
     const calculateSubtotal = () => {
         return orderData?.items?.reduce((total, item) => {
-            return total + (item.productID?.price || 0);
+            const productPrice = item.productID?.price || 0;
+            const lensTypePrice = item.lensType && item.lensType.price ? Number(item.lensType.price) : 0;
+            const lensCoatingPrice = item.lensCoating && item.lensCoating.price ? Number(item.lensCoating.price) : 0;
+            return total + productPrice + lensTypePrice + lensCoatingPrice;
         }, 0);
     };
 
@@ -336,25 +339,33 @@ const OrderConfirmation = () => {
                             <thead>
                                 <tr>
                                     <th>Item</th>
-                                    <th>Price</th>
+                                    <th>Product Price</th>
+                                    <th>Lens Price</th>
+                                    <th>Coating Price</th>
+                                    <th>Total</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                ${orderData.items.map(item => `
+                                ${orderData.items.map(item => {
+            const productPrice = item.productID?.price || 0;
+            const lensTypePrice = item.lensType && item.lensType.price ? Number(item.lensType.price) : 0;
+            const lensCoatingPrice = item.lensCoating && item.lensCoating.price ? Number(item.lensCoating.price) : 0;
+            const itemTotal = productPrice + lensTypePrice + lensCoatingPrice;
+            return `
                                     <tr>
                                         <td>${item.productID?.name || 'Product Name'}</td>
-                                        <td>₹${item.productID?.price?.toLocaleString('en-IN') || '0'}</td>
+                                        <td>₹${productPrice.toLocaleString('en-IN')}</td>
+                                        <td>₹${lensTypePrice ? lensTypePrice.toLocaleString('en-IN') : '0'}</td>
+                                        <td>₹${lensCoatingPrice ? lensCoatingPrice.toLocaleString('en-IN') : '0'}</td>
+                                        <td>₹${itemTotal.toLocaleString('en-IN')}</td>
                                     </tr>
-                                `).join('')}
+                                    `;
+        }).join('')}
                             </tbody>
                         </table>
                     </div>
 
                     <div class="summary">
-                        <div class="summary-item">
-                            <span>Subtotal</span>
-                            <span>₹${subtotal.toLocaleString('en-IN')}</span>
-                        </div>
                         <div class="summary-item">
                             <span>Shipping</span>
                             <span>Free</span>
@@ -439,10 +450,26 @@ const OrderConfirmation = () => {
                     <div className={styles.section}>
                         <h2>Order Summary</h2>
                         <div className={styles.summary}>
-                            <div className={styles.summaryItem}>
-                                <span>Subtotal</span>
-                                <span>₹{subtotal.toLocaleString('en-IN')}</span>
-                            </div>
+                            {orderData.items.length > 0 && (
+                                <>
+                                    <div className={styles.summaryItem}>
+                                        <span>Product Price</span>
+                                        <span>₹{(orderData.items[0].productID.price || 0).toLocaleString('en-IN')}</span>
+                                    </div>
+                                    {orderData.items[0].lensType && orderData.items[0].lensType.price && (
+                                        <div className={styles.summaryItem}>
+                                            <span>Lens Price</span>
+                                            <span>₹{orderData.items[0].lensType.price.toLocaleString('en-IN')}</span>
+                                        </div>
+                                    )}
+                                    {orderData.items[0].lensCoating && orderData.items[0].lensCoating.price && (
+                                        <div className={styles.summaryItem}>
+                                            <span>Coating Price</span>
+                                            <span>₹{orderData.items[0].lensCoating.price.toLocaleString('en-IN')}</span>
+                                        </div>
+                                    )}
+                                </>
+                            )}
                             <div className={styles.summaryItem}>
                                 <span>Shipping</span>
                                 <span>Free</span>
