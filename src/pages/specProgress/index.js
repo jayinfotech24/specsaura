@@ -81,85 +81,54 @@ export default function index() {
         // eslint-disable-next-line
     }, [LensName]);
     const Changepage = (number, IsFile) => {
+        // Reset all steps
+        setFirstStep(false);
+        setLensStep(false);
+        setCoatingStep(false);
+        setSecondStep(false);
+        setThiredStep(false);
+        setFourtStep(false);
+
+        // Reset all completion states
+        setIsOneComplete(false);
+        setIsLensComplete(false);
+        setIsCoatingComplete(false);
+        setIsTwoComplete(false);
+        setIsThiredComplete(false);
+        setIsFourthComplete(false);
+
         if (number == 0) {
-            setFirstStep(true)
-            setLensStep(false);
-            setCoatingStep(false);
-            setSecondStep(false);
-            setThiredStep(false)
-            setFourtStep(false)
-            setIsOneComplete(false)
-            setIsLensComplete(false)
-            setIsCoatingComplete(false)
-            setIsTwoComplete(false)
-            setIsThiredComplete(false)
-            setIsFourthComplete(false)
+            setFirstStep(true);
         }
         if (number == 1) {
-            setFirstStep(false)
             setLensStep(true);
-            setCoatingStep(false);
-            setSecondStep(false);
-            setThiredStep(false)
-            setFourtStep(false)
-            setIsOneComplete(true)
-            setIsLensComplete(false)
-            setIsCoatingComplete(false)
-            setIsTwoComplete(false)
-            setIsThiredComplete(false)
-            setIsFourthComplete(false)
+            setIsOneComplete(true);
         }
         if (number == 2) {
-            setLensStep(false);
             setCoatingStep(true);
-            setFirstStep(false)
-            setSecondStep(false);
-            setThiredStep(false)
-            setFourtStep(false)
-            setIsLensComplete(true)
-            setIsCoatingComplete(false)
-            setIsTwoComplete(false)
-            setIsThiredComplete(false)
-            setIsFourthComplete(false)
+            setIsOneComplete(true);
+            setIsLensComplete(true);
         }
         if (number == 3) {
-            setFirstStep(false)
-            setLensStep(false);
-            setCoatingStep(false);
             setSecondStep(true);
-            setThiredStep(false)
-            setFourtStep(false)
-            setIsLensComplete(true)
-            setIsCoatingComplete(true)
-            setIsTwoComplete(false)
-            setIsThiredComplete(false)
-            setIsFourthComplete(false)
+            setIsOneComplete(true);
+            setIsLensComplete(true);
+            setIsCoatingComplete(true);
         }
         if (number == 4) {
-            setFirstStep(false)
-            setLensStep(false);
-            setCoatingStep(false);
-            setSecondStep(false);
-            setThiredStep(true)
-            setFourtStep(false)
-            setIsLensComplete(true)
-            setIsCoatingComplete(true)
-            setIsTwoComplete(true)
-            setIsThiredComplete(true)
-            setIsFourthComplete(false)
+            setThiredStep(true);
+            setIsOneComplete(true);
+            setIsLensComplete(true);
+            setIsCoatingComplete(true);
+            setIsTwoComplete(true);
         }
         if (number == 5) {
-            setFirstStep(false)
-            setLensStep(false);
-            setCoatingStep(false);
-            setSecondStep(false);
-            setThiredStep(false)
-            setFourtStep(true)
-            setIsLensComplete(true)
-            setIsCoatingComplete(true)
-            setIsTwoComplete(true)
-            setIsThiredComplete(true)
-            setIsFourthComplete(true)
+            setFourtStep(true);
+            setIsOneComplete(true);
+            setIsLensComplete(true);
+            setIsCoatingComplete(true);
+            setIsTwoComplete(true);
+            setIsThiredComplete(true);
         }
     }
 
@@ -719,7 +688,7 @@ export default function index() {
             }
         }
         const handleClick = (e) => {
-            e.preventDefault()
+            // e.preventDefault()
             inputRef.current.click()
         }
         const handleFileChange = (event) => {
@@ -811,9 +780,7 @@ export default function index() {
 
 
 
-        useEffect(() => {
-            ////console.log("tw", IsTwoPds)
-        }, [IsTwoPds])
+
         return (
             <div
                 initial={{ x: 500, opacity: 0 }}
@@ -830,7 +797,7 @@ export default function index() {
                     <h1 style={{ fontSize: "15px" }}>Enter Your Prescription Manually</h1>
 
                     <div >
-                        <form onSubmit={handleSubmit(SubmitHandler)}>
+                        <form onSubmit={e => { e.preventDefault(); SubmitHandler(e) }}>
 
 
 
@@ -1014,14 +981,14 @@ export default function index() {
                     </div>
                     <div className={styles.buttonWrapper}>
                         <p>Upload your prescription for us to confirm that you have entered it correctly (Optional).</p>
-                        <button onClick={(e) => handleClick(e)}    >
+                        <button type="button" onClick={(e) => handleClick(e)}>
                             <span><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-link"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" /><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" /></svg></span>
                             Choose File
                         </button>
                         <input style={{ display: "none" }} type='file' ref={inputRef} onChange={handleFileChange} />
                     </div>
                     <div className={styles.filenameContainer}>
-                        {selectedFile && <p style={{ color: "#000" }}> {selectedFile.name}</p>}
+                        {selectedFile && <p style={{ color: "#000", textAlign: "center" }}> {selectedFile.name}</p>}
                     </div>
 
                     <div className={styles.buttonContainer}>
@@ -1040,11 +1007,11 @@ export default function index() {
                             </button>
                             <h1 style={{ fontSize: "15px" }}>Upload Prescription</h1>
                             <p>Please upload your prescription as a PNG, JPG or PDF file.</p>
-                            <form >
+                            <form onSubmit={e => { e.preventDefault(); HandleSaveFile(e) }}>
                                 <div className={styles.buttonWrapper}>
 
                                     <p>Upload your prescription for us to confirm that you have entered it correctly (Optional).</p>
-                                    <button onClick={(e) => handleClick(e)} >
+                                    <button type="button" onClick={(e) => handleClick(e)} >
                                         <span><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-link"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" /><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" /></svg></span>
                                         Choose File
                                     </button>
@@ -1056,11 +1023,11 @@ export default function index() {
                                     <input type='file' ref={inputRef} style={{ display: "none" }} onChange={handleFileChange} />
                                 </div>
                                 <div style={{ width: "100%", padding: "0px 40px", height: "10px" }}>
-                                    <p style={{ color: "#000" }}> {selectedFile && selectedFile.fileName}</p>
+                                    <p style={{ color: "#000", textAlign: "center" }}> {selectedFile && selectedFile.fileName}</p>
                                 </div>
-                                {selectedFile && <p style={{ color: "#000" }}> {selectedFile.name}</p>}
+                                {selectedFile && <p style={{ color: "#000", textAlign: "center" }}> {selectedFile.name}</p>}
                                 <div className={styles.buttonContainer}>
-                                    <button type='submit' onClick={(e) => HandleSaveFile(e)}>
+                                    <button type='submit'>
                                         Save and Continue
                                     </button>
                                 </div>

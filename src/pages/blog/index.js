@@ -82,29 +82,36 @@ const Blog = () => {
                 </div>
 
                 {/* Blog Posts Grid */}
-                <div className={styles.blogGrid}>
-                    {filteredPosts.map((post) => (
-                        <article key={post._id} className={styles.blogCard}>
-                            <div className={styles.imageContainer}>
-                                <img src={post.url} alt={post.title} />
-                            </div>
-                            <div className={styles.cardContent}>
-                                <h2>{post.title}</h2>
-                                <p>{post.description}</p>
-                                <div className={styles.metaInfo}>
-                                    <span><FaCalendarAlt /> {formatDate(post.createdAt)}</span>
-                                    <span><FaUser /> {post.writerName}</span>
+                {filteredPosts.length === 0 ? (
+                    <div className={styles.noBlogFound}>
+                        <h2>No blog found</h2>
+                        <p>We couldn't find any blog posts matching your search or there are no blogs available at the moment.</p>
+                    </div>
+                ) : (
+                    <div className={styles.blogGrid}>
+                        {filteredPosts.map((post) => (
+                            <article key={post._id} className={styles.blogCard}>
+                                <div className={styles.imageContainer}>
+                                    <img src={post.url} alt={post.title} />
                                 </div>
-                                <button
-                                    className={styles.readMore}
-                                    onClick={() => handleReadMore(post)}
-                                >
-                                    Read More
-                                </button>
-                            </div>
-                        </article>
-                    ))}
-                </div>
+                                <div className={styles.cardContent}>
+                                    <h2>{post.title}</h2>
+                                    <p>{post.description}</p>
+                                    <div className={styles.metaInfo}>
+                                        <span><FaCalendarAlt /> {formatDate(post.createdAt)}</span>
+                                        <span><FaUser /> {post.writerName}</span>
+                                    </div>
+                                    <button
+                                        className={styles.readMore}
+                                        onClick={() => handleReadMore(post)}
+                                    >
+                                        Read More
+                                    </button>
+                                </div>
+                            </article>
+                        ))}
+                    </div>
+                )}
             </div>
 
             {/* Blog Detail Modal */}

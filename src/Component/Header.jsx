@@ -156,7 +156,7 @@ export default function Header({ isHeaderVisible }) {
                             <li onClick={() => { router.push("/") }}>Home</li>
                             <li onClick={() => { router.push("/category/f") }}>Shop</li>
                             {/* <li>Featured</li> <li>Pages</li> */}
-                            <li>Blogs</li>
+                            <li onClick={()=>router.push("/blog")}>Blogs</li>
                         </ul>
                     </motion.div>
                 )}
