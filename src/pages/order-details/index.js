@@ -492,34 +492,37 @@ const OrderDetails = () => {
                         <div className={styles.section}>
                             <h2>Order Summary</h2>
                             <div className={styles.summary}>
-                                {orderData.items.length > 0 && (
-                                    <>
+                                {orderData.items.map((item, index) => (
+                                    <div key={index} className={styles.itemSummary}>
                                         <div className={styles.summaryItem}>
-                                            <span>Product Price</span>
-                                            <span>₹{(orderData.items[0].productID.price || 0).toLocaleString('en-IN')}</span>
+                                            <span>{item.productID.name || 'Product'}</span>
+                                            <span>₹{(item.productID.price || 0).toLocaleString('en-IN')}</span>
                                         </div>
-                                        {orderData.items[0].lensType && orderData.items[0].lensType.price && (
+                                        {item.lensType && item.lensType.price && (
                                             <div className={styles.summaryItem}>
-                                                <span>Lens Price</span>
-                                                <span>₹{orderData.items[0].lensType.price.toLocaleString('en-IN')}</span>
+                                                <span>Lens ({item.lensType.name})</span>
+                                                <span>₹{item.lensType.price.toLocaleString('en-IN')}</span>
                                             </div>
                                         )}
-                                        {orderData.items[0].lensCoating && orderData.items[0].lensCoating.price && (
+                                        {item.lensCoating && item.lensCoating.price && (
                                             <div className={styles.summaryItem}>
-                                                <span>Coating Price</span>
-                                                <span>₹{orderData.items[0].lensCoating.price.toLocaleString('en-IN')}</span>
+                                                <span>Coating ({item.lensCoating.title})</span>
+                                                <span>₹{item.lensCoating.price.toLocaleString('en-IN')}</span>
                                             </div>
                                         )}
-                                    </>
-                                )}
+                                        {from === 'cart' && item.numberOfItems > 1 && (
+                                            <div className={styles.summaryItem}>
+                                                <span>Quantity: {item.numberOfItems}</span>
+                                                <span>₹{((item.productID.price || 0) + (item.lensType?.price || 0) + (item.lensCoating?.price || 0)) * item.numberOfItems}</span>
+                                            </div>
+                                        )}
+                                        {index < orderData.items.length - 1 && <hr className={styles.summaryDivider} />}
+                                    </div>
+                                ))}
                                 <div className={styles.summaryItem}>
                                     <span>Shipping</span>
                                     <span>Free</span>
                                 </div>
-                                {/* <div className={styles.summaryItem}>
-                                    <span>Tax (18%)</span>
-                                    <span>₹{(orderData.totalAmount * 0.18).toLocaleString('en-IN')}</span>
-                                </div> */}
                                 <div className={styles.total}>
                                     <span>Total Amount</span>
                                     <span className={styles.totalAmount}>

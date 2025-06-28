@@ -92,8 +92,11 @@ export default function index() {
     }, [])
     const totalAmount = CartData?.reduce((acc, item) => {
         const itemPrice = Number(item.productID.price) || 0;
+        const lensTypePrice = item.lensType && item.lensType.price ? Number(item.lensType.price) : 0;
+        const lensCoatingPrice = item.lensCoating && item.lensCoating.price ? Number(item.lensCoating.price) : 0;
         const itemQuantity = Number(item.numberOfItems) || 1;
-        return acc + (itemPrice * itemQuantity);
+        const itemTotal = (itemPrice + lensTypePrice + lensCoatingPrice) * itemQuantity;
+        return acc + itemTotal;
     }, 0);
 
     console.log("Total Amount:", totalAmount);
@@ -284,9 +287,12 @@ export default function index() {
                                 </thead>
                                 <tbody>
                                     {CartData?.map((item) => {
+                                        console.log("Item", item)
                                         const itemPrice = Number(item.productID.price) || 0;
+                                        const lensTypePrice = item.lensType && item.lensType.price ? Number(item.lensType.price) : 0;
+                                        const lensCoatingPrice = item.lensCoating && item.lensCoating.price ? Number(item.lensCoating.price) : 0;
                                         const itemQuantity = Number(item.numberOfItems) || 1;
-                                        const itemTotal = itemPrice * itemQuantity;
+                                        const itemTotal = (itemPrice + lensTypePrice + lensCoatingPrice) * itemQuantity;
                                         const needsPrescription = !item.isAllDataAdded;
 
                                         return (
@@ -301,7 +307,9 @@ export default function index() {
                                                     </div>
                                                 </td>
                                                 <td data-label="Price">
-                                                    <h2 style={{ fontSize: '14px' }}>{`₹${itemTotal?.toLocaleString('en-IN')}`}</h2>
+                                                    <h2 style={{ fontSize: '14px', color: "#000" }}>
+                                                        {`₹${itemTotal?.toLocaleString('en-IN')}`}
+                                                    </h2>
                                                 </td>
                                                 <td data-label="Quantity">
                                                     <div className={styles.quantity}>

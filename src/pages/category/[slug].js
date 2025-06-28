@@ -69,13 +69,20 @@ export default function CategoryPage() {
 
             // Filter by category ID if slug is present and not empty
             if (router.query.slug && router.query.slug !== '' && router.query.slug !== undefined) {
-                filtered = filtered.filter(product => {
+                const categoryFiltered = filtered.filter(product => {
                     console.log("Checking product:", {
                         product
                     });
                     return product.category._id == router.query.slug;
                 });
-                console.log("Filtered Products by Category:", filtered);
+                console.log("Filtered Products by Category:", categoryFiltered);
+
+                // If no products found for the category, show all products
+                if (categoryFiltered.length === 0) {
+                    filtered = [...Products]; // Show all products
+                } else {
+                    filtered = categoryFiltered;
+                }
             }
 
             // Apply active filters

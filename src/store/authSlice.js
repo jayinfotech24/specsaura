@@ -277,9 +277,9 @@ export const GetCartMany = createAsyncThunk(
 );
 export const UpdateCartFlag = createAsyncThunk(
     "api/updateCartFlag",
-    async (credentials, { rejectWithValue }) => {
+    async (id, { rejectWithValue }) => {
         try {
-            const response = await axiosInstance.patch(`${Appapis.Basurl}${Appapis.updateCartFlag}`, credentials);
+            const response = await axiosInstance.patch(`${Appapis.Basurl}${Appapis.updateCartFlag(id)}`);
             return response.data;
         }
         catch (error) {

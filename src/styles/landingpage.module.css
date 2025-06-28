@@ -532,7 +532,7 @@
 /* Mobile responsive */
 @media (max-width: 768px) {
   .collection {
-    padding: 20px 50px;
+    padding: 20px 40px;
     gap: 30px;
   }
 

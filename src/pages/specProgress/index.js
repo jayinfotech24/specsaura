@@ -9,7 +9,7 @@ import *as yup from "yup"
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useRef } from 'react';
 import { useDispatch } from 'react-redux';
-import { FileUpload, SavePrescription, AddCart, GetUser, UpdateCart, GetLensType, GetLensDeatil } from '../../store/authSlice';
+import { FileUpload, SavePrescription, AddCart, GetUser, UpdateCart, GetLensType, GetLensDeatil, UpdateCartFlag } from '../../store/authSlice';
 import { ToastContainer, toast } from 'react-toastify';
 import ProgressBar from "@ramonak/react-progress-bar";
 import Preloader from '../../Component/Animated';
@@ -430,6 +430,16 @@ export default function index() {
                 if (res.status == 200) {
                     toast.success("Product added to cart successfully");
                     localStorage.setItem("cartId", res.cart._id)
+
+                    // Update cart flag before proceeding to payment
+                    try {
+                        await dispatch(UpdateCartFlag(res.cart._id)).unwrap();
+                        console.log("Cart flag updated successfully");
+                    } catch (flagError) {
+                        console.error("Error updating cart flag:", flagError);
+                        // Continue with payment even if flag update fails
+                    }
+
                     router.push('/order-details');
                 } else if (res.status === 401) {
                     toast.error("Please login to continue");
@@ -620,9 +630,22 @@ export default function index() {
 
 
         const { register, handleSubmit, formState: { errors } } = useForm({
-            resolver: yupResolver(isMobile ? MobileValidationSchema : validationSchema)
+            resolver: yupResolver(isMobile ? MobileValidationSchema : validationSchema),
+            defaultValues: {
+                rightsph: "",
+                rightcyl: "",
+                rightaxis: "",
+                leftsph: "",
+                leftcyl: "",
+                leftaxis: "",
+                pd: "",
+                leftPd: "",
+                rightPd: "",
+                powers: ""
+            }
         });
-        console.log("EEE", errors)
+
+
         useEffect(() => {
             if (Object.keys(errors).length > 0) {
                 setIsLoading(false); // Stop loader before showing alert
@@ -712,7 +735,8 @@ export default function index() {
             // ////console.log("Hidden button clicked!");
             // alert("Hidden button was triggered!");
         };
-        const handleUpload = () => {
+        const handleUpload = (e) => {
+            e.preventDefault()
             if (buttonRef.current) {
                 //console.log("Triggering hidden button click..."); // Debugging log
                 buttonRef.current.click();
@@ -721,6 +745,8 @@ export default function index() {
             }
         }
         const HandleSaveFile = (e) => {
+            e.preventDefault()
+            console.log("Callssss")
             e.preventDefault();
             if (!selectedFile) {
                 setIsLoading(false); // Stop loader before showing alert
@@ -759,7 +785,7 @@ export default function index() {
                     }
                 })
                 .then((res) => {
-                    console.log("PPPPPPP", res)
+                    console.log("R", res)
                     if (res && res.payload && res.payload.status == 200) {
                         console.log("PPPPPPP2", res.payload.prescription._id)
                         localStorage.setItem("PrescriptionId", res.payload.prescription._id)
@@ -797,7 +823,7 @@ export default function index() {
                     <h1 style={{ fontSize: "15px" }}>Enter Your Prescription Manually</h1>
 
                     <div >
-                        <form onSubmit={e => { e.preventDefault(); SubmitHandler(e) }}>
+                        <form onSubmit={handleSubmit(SubmitHandler)}>
 
 
 
@@ -816,7 +842,7 @@ export default function index() {
                                 <div className={styles.column}>
                                     <label>SPH</label>
                                     <select {...register("rightsph")}>
-                                        <option value="" disabled selected>-- Select --</option> {/* Default option */}
+                                        <option value="" disabled >-- Select --</option> {/* Default option */}
                                         {[
                                             "-10.00", "-9.75", "-9.50", "-9.25", "-9.00", "-8.75", "-8.50", "-8.25", "-8.00",
                                             "-7.75", "-7.50", "-7.25", "-7.00", "-6.75", "-6.50", "-6.25", "-6.00",
@@ -834,7 +860,7 @@ export default function index() {
                                 <div className={styles.column}>
                                     <label>CYL</label>
                                     <select {...register("rightcyl")}>
-                                        <option value="" disabled selected>-- Select --</option> {/* Default option */}
+                                        <option value="" disabled >-- Select --</option> {/* Default option */}
                                         {[
                                             "-6.00", "-5.75", "-5.50", "-5.25", "-5.00", "-4.75", "-4.50", "-4.25", "-4.00",
                                             "-3.75", "-3.50", "-3.25", "-3.00", "-2.75", "-2.50", "-2.25", "-2.00", "-1.75",
@@ -851,7 +877,7 @@ export default function index() {
                                 <div className={styles.column}>
                                     <label>AXIS</label>
                                     <select {...register("rightaxis")}>
-                                        <option value="" disabled selected>-- Select --</option> {/* Default option */}
+                                        <option value="" disabled >-- Select --</option> {/* Default option */}
                                         {axisValues.map((value, index) => (
                                             <option key={value} value={value}>
                                                 {value}
@@ -870,7 +896,7 @@ export default function index() {
                                 <div className={styles.column}>
                                     <label>SPH</label>
                                     <select {...register("leftsph")}>
-                                        <option value="" disabled selected>-- Select --</option> {/* Default option */}
+                                        <option value="" disabled >-- Select --</option> {/* Default option */}
                                         {[
                                             "-10.00", "-9.75", "-9.50", "-9.25", "-9.00", "-8.75", "-8.50", "-8.25", "-8.00",
                                             "-7.75", "-7.50", "-7.25", "-7.00", "-6.75", "-6.50", "-6.25", "-6.00",
@@ -888,7 +914,7 @@ export default function index() {
                                 <div className={styles.column}>
                                     <label>CYL</label>
                                     <select {...register("leftcyl")}>
-                                        <option value="" disabled selected>-- Select --</option>
+                                        <option value="" disabled >-- Select --</option>
                                         {[
                                             "-6.00", "-5.75", "-5.50", "-5.25", "-5.00", "-4.75", "-4.50", "-4.25", "-4.00",
                                             "-3.75", "-3.50", "-3.25", "-3.00", "-2.75", "-2.50", "-2.25", "-2.00", "-1.75",
@@ -905,7 +931,7 @@ export default function index() {
                                 <div className={styles.column}>
                                     <label>AXIS</label>
                                     <select {...register("leftaxis")}>
-                                        <option value="" disabled selected>-- Select --</option> {/* Default option */}
+                                        <option value="" disabled >-- Select --</option> {/* Default option */}
                                         {axisValues.map((value, index) => (
                                             <option key={index} value={value}>
                                                 {value}
@@ -940,7 +966,7 @@ export default function index() {
                                     <div className={styles.singlePd}>
                                         <label>Left</label>
                                         <select {...register("leftPd")}>
-                                            <option value="" disabled selected>-- Select --</option>
+                                            <option value="" disabled >-- Select --</option>
                                             {pdValues.map((value, index) => (
                                                 <option key={index} value={value}>
                                                     {value}
@@ -951,7 +977,7 @@ export default function index() {
                                     <div className={styles.singlePd}>
                                         <label>Right</label>
                                         <select {...register("rightPd")}>
-                                            <option value="" disabled selected>-- Select --</option>
+                                            <option value="" disabled >-- Select --</option>
                                             {pdValues.map((value, index) => (
                                                 <option key={index} value={value}>
                                                     {value}
@@ -968,7 +994,7 @@ export default function index() {
                             <div className={styles.pupilDistance}>
                                 <h2>Additional Power</h2>
                                 <select {...register("powers")}>
-                                    <option value="" disabled selected>-- Select --</option>
+                                    <option value="" disabled >-- Select --</option>
                                     {powers.map((value, index) => (
                                         <option key={index} value={value}>
                                             {value}
@@ -983,7 +1009,7 @@ export default function index() {
                         <p>Upload your prescription for us to confirm that you have entered it correctly (Optional).</p>
                         <button type="button" onClick={(e) => handleClick(e)}>
                             <span><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-link"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" /><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" /></svg></span>
-                            Choose File
+                            Choose Files
                         </button>
                         <input style={{ display: "none" }} type='file' ref={inputRef} onChange={handleFileChange} />
                     </div>
@@ -992,7 +1018,7 @@ export default function index() {
                     </div>
 
                     <div className={styles.buttonContainer}>
-                        <button type='button' onClick={handleUpload}>
+                        <button type='button' onClick={(e) => handleUpload(e)}>
                             Save and Continue
                         </button>
                     </div>
