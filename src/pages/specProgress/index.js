@@ -204,7 +204,7 @@ export default function index() {
                 onClick: async () => {
                     setLensName("Frame Only")
                     await getLensType("frameOnly");
-                    Changepage(4);
+                    Changepage(5);
                 }
             }
         ];

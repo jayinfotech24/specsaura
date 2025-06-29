@@ -258,7 +258,7 @@ export default function Index() {
                     <div className={styles.headerContent}>
                         <h1>{Data.name}</h1>
                         <div className={styles.priceContainer}>
-                            <h2>{Math.floor(IncreasePrice(Number(Data.price)))} ₹</h2>
+                            <h2>{Math.floor((Number(Data.price)))} ₹</h2>
                             <span className={styles.stockStatus}>
                                 {Data.availableItems > 0 ? 'In Stock' : 'Out of Stock'}
                             </span>

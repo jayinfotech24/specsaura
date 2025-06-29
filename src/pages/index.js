@@ -185,7 +185,7 @@ export default function index() {
                                 id={item._id}
                                 src={item.url}
                                 name={item.name}
-                                price={IncreasePrice(Number(item.price))}
+                                price={(Number(item.price))}
                                 total={item.totalItems}
                                 available={item.availableItems}
                                 images={item.images}
