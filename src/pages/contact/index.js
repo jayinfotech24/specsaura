@@ -164,6 +164,7 @@ export default function index() {
                             <h2>Shop no 30,  Shardhadeep Complex, Near Laxmi Gathiya Rath, Opp. Anant Atila,
                                 Shastri nagar cross road.  Ahmedabad ,
                                 Gujarat.
+                                <span className={styles.pincode}>380063</span>
                             </h2>
                         </div>
                     </div>

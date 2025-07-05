@@ -174,6 +174,13 @@ export default function Index() {
         setIsFullscreen(!isFullscreen);
     };
 
+    // Small frames: 50-53mm
+    // Medium frames: 54-56mm  
+    // Large frames: 57-60mm
+    // Extra Large: 61mm+
+
+
+
     return (
         <div className={styles.main}>
             {isLoading && <Preloader />}
@@ -270,6 +277,15 @@ export default function Index() {
                             <h3>Product Details</h3>
                             <div className={styles.detailGrid}>
                                 <div className={styles.detailItem}>
+                                    <span className={styles.label}>Brand:</span>
+                                    <span className={styles.value}>{Data.brandName || 'Not specified'}</span>
+                                </div>
+                                <div className={styles.detailItem}>
+                                    <span className={styles.label}>Model No:</span>
+                                    <span className={styles.value}>{Data.modelNo || 'Not specified'}</span>
+                                </div>
+
+                                <div className={styles.detailItem}>
                                     <span className={styles.label}>Frame Material:</span>
                                     <span className={styles.value}>{Data.frameMaterial || 'Not specified'}</span>
                                 </div>
@@ -278,12 +294,70 @@ export default function Index() {
                                     <span className={styles.value}>{Data.frameColor || 'Not specified'}</span>
                                 </div>
                                 <div className={styles.detailItem}>
+                                    <span className={styles.label}>Temple Color:</span>
+                                    <span className={styles.value}>{Data.templeColor || 'Not specified'}</span>
+                                </div>
+                                <div className={styles.detailItem}>
                                     <span className={styles.label}>Lens Color:</span>
                                     <span className={styles.value}>{Data.lensColor || 'Not specified'}</span>
                                 </div>
                                 <div className={styles.detailItem}>
+                                    <span className={styles.label}>Lens Type:</span>
+                                    <span className={styles.value}>{Data.lens || 'Not specified'}</span>
+                                </div>
+                                <div className={styles.detailItem}>
                                     <span className={styles.label}>Gender:</span>
                                     <span className={styles.value}>{Data.gender || 'Unisex'}</span>
+                                </div>
+                                <div className={styles.detailItem}>
+                                    <span className={styles.label}>Warranty:</span>
+                                    <span className={styles.value}>{Data.warranty || 'Not specified'}</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className={styles.detailSection}>
+                            <h3>Frame Dimensions</h3>
+                            <div className={styles.detailGrid}>
+                                <div className={styles.detailItem}>
+                                    <span className={styles.label}>Frame Width:</span>
+                                    <span className={styles.value}>{Data.frameWidth ? `${Data.frameWidth}mm` : 'Not specified'}</span>
+                                </div>
+                                <div className={styles.detailItem}>
+                                    <span className={styles.label}>Frame Height:</span>
+                                    <span className={styles.value}>{Data.frameHeight ? `${Data.frameHeight}mm` : 'Not specified'}</span>
+                                </div>
+                                <div className={styles.detailItem}>
+                                    <span className={styles.label}>Frame Dimensions:</span>
+                                    <span className={styles.value}>{Data.frameDimention || 'Not specified'}</span>
+                                </div>
+                                <div className={styles.detailItem}>
+                                    <span className={styles.label}>Frame Size:</span>
+                                    <span className={styles.value}>
+                                        {Data.frameWidth ?
+                                            (Data.frameWidth <= 53 ? 'Small' :
+                                                Data.frameWidth <= 56 ? 'Medium' :
+                                                    Data.frameWidth <= 60 ? 'Large' : 'Extra Large')
+                                            : 'Not specified'}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className={styles.detailSection}>
+                            <h3>Stock Information</h3>
+                            <div className={styles.detailGrid}>
+                                <div className={styles.detailItem}>
+                                    <span className={styles.label}>Available Items:</span>
+                                    <span className={styles.value}>{Data.availableItems || 0}</span>
+                                </div>
+                                <div className={styles.detailItem}>
+                                    <span className={styles.label}>Total Items:</span>
+                                    <span className={styles.value}>{Data.totalItems || 0}</span>
+                                </div>
+                                <div className={styles.detailItem}>
+                                    <span className={styles.label}>Power Sunglasses:</span>
+                                    <span className={styles.value}>{Data.powerSunglasses ? 'Yes' : 'No'}</span>
                                 </div>
                             </div>
                         </div>

@@ -12,6 +12,10 @@ const FilterSidebar = ({ onFilterChange, activeFilters, isSunglasses }) => {
             title: 'Material Wise',
             options: ['Acetate', 'Titanium', 'Fiber', 'Metal', 'Plastic']
         },
+        size: {
+            title: 'Frame Size',
+            options: ['Small', 'Medium', 'Large', 'Extra Large']
+        },
         price: {
             title: 'Price Wise',
             options: ['0-1000', '1000-2000', '2000-3000', '3000-4000', '4000+']

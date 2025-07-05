@@ -820,7 +820,7 @@ export default function index() {
                     <button className={styles.backButton} onClick={() => Changepage(1)}>
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-left-icon lucide-arrow-left"><path d="m12 19-7-7 7-7" /><path d="M19 12H5" /></svg>
                     </button>
-                    <h1 style={{ fontSize: "15px" }}>Enter Your Prescription Manually</h1>
+                    <h1 style={{ fontSize: "15px", color: "#000" }}>Enter Your Prescription Manually</h1>
 
                     <div >
                         <form onSubmit={handleSubmit(SubmitHandler)}>
@@ -946,10 +946,10 @@ export default function index() {
                         </div>
 
                         <div className={styles.devider}></div>
-                        {(IsSingle || IsBifocel) && <div className={styles.pupilDistance}>
+                        {(IsSingle || IsBifocel || IsProgressive) && <div className={styles.pupilDistance}>
                             <h2>Pupil Distance</h2>
                             <div className={styles.innerPupil}><input checked={IsTwoPds}
-                                onChange={handleCheckboxChange} type="checkbox" /><span><p>Have two PDs</p></span></div>
+                                onChange={handleCheckboxChange} type="checkbox" /><span><p>two PDs</p></span></div>
                             {
                                 !IsTwoPds && <select {...register("pd")}>
                                     <option value="" disabled selected>-- Select --</option>

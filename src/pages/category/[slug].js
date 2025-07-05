@@ -95,8 +95,24 @@ export default function CategoryPage() {
                         case 'material':
                             return values.includes(product.frameMaterial?.toLowerCase());
                         case 'size':
-                            // Add size filtering logic if needed
-                            return true;
+                            // Frame size filtering based on frameWidth
+                            return values.some(size => {
+                                const frameWidth = product.frameWidth;
+                                if (!frameWidth) return false;
+
+                                switch (size) {
+                                    case 'small':
+                                        return frameWidth >= 50 && frameWidth <= 53;
+                                    case 'medium':
+                                        return frameWidth >= 54 && frameWidth <= 56;
+                                    case 'large':
+                                        return frameWidth >= 57 && frameWidth <= 60;
+                                    case 'extra-large':
+                                        return frameWidth >= 61;
+                                    default:
+                                        return false;
+                                }
+                            });
                         case 'price':
                             const [min, max] = values[0].split('-').map(Number);
                             return product.price >= min && product.price <= max;
