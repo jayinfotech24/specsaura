@@ -1174,7 +1174,26 @@ export default function index() {
                         Select Your Coating
                     </motion.h1>
                     <div style={{ display: 'flex', flexWrap: 'wrap', gap: 24, justifyContent: 'center', marginTop: 24 }}>
-                        {coatings.length === 0 && <div style={{ padding: '2rem', textAlign: 'center' }}>No coatings available for this lens.</div>}
+                        {/* No Coating Option */}
+                        <motion.div
+                            className={styles.coatingCard + (!selectedCoating ? ' ' + styles.selectedCoating : '')}
+                            onClick={() => setSelectedCoating(null)}
+                            initial={{ opacity: 0, scale: 0.95 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            transition={{ delay: 0.2, type: 'spring', stiffness: 180 }}
+                            whileHover={{ scale: 1.04, boxShadow: "0 8px 24px rgba(88,85,235,0.13)" }}
+                            whileTap={{ scale: 0.97 }}
+                            style={{ minWidth: 240, maxWidth: 320, background: !selectedCoating ? 'linear-gradient(120deg, #e6f0fa 60%, #dbeafe 100%)' : '#fafbfc', border: !selectedCoating ? '2.5px solid #5855eb' : '2px solid #e0e0e0', position: 'relative', cursor: 'pointer', transition: 'all 0.3s' }}
+                        >
+                            <div style={{ fontSize: 32, marginRight: 18, marginBottom: 8, textAlign: 'center' }}>🚫</div>
+                            <div className={styles.coatingInfo} style={{ flex: 1 }}>
+                                <div className={styles.coatingTitle} style={{ fontSize: '1.08rem', fontWeight: 700 }}>No Coating</div>
+                                <div className={styles.coatingDesc} style={{ fontSize: '0.97rem', color: '#5855eb', marginTop: 4 }}>Proceed without any coating</div>
+                            </div>
+                            {!selectedCoating && (
+                                <span className={styles.checkmark} style={{ position: 'absolute', top: 10, right: 16, fontSize: 22, color: '#5855eb' }}>✔</span>
+                            )}
+                        </motion.div>
                         {coatings.map((coating, idx) => (
                             <motion.div
                                 key={coating._id}
@@ -1202,16 +1221,25 @@ export default function index() {
                     <div className={styles.lensButtonContainer} style={{ marginTop: 32 }}>
                         <button
                             className={styles.proceedButton}
-                            disabled={!selectedCoating && coatings.length > 0}
+                            // Allow continue if selectedCoating is null (No Coating) or a valid coating is selected
+                            disabled={coatings.length > 0 && selectedCoating === undefined}
                             onClick={() => {
-                                if (selectedCoating) {
-                                    localStorage.setItem('selectedCoating', JSON.stringify(selectedCoating));
+                                if (selectedCoating !== undefined) {
+                                    if (selectedCoating) {
+                                        localStorage.setItem('selectedCoating', JSON.stringify(selectedCoating));
+                                    } else {
+                                        localStorage.removeItem('selectedCoating');
+                                    }
                                     setIsCoatingComplete(true);
                                     Changepage(3);
                                 }
                             }}
                         >
-                            {selectedCoating ? `Select "${selectedCoating.title}" and Continue` : 'Select a Coating to Continue'}
+                            {selectedCoating === null
+                                ? 'Continue without Coating'
+                                : selectedCoating
+                                    ? `Select "${selectedCoating.title}" and Continue`
+                                    : 'Select a Coating to Continue'}
                         </button>
                     </div>
                 </div>

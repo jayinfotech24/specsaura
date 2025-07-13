@@ -79,7 +79,7 @@ export default function CategoryPage() {
 
                 // If no products found for the category, show all products
                 if (categoryFiltered.length === 0) {
-                    filtered = [...Products]; // Show all products
+                    filtered = []; // Show all products
                 } else {
                     filtered = categoryFiltered;
                 }
@@ -90,8 +90,10 @@ export default function CategoryPage() {
                 filtered = filtered.filter(product => {
                     switch (category) {
                         case 'shape':
-                            // Add shape filtering logic if needed
-                            return true;
+                            // Filter by frameShape (case-insensitive)
+                            return values.some(
+                                v => product.frameShape && product.frameShape.toLowerCase() === v.toLowerCase()
+                            );
                         case 'material':
                             return values.includes(product.frameMaterial?.toLowerCase());
                         case 'size':

@@ -262,6 +262,18 @@ export const DeleteFullCart = createAsyncThunk(
     }
 );
 
+export const sendOrder = createAsyncThunk(
+    "api/sendOrder",
+    async (credentials, { rejectWithValue }) => {
+        try {
+            const response = await axiosInstance.post(`${Appapis.Basurl}${Appapis.sendorder}`, credentials);
+            return response.data;
+        } catch (error) {
+            console.log("sendOrder", error)
+            return rejectWithValue(error.response?.data || "Something went wrong");
+        }
+    }
+);
 
 export const GetCartMany = createAsyncThunk(
     "api/getCartMany",
@@ -654,6 +666,16 @@ const counterSlice = createSlice({
                 state.loading = false;
             })
             .addCase(GetLensDeatil.rejected, (state, action) => {
+                state.loading = false;
+                state.error = handleUnauthorized(action.payload);
+            })
+            .addCase(sendOrder.pending, (state, action) => {
+                state.loading = true
+            })
+            .addCase(sendOrder.fulfilled, (state, action) => {
+                state.loading = false;
+            })
+            .addCase(sendOrder.rejected, (state, action) => {
                 state.loading = false;
                 state.error = handleUnauthorized(action.payload);
             })

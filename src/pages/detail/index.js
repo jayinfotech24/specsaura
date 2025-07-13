@@ -19,6 +19,7 @@ export default function Index() {
     const [isLoading, setIsLoading] = useState(false);
     const [isFullscreen, setIsFullscreen] = useState(false);
     const dispatch = useDispatch();
+    const [powerSunglassesOption, setPowerSunglassesOption] = useState(null);
 
     const GetProduct = (Id) => {
         setIsLoading(true);
@@ -69,7 +70,8 @@ export default function Index() {
                 productID: id,
                 numberOfItems: 1,
 
-                prescriptionID: null
+                prescriptionID: null,
+                powerSunglasses: powerSunglassesOption // <-- add value here
             };
 
             const res = await dispatch(AddCart(responseObject)).unwrap();
@@ -141,7 +143,8 @@ export default function Index() {
                 name: Data.name,
                 price: Data.price,
                 image: Data.images?.[0] || Data.url || '/Images/placeholder.webp',
-                url: Data.url || '/Images/placeholder.webp'
+                url: Data.url || '/Images/placeholder.webp',
+                powerSunglasses: powerSunglassesOption // <-- add value here
             }));
             localStorage.setItem("productId", id);
             router.push("/specProgress")
@@ -198,7 +201,7 @@ export default function Index() {
                         <AnimatePresence mode="wait">
                             <motion.img
                                 key={currentImageIndex}
-                                src={Data.images && Data.images.length > 0 ? Data.images[currentImageIndex] : Data.url || "/Images/placeholder.webp"}
+                                src={Data?.images && Data.images?.length > 0 ? Data?.images[currentImageIndex] : Data.url || "/Images/placeholder.webp"}
                                 alt={Data.name}
                                 className={styles.mainImage}
                                 initial={{ opacity: 0 }}
@@ -309,10 +312,7 @@ export default function Index() {
                                     <span className={styles.label}>Gender:</span>
                                     <span className={styles.value}>{Data.gender || 'Unisex'}</span>
                                 </div>
-                                <div className={styles.detailItem}>
-                                    <span className={styles.label}>Warranty:</span>
-                                    <span className={styles.value}>{Data.warranty || 'Not specified'}</span>
-                                </div>
+
                             </div>
                         </div>
 
@@ -344,23 +344,35 @@ export default function Index() {
                             </div>
                         </div>
 
-                        <div className={styles.detailSection}>
-                            <h3>Stock Information</h3>
-                            <div className={styles.detailGrid}>
-                                <div className={styles.detailItem}>
-                                    <span className={styles.label}>Available Items:</span>
-                                    <span className={styles.value}>{Data.availableItems || 0}</span>
-                                </div>
-                                <div className={styles.detailItem}>
-                                    <span className={styles.label}>Total Items:</span>
-                                    <span className={styles.value}>{Data.totalItems || 0}</span>
-                                </div>
-                                <div className={styles.detailItem}>
-                                    <span className={styles.label}>Power Sunglasses:</span>
-                                    <span className={styles.value}>{Data.powerSunglasses ? 'Yes' : 'No'}</span>
+                        {/* Power Sunglasses Option */}
+                        {Data.powerSunglasses && (
+                            <div className={styles.powerSunglassesSection}>
+                                <label className={styles.powerSunglassesLabel}>Power Sunglasses:</label>
+                                <div className={styles.radioGroup}>
+                                    <label className={styles.radioLabel}>
+                                        <input
+                                            type="radio"
+                                            name="powerSunglasses"
+                                            value="yes"
+                                            checked={powerSunglassesOption === "yes"}
+                                            onChange={() => setPowerSunglassesOption("yes")}
+                                        />
+                                        Yes
+                                    </label>
+                                    <label className={styles.radioLabel}>
+                                        <input
+                                            type="radio"
+                                            name="powerSunglasses"
+                                            value="no"
+                                            checked={powerSunglassesOption === "no"}
+                                            onChange={() => setPowerSunglassesOption("no")}
+                                        />
+                                        No
+                                    </label>
                                 </div>
                             </div>
-                        </div>
+                        )}
+
 
                         <div className={styles.descriptionSection}>
                             <h3>Description</h3>

@@ -7,6 +7,8 @@ import { getCartDetail } from '../../store/authSlice';
 import { useDispatch } from 'react-redux';
 import Preloader from '../../Component/Animated';
 import { FaPrint } from 'react-icons/fa';
+import { sendOrder } from '../../store/authSlice'; // Adjust the path as needed
+
 
 const OrderConfirmation = () => {
     const router = useRouter();
@@ -53,36 +55,6 @@ const OrderConfirmation = () => {
             });
         }
     }, []);
-    // useEffect(() => {
-    //     const fetchOrderDetails = async () => {
-    //         try {
-    //             // Get stored order items from localStorage
-    //             const storedItems = localStorage.getItem('orderItems');
-    //             if (storedItems) {
-    //                 const items = JSON.parse(storedItems);
-    //                 setOrderData(prev => ({
-    //                     ...prev,
-    //                     items: items || []
-    //                 }));
-    //             } else {
-    //                 // Fallback to fetching from cart if no stored items
-    //                 const userId = localStorage.getItem("userId");
-    //                 const response = await dispatch(getCartDetail(userId)).unwrap();
-    //                 console.log("Response", response);
-    //                 setOrderData(prev => ({
-    //                     ...prev,
-    //                     items: response.items || []
-    //                 }));
-    //             }
-    //         } catch (error) {
-    //             console.error("Error fetching order details:", error);
-    //         } finally {
-    //             setIsLoading(false);
-    //         }
-    //     };
-
-    //     fetchOrderDetails();
-    // }, [dispatch]);
 
 
     useEffect(() => {
@@ -106,6 +78,307 @@ const OrderConfirmation = () => {
             return total + productPrice + lensTypePrice + lensCoatingPrice;
         }, 0);
     };
+
+    useEffect(() => {
+        if (orderData && orderData.orderId && orderData.items.length > 0) {
+            // Get customer email from orderData or localStorage
+            const customerEmail = orderData.items[0]?.productID?.customerEmail || "customer@example.com"; // Replace with actual email logic
+            const email = localStorage.getItem("email")
+            // Build the HTML template
+            const htmlTemplate = `
+                 <!DOCTYPE html>
+            <html>
+            <head>
+                <title>Order Invoice - ${orderData.orderId}</title>
+                <style>
+                    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap');
+                    body {
+                        font-family: 'Poppins', sans-serif;
+                        margin: 0;
+                        padding: 20px;
+                        color: #333;
+                    }
+                    .invoice {
+                        max-width: 800px;
+                        margin: 0 auto;
+                        padding: 20px;
+                        border: 1px solid #ddd;
+                    }
+                    .header {
+                        margin-top: 20px;
+                        text-align: center;
+                        margin-bottom: 30px;
+                        border-bottom: 2px solid #ddd;
+                        padding-bottom: 20px;
+                        position: relative;
+                    }
+                    .header img {
+                        max-width: 150px;
+                        height: auto;
+                        margin-bottom: 10px;
+                    }
+                    .header p {
+                        color: #666;
+                        margin: 5px 0;
+                    }
+                    .title {
+                        position: absolute;
+                        top: 20px;
+                        right: 20px;
+                        text-align: right;
+                        font-size: 14px;
+                        color: #333;
+                        font-weight: 500;
+                    }
+                    .orderId {
+                        position: absolute;
+                        top: 0;
+                        right: 0;
+                        text-align: right;
+                        font-size: 16px;
+                        color: #333;
+                        font-weight: 500;
+                    }
+                    .invoiceNumber {
+                        position: absolute;
+                        top: 0;
+                        right: 0;
+                        text-align: right;
+                        font-size: 14px;
+                        color: #666;
+                    }
+                    .invoiceNumber strong {
+                        display: block;
+                        color: #333;
+                        font-size: 16px;
+                    }
+                    .details {
+                        margin-bottom: 30px;
+                    }
+                    .details-grid {
+                        display: grid;
+                        grid-template-columns: repeat(2, 1fr);
+                        gap: 20px;
+                        margin-bottom: 20px;
+                    }
+                    .detail-item {
+                        margin-bottom: 10px;
+                    }
+                    .detail-item strong {
+                        display: block;
+                        color: #666;
+                        font-size: 14px;
+                    }
+                    .items {
+                        margin-bottom: 30px;
+                        overflow-x: auto;
+                    }
+                    .items table {
+                        width: 100%;
+                        border-collapse: collapse;
+                        min-width: 300px;
+                    }
+                    .items th, .items td {
+                        padding: 12px;
+                        text-align: left;
+                        border-bottom: 1px solid #ddd;
+                    }
+                    .items th {
+                        background-color: #f8f9fa;
+                        font-weight: 500;
+                    }
+                    .summary {
+                        margin-top: 30px;
+                        border-top: 2px solid #ddd;
+                        padding-top: 20px;
+                    }
+                    .summary-item {
+                        display: flex;
+                        justify-content: space-between;
+                        margin-bottom: 10px;
+                    }
+                    .total {
+                        font-weight: 600;
+                        font-size: 18px;
+                        margin-top: 20px;
+                        padding-top: 20px;
+                        border-top: 1px solid #ddd;
+                    }
+                    .footer {
+                        text-align: center;
+                        margin-top: 40px;
+                        color: #666;
+                        font-size: 14px;
+                    }
+
+                    /* Responsive Styles */
+                    @media (max-width: 768px) {
+                        body {
+                            padding: 10px;
+                        }
+                        .invoice {
+                            padding: 15px;
+                        }
+                        .header {
+                            margin-top: 10px;
+                            margin-bottom: 20px;
+                        }
+                        .header img {
+                            max-width: 120px;
+                        }
+                        .title {
+                            position: static;
+                            text-align: center;
+                            margin-bottom: 15px;
+                        }
+                        .details-grid {
+                            grid-template-columns: 1fr;
+                            gap: 15px;
+                        }
+                        .items th, .items td {
+                            padding: 8px;
+                            font-size: 14px;
+                        }
+                        .summary-item, .total {
+                            font-size: 16px;
+                        }
+                    }
+
+                    @media (max-width: 480px) {
+                        body {
+                            padding: 5px;
+                        }
+                        .invoice {
+                            padding: 10px;
+                        }
+                        .header img {
+                            max-width: 100px;
+                        }
+                        .items th, .items td {
+                            padding: 6px;
+                            font-size: 13px;
+                        }
+                        .summary-item, .total {
+                            font-size: 15px;
+                        }
+                        .footer {
+                            font-size: 12px;
+                        }
+                    }
+
+                    @media print {
+                        body {
+                            padding: 0;
+                        }
+                        .invoice {
+                            border: none;
+                            padding: 0;
+                        }
+                        .header {
+                            margin-top: 0;
+                        }
+                    }
+                </style>
+            </head>
+            <body>
+                <div class="invoice">
+                    <div class="header">
+                        <img src="https://res.cloudinary.com/dbujlyfyn/image/upload/v1745037884/uploads/mcueefshi08tjnzydxx4.png " alt="SpecsAura Logo" />
+                        <p>Your Vision, Our Priority</p>
+                    </div>
+
+                    <div class="details">
+                        <div class="details-grid">
+                            <div class="detail-item">
+                                <strong>Order Number</strong>
+                                ${orderData.orderId}
+                            </div>
+                            <div class="detail-item">
+                                <strong>Date</strong>
+                                ${orderData.date}
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <div class="items">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Item</th>
+                                    <th>Product Price</th>
+                                    <th>Lens Price</th>
+                                    <th>Coating Price</th>
+                                    <th>Total</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${orderData.items.map(item => {
+                const productPrice = item.productID?.price || 0;
+                const lensTypePrice = item.lensType && item.lensType.price ? Number(item.lensType.price) : 0;
+                const lensCoatingPrice = item.lensCoating && item.lensCoating.price ? Number(item.lensCoating.price) : 0;
+                const itemTotal = productPrice + lensTypePrice + lensCoatingPrice;
+                return `
+                                    <tr>
+                                        <td>${item.productID?.name || 'Product Name'}</td>
+                                        <td>₹${productPrice.toLocaleString('en-IN')}</td>
+                                        <td>₹${lensTypePrice ? lensTypePrice.toLocaleString('en-IN') : '0'}</td>
+                                        <td>₹${lensCoatingPrice ? lensCoatingPrice.toLocaleString('en-IN') : '0'}</td>
+                                        <td>₹${itemTotal.toLocaleString('en-IN')}</td>
+                                    </tr>
+                                    `;
+            }).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="summary">
+                        <div class="summary-item">
+                            <span>Shipping</span>
+                            <span>Free</span>
+                        </div>
+                        <div class="total">
+                            <span>Total Amount</span>
+                            <span>₹${subtotal.toLocaleString('en-IN')}</span>
+                        </div>
+                    </div>
+
+                    <div class="footer">
+                        <p>Thank you for shopping with us!</p>
+                        <p>For any queries, please contact our customer support.</p>
+                    </div>
+                </div>
+                <script>
+                    // Convert to PDF and download
+                    window.onload = function() {
+                        html2pdf().from(document.body).save('Order_${orderData.orderId}.pdf');
+                    }
+                </script>
+                <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+            </body>
+            </html>
+            `;
+
+
+            const jsonObject = {
+                email: email,
+                htmlTemplate,
+                orderId: orderData.orderId
+            }
+
+            console.log("Ob", jsonObject)
+            dispatch(sendOrder(jsonObject)).then((res) => {
+                console.log("Res", res)
+                // Optionally show a toast or log success
+                console.log('Order confirmation email sent!');
+            }).catch((err) => {
+                // Optionally handle error
+                console.error('Failed to send order email:', err);
+            });
+            // Call the API
+
+        }
+    }, [orderData]);
 
     if (isLoading) {
         return <Preloader />;
@@ -491,12 +764,7 @@ const OrderConfirmation = () => {
                     >
                         <FaPrint /> Print Bill
                     </button>
-                    <button
-                        className={styles.trackButton}
-                        onClick={() => router.push('/track-order')}
-                    >
-                        Track Order
-                    </button>
+
                     <button
                         className={styles.continueButton}
                         onClick={() => router.push('/')}

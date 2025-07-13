@@ -29,6 +29,12 @@
   z-index: 1;
 }
 
+.brandRow {
+  display: flex;
+  justify-content: space-between;
+  flex-direction: row;
+}
+
 .inner .posterComponent::before {
   position: absolute;
   top: 0;

@@ -25,6 +25,8 @@ export default function CategoryIndexPage() {
     const GetProduct = () => {
         setIsLoading(true)
         dispatch(ProductList()).then((res) => {
+
+            console.log("Res", res)
             if (res.payload.status == 200) {
                 setProducts(res.payload.products)
                 setFilteredProducts(res.payload.products)
@@ -64,8 +66,15 @@ export default function CategoryIndexPage() {
     useEffect(() => {
         if (Products) {
             let filtered = [...Products];
+            console.log("Prduicts", Products)
+            // Filter by collection_type from URL if present
+            if (router.query.type) {
+                const urlType = router.query.type.toLowerCase();
+                filtered = filtered.filter(product =>
 
-            // Do NOT filter by category id here!
+                    product.collection_type.toLowerCase() === urlType
+                );
+            }
 
             // Apply active filters
             Object.entries(activeFilters).forEach(([category, values]) => {
@@ -94,6 +103,9 @@ export default function CategoryIndexPage() {
                             return values.includes(product.gender?.toLowerCase());
                         case 'lensColor':
                             return values.includes(product.lensColor?.toLowerCase());
+                        case 'collection_type':
+                            // Assuming product.category.title holds the collection type
+                            return values.includes(product.category?.title);
                         default:
                             return true;
                     }
@@ -120,21 +132,26 @@ export default function CategoryIndexPage() {
         }
     }, [Products, activeFilters, router.query]);
 
+    // Get the type from the URL
+    const type = router.query.type;
+
+    // Determine if we should use boy/girl for gender
+    const isHalospecs = type && type.toLowerCase().includes('halospecs');
+
     return (
         <div className={styles.main}>
             <Header isHeaderVisible={true} />
             <div className={styles.inner}>
                 <div className={styles.poster}>
                     <img src="/Images/bg_poster.webp" />
-                    <div className={styles.imageContent}>
-                        <h1>All Products</h1>
-                    </div>
+
                 </div>
                 <div className={styles.contentWrapper}>
                     <FilterSidebar
                         onFilterChange={handleFilterChange}
                         activeFilters={activeFilters}
                         isSunglasses={false}
+                        useBoyGirlGender={isHalospecs}
                     />
                     <div className={styles.cardComponent}>
                         <div className={styles.heading}>

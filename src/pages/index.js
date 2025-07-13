@@ -106,7 +106,19 @@ export default function index() {
     //     return () => clearTimeout(interval);
     // }, [activeSlide])
 
+    const brandMap = [
+        { img: "/Images/brand1.jpg", type: "Ascend Drip" },
+        { img: "/Images/brand2.jpg", type: "Seraphic" },
+        { img: "/Images/brand3.jpg", type: "PriumX" },
+        { img: "/Images/brand4.jpg", type: "halospecs" }
+    ];
 
+    const handleBrandClick = (type) => {
+        router.push({
+            pathname: '/category',
+            query: { type }
+        });
+    };
 
     return (
         <div className={styles.main}>
@@ -131,19 +143,18 @@ export default function index() {
                 </div>
                 <div className={styles.secondComponent}>
                     <div className={styles.logoComponent}>
-                        <div className={styles.imageContainer}>
-                            <img src="/Images/brand1.jpg" />
+                        <div className={styles.brandRow}>
+                            {brandMap.map((brand, idx) => (
+                                <div
+                                    key={brand.type}
+                                    className={styles.imageContainer}
+                                    style={{ cursor: 'pointer' }}
+                                    onClick={() => handleBrandClick(brand.type)}
+                                >
+                                    <img src={brand.img} alt={brand.type} />
+                                </div>
+                            ))}
                         </div>
-                        <div className={styles.imageContainer}>
-                            <img src="/Images/brand2.jpg" />
-                        </div>
-                        <div className={styles.imageContainer}>
-                            <img src="/Images/brand3.jpg" />
-                        </div>
-                        <div className={styles.imageContainer}>
-                            <img src="/Images/brand4.jpg" />
-                        </div>
-
                     </div>
                 </div>
                 <div className={styles.collection}>

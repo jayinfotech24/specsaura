@@ -255,6 +255,8 @@ const OrderDetails = () => {
 
                         console.log("Order Payload", orderPayload);
                         try {
+
+                            setIsLoading(true)
                             const orderRes = await dispatch(CreateOrder(orderPayload)).unwrap();
                             console.log("Order created successfully", orderRes);
 
@@ -274,7 +276,7 @@ const OrderDetails = () => {
                                 localStorage.removeItem('selectedProduct');
                                 localStorage.removeItem('specsData');
                                 localStorage.setItem("OrderData", JSON.stringify(orderData));
-
+                                setIsLoading(false)
                                 router.push('/order-confirmation');
                             } else {
                                 const cartId = localStorage.getItem("cartId");
@@ -287,6 +289,7 @@ const OrderDetails = () => {
                                 localStorage.removeItem('selectedProduct');
                                 localStorage.removeItem('specsData');
                                 localStorage.setItem("OrderData", JSON.stringify(orderData));
+                                setIsLoading(false)
                                 router.push('/order-confirmation');
                             }
 
@@ -334,6 +337,15 @@ const OrderDetails = () => {
             console.error("Error clearing cart:", error);
             toast.error("Failed to clear cart");
         }
+    };
+
+    const reloadRazorpayScript = () => {
+        setIsRazorpayLoaded(false);
+        const script = document.createElement('script');
+        script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+        script.onload = () => setIsRazorpayLoaded(true);
+        script.onerror = () => setIsRazorpayLoaded(false);
+        document.body.appendChild(script);
     };
 
     if (isLoading) {
@@ -542,10 +554,17 @@ const OrderDetails = () => {
                             Back to Cart
                         </button>
 
+                        {!isRazorpayLoaded && (
+                            <div className={styles.alert}>
+                                Payment system is not ready. Please check your internet connection and refresh the page.
+                                {/* Optionally, add a retry button */}
+                                <button onClick={reloadRazorpayScript}>Retry</button>
+                            </div>
+                        )}
                         <button
                             type="submit"
                             className={styles.payButton}
-                            disabled={isLoading}
+                            disabled={isLoading || !isRazorpayLoaded}
                         >
                             {isLoading ? 'Processing...' : 'Proceed to Payment'}
                         </button>

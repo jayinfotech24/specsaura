@@ -3,7 +3,30 @@ import styles from '../styles/filterSidebar.module.css';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useRouter } from 'next/router';
 
-const FilterSidebar = ({ onFilterChange, activeFilters, isSunglasses }) => {
+export const FRAME_SHAPES = Object.freeze([
+    "Round",
+    "Oval",
+    "Square",
+    "Rectangle",
+    "Cat Eye",
+    "Geometric",
+    "Hexagon",
+    "Octagon",
+    "Browline",
+    "Butterfly",
+    "Wraparound",
+    "Shield",
+    "Aviator",
+    "Wayfarer",
+    "Rimless",
+    "Semi-Rimless",
+    "Full Rim",
+    "Heart",
+    "Star",
+    "Novelty"
+]);
+
+const FilterSidebar = ({ onFilterChange, activeFilters, isSunglasses, useBoyGirlGender }) => {
     const [expandedSections, setExpandedSections] = useState({});
     const router = useRouter();
 
@@ -11,6 +34,10 @@ const FilterSidebar = ({ onFilterChange, activeFilters, isSunglasses }) => {
         material: {
             title: 'Material Wise',
             options: ['Acetate', 'Titanium', 'Fiber', 'Metal', 'Plastic']
+        },
+        shape: {
+            title: 'Shape',
+            options: FRAME_SHAPES
         },
         size: {
             title: 'Frame Size',
@@ -26,7 +53,7 @@ const FilterSidebar = ({ onFilterChange, activeFilters, isSunglasses }) => {
         },
         gender: {
             title: 'Gender',
-            options: ['Male', 'Female', 'Unisex']
+            options: useBoyGirlGender ? ['Girl', 'Boy'] : ['Male', 'Female', 'Unisex']
         }
     };
 
