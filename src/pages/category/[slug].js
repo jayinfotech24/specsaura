@@ -152,6 +152,9 @@ export default function CategoryPage() {
                 );
             }
 
+            // Sort by updatedAt (latest first)
+            filtered.sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt));
+
             setFilteredProducts(filtered);
         }
     }, [Products, activeFilters, router.query]);
