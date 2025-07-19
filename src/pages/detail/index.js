@@ -5,7 +5,7 @@ import Footer from "../../Component/Footer";
 import { useRouter } from 'next/router';
 import { handlePayment, IncreasePrice, Validate } from '../../store/commonFunction';
 import { useDispatch } from 'react-redux';
-import { AddCart, getProductDetail } from '../../store/authSlice';
+import { AddCart, getProductDetail, getDisplayPrices } from '../../store/authSlice';
 import Preloader from '../../Component/Animated';
 import { ToastContainer, toast } from 'react-toastify';
 import { FaArrowLeft, FaArrowRight, FaShoppingCart, FaShoppingBag, FaExpand } from 'react-icons/fa';
@@ -24,11 +24,11 @@ export default function Index() {
     const GetProduct = (Id) => {
         setIsLoading(true);
         dispatch(getProductDetail(Id)).then((res) => {
-            console.log("Res", res)
+            ////console.log("Res", res)
             setData(res.payload.product);
             setIsLoading(false);
         }).catch((error) => {
-            console.log("Error", error);
+            ////console.log("Error", error);
             setIsLoading(false);
         });
     };
@@ -75,7 +75,7 @@ export default function Index() {
             };
 
             const res = await dispatch(AddCart(responseObject)).unwrap();
-            console.log("Res2", res)
+            ////console.log("Res2", res)
             if (res.status === 200) {
                 toast.success("Product added to cart successfully");
                 // Clear the stored data
@@ -109,7 +109,7 @@ export default function Index() {
         //     localStorage.setItem('selectedProduct', JSON.stringify({
         //         id: id,
         //         name: Data.name,
-        //         price: Data.price,
+        //         price: Data.crossPrice != null ? Data.crossPrice : Data.price,
         //         image: Data.images?.[0] || Data.url || '/Images/placeholder.webp',
         //         url: Data.url || '/Images/placeholder.webp'
         //     }));
@@ -130,6 +130,7 @@ export default function Index() {
 
 
     const BuyNow = async () => {
+        //console.log("Data", Data)
         try {
             const isAuthenticated = await checkUserAuth();
             if (!isAuthenticated) {
@@ -141,7 +142,7 @@ export default function Index() {
             localStorage.setItem('selectedProduct', JSON.stringify({
                 id: id,
                 name: Data.name,
-                price: Data.price,
+                price: Data.crossPrice != null ? Data.crossPrice : Data.price,
                 image: Data.images?.[0] || Data.url || '/Images/placeholder.webp',
                 url: Data.url || '/Images/placeholder.webp',
                 powerSunglasses: powerSunglassesOption // <-- add value here
@@ -182,6 +183,7 @@ export default function Index() {
     // Large frames: 57-60mm
     // Extra Large: 61mm+
 
+    const { mainPrice, originalPrice } = getDisplayPrices(Data?.price, Data?.crossPrice);
 
 
     return (
@@ -268,7 +270,13 @@ export default function Index() {
                     <div className={styles.headerContent}>
                         <h1>{Data.name}</h1>
                         <div className={styles.priceContainer}>
-                            <h2>{Math.floor((Number(Data.price)))} ₹</h2>
+                            <h2>{`₹ ${Math.round(mainPrice || 0)}`}</h2>
+                            {originalPrice && (
+                                <span className={styles.crossPrice}>₹ {Math.round(originalPrice)}</span>
+                            )}
+                            {Data.discount != 0 && (
+                                <span className={styles.discountBadge}>{Data.discount}% OFF</span>
+                            )}
                             <span className={styles.stockStatus}>
                                 {Data.availableItems > 0 ? 'In Stock' : 'Out of Stock'}
                             </span>

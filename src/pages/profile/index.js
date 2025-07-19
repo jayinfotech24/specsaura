@@ -41,10 +41,10 @@ const Profile = () => {
             number: updatedData?.number,
             address: updatedData?.address,
         };
-        console.log("UpdatedData", updatePayload);
+        ////console.log("UpdatedData", updatePayload);
 
         dispatch(UpdateUser(updatePayload)).then((res) => {
-            console.log("ResponseUpdate", res);
+            ////console.log("ResponseUpdate", res);
             if (res.payload.status === 200) {
                 setUserData(res.payload.user);
             }
@@ -57,7 +57,7 @@ const Profile = () => {
         try {
             setIsLoading(true);
             const response = await dispatch(GetUser()).unwrap();
-            console.log(response);
+            ////console.log(response);
             if (response.status === 200) {
                 setUserData(response.mainUser);
             }
@@ -69,12 +69,12 @@ const Profile = () => {
     };
 
     const GetOrderDetail = async (userId) => {
-        console.log("Call", userId);
+        ////console.log("Call", userId);
         if (!userId) return;
 
         try {
             const response = await dispatch(GetOrderById(userId)).unwrap();
-            console.log(response);
+            ////console.log(response);
             if (response.status === 200) {
 
                 setOrderData(response.items || []);
@@ -174,7 +174,7 @@ const Profile = () => {
                                                                     />
                                                                     <div className={styles.itemDetails}>
                                                                         <p className={styles.itemName}>{item.product?.name}</p>
-                                                                        <p className={styles.itemPrice}>₹{item.product?.price}</p>
+                                                                        <p className={styles.itemPrice}>₹{item.product?.crossPrice != null ? item.product.crossPrice : item.product?.price}</p>
                                                                         <p className={styles.itemQuantity}>Quantity: {item.quantity}</p>
                                                                     </div>
                                                                 </div>

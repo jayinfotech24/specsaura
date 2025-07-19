@@ -28,7 +28,7 @@ export const setOriginalPrice = (price, percent) => {
 
 
 export const handlePayment = async (dispatch, amount) => {
-    console.log("Payment amount:", amount);
+    ////console.log("Payment amount:", amount);
 
     if (!process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID) {
         console.error("Razorpay key is not configured");
@@ -60,7 +60,7 @@ export const handlePayment = async (dispatch, amount) => {
 
     try {
         const result = await dispatch(MakePayment({ amount: amountInPaise })).unwrap();
-        console.log("Payment order created:", result);
+        ////console.log("Payment order created:", result);
 
         if (!result || !result.id) {
             throw new Error("Invalid payment order response");
@@ -75,7 +75,7 @@ export const handlePayment = async (dispatch, amount) => {
                 description: "Specsaura",
                 order_id: result.id,
                 handler: async function (response) {
-                    console.log("Payment response:", response);
+                    ////console.log("Payment response:", response);
                     const payload = {
                         razorpay_order_id: response.razorpay_order_id,
                         razorpay_payment_id: response.razorpay_payment_id,
@@ -83,7 +83,7 @@ export const handlePayment = async (dispatch, amount) => {
                     };
                     try {
                         const verifyRes = await dispatch(VerifyPayment(payload)).unwrap();
-                        console.log("Payment verified:", verifyRes);
+                        ////console.log("Payment verified:", verifyRes);
                         toast.success("Payment successful!");
                         resolve(verifyRes);
                     } catch (error) {

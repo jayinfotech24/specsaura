@@ -45,7 +45,7 @@ const OrderConfirmation = () => {
             day: 'numeric'
         });
 
-        console.log("DD", savedOrder)
+        ////console.log("DD", savedOrder)
 
         if (savedOrder) {
             setOrderData({
@@ -58,7 +58,7 @@ const OrderConfirmation = () => {
 
 
     useEffect(() => {
-        console.log("ORderData", orderData)
+        ////console.log("ORderData", orderData)
     }, [orderData])
     // useEffect(() => {
     //     if (amount) {
@@ -72,7 +72,7 @@ const OrderConfirmation = () => {
     // Calculate subtotal from items
     const calculateSubtotal = () => {
         return orderData?.items?.reduce((total, item) => {
-            const productPrice = item.productID?.price || 0;
+            const productPrice = item.productID?.crossPrice != null ? item.productID.crossPrice : item.productID?.price || 0;
             const lensTypePrice = item.lensType && item.lensType.price ? Number(item.lensType.price) : 0;
             const lensCoatingPrice = item.lensCoating && item.lensCoating.price ? Number(item.lensCoating.price) : 0;
             return total + productPrice + lensTypePrice + lensCoatingPrice;
@@ -314,7 +314,7 @@ const OrderConfirmation = () => {
                             </thead>
                             <tbody>
                                 ${orderData.items.map(item => {
-                const productPrice = item.productID?.price || 0;
+                const productPrice = item.productID?.crossPrice != null ? item.productID.crossPrice : item.productID?.price || 0;
                 const lensTypePrice = item.lensType && item.lensType.price ? Number(item.lensType.price) : 0;
                 const lensCoatingPrice = item.lensCoating && item.lensCoating.price ? Number(item.lensCoating.price) : 0;
                 const itemTotal = productPrice + lensTypePrice + lensCoatingPrice;
@@ -366,11 +366,11 @@ const OrderConfirmation = () => {
                 orderId: orderData.orderId
             }
 
-            console.log("Ob", jsonObject)
+            ////console.log("Ob", jsonObject)
             dispatch(sendOrder(jsonObject)).then((res) => {
-                console.log("Res", res)
+                ////console.log("Res", res)
                 // Optionally show a toast or log success
-                console.log('Order confirmation email sent!');
+                ////console.log('Order confirmation email sent!');
             }).catch((err) => {
                 // Optionally handle error
                 console.error('Failed to send order email:', err);
@@ -620,7 +620,7 @@ const OrderConfirmation = () => {
                             </thead>
                             <tbody>
                                 ${orderData.items.map(item => {
-            const productPrice = item.productID?.price || 0;
+            const productPrice = item.productID?.crossPrice != null ? item.productID.crossPrice : item.productID?.price || 0;
             const lensTypePrice = item.lensType && item.lensType.price ? Number(item.lensType.price) : 0;
             const lensCoatingPrice = item.lensCoating && item.lensCoating.price ? Number(item.lensCoating.price) : 0;
             const itemTotal = productPrice + lensTypePrice + lensCoatingPrice;
@@ -712,7 +712,7 @@ const OrderConfirmation = () => {
                                         <h3>{item.productID?.name || 'Product Name'}</h3>
                                         <div className={styles.itemInfo}>
                                             <span>Color: {item.productID?.color || 'N/A'}</span>
-                                            <span className={styles.price}>₹{item.productID?.price?.toLocaleString('en-IN') || '0'}</span>
+                                            <span className={styles.price}>₹{(item.productID?.crossPrice != null ? item.productID.crossPrice : item.productID?.price)?.toLocaleString('en-IN') || '0'}</span>
                                         </div>
                                     </div>
                                 </div>
@@ -727,7 +727,7 @@ const OrderConfirmation = () => {
                                 <>
                                     <div className={styles.summaryItem}>
                                         <span>Product Price</span>
-                                        <span>₹{(orderData.items[0].productID.price || 0).toLocaleString('en-IN')}</span>
+                                        <span>₹{((orderData.items[0].productID.crossPrice != null ? orderData.items[0].productID.crossPrice : orderData.items[0].productID.price) || 0).toLocaleString('en-IN')}</span>
                                     </div>
                                     {orderData.items[0].lensType && orderData.items[0].lensType.price && (
                                         <div className={styles.summaryItem}>

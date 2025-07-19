@@ -46,10 +46,12 @@ const OrderDetails = () => {
                 if (from == "cart") {
                     // CASE 1
                     const response = await dispatch(getCartDetail(userId)).unwrap();
-                    console.log("Cart Response", response);
+                    ////console.log("Cart Response", response);
 
                     const total = response.items.reduce((acc, item) => {
-                        const itemPrice = Number(item.productID.price) || 0;
+
+                        console.log("Item", item)
+                        const itemPrice = Number(item.productID.crossPrice != null ? item.productID.crossPrice : item.productID.price) || 0;
                         const lensTypePrice = item.lensType && item.lensType.price ? Number(item.lensType.price) : 0;
                         const lensCoatingPrice = item.lensCoating && item.lensCoating.price ? Number(item.lensCoating.price) : 0;
                         const itemQuantity = Number(item.numberOfItems) || 1;
@@ -70,10 +72,10 @@ const OrderDetails = () => {
                     if (!cartId) throw new Error("Cart ID missing from localStorage");
 
                     const res = await dispatch(GetSingleCart(cartId)).unwrap();
-                    console.log("Res", res)
+                    ////console.log("Res", res)
                     const selectedProduct = res?.carts?.productID;
 
-                    const basePrice = Number(selectedProduct.price) || 0;
+                    const basePrice = Number(selectedProduct.crossPrice != null ? selectedProduct.crossPrice : selectedProduct.price) || 0;
                     const lensTypePrice = res.carts.lensType && res.carts.lensType.price ? Number(res.carts.lensType.price) : 0;
                     const lensCoatingPrice = res.carts.lensCoating && res.carts.lensCoating.price ? Number(res.carts.lensCoating.price) : 0;
                     const additionalCost = Number(specsData.additionalCost) || 0;
@@ -103,11 +105,11 @@ const OrderDetails = () => {
                     const cartId = localStorage.getItem("cartId");
 
                     const res = await dispatch(GetSingleCart(cartId)).unwrap();
-                    console.log("Res", res)
+                    ////console.log("Res", res)
                     const selectedProduct = res?.carts?.productID;
 
                     if (selectedProduct && selectedProduct.price) {
-                        const basePrice = Number(selectedProduct.price) || 0;
+                        const basePrice = Number(selectedProduct.crossPrice != null ? selectedProduct.crossPrice : selectedProduct.price) || 0;
                         const lensTypePrice = res.carts.lensType && res.carts.lensType.price ? Number(res.carts.lensType.price) : 0;
                         const lensCoatingPrice = res.carts.lensCoating && res.carts.lensCoating.price ? Number(res.carts.lensCoating.price) : 0;
                         const additionalCost = Number(specsData.additionalCost) || 0;
@@ -146,7 +148,7 @@ const OrderDetails = () => {
 
 
     useEffect(() => {
-        console.log("Ord", orderData)
+        ////console.log("Ord", orderData)
     }, [orderData])
 
 
@@ -186,7 +188,7 @@ const OrderDetails = () => {
             }
 
 
-            console.log("Is", isRazorpayLoaded)
+            ////console.log("Is", isRazorpayLoaded)
             // Get the total amount from orderData
             const amount = orderData.total;
 
@@ -215,7 +217,7 @@ const OrderDetails = () => {
 
                     try {
                         const verifyRes = await dispatch(VerifyPayment(payload)).unwrap();
-                        console.log("Verify Response", verifyRes);
+                        ////console.log("Verify Response", verifyRes);
                         let orderPayload;
                         if (from == "cart") {
                             orderPayload = {
@@ -253,12 +255,12 @@ const OrderDetails = () => {
                         // Create order after successful payment verification
 
 
-                        console.log("Order Payload", orderPayload);
+                        ////console.log("Order Payload", orderPayload);
                         try {
 
                             setIsLoading(true)
                             const orderRes = await dispatch(CreateOrder(orderPayload)).unwrap();
-                            console.log("Order created successfully", orderRes);
+                            ////console.log("Order created successfully", orderRes);
 
                             if (from == "cart") {
                                 const productIds = orderData.items.map(item => item._id);
@@ -266,9 +268,9 @@ const OrderDetails = () => {
                                     ids: productIds
                                 };
                                 await dispatch(DeleteFullCart(cartPayload)).then((res) => {
-                                    console.log("Cart cleared successfully", res);
+                                    ////console.log("Cart cleared successfully", res);
                                 }).catch((error) => {
-                                    console.log("Error clearing cart:", error);
+                                    ////console.log("Error clearing cart:", error);
                                 });
 
                                 toast.success("Payment successful!");
@@ -282,7 +284,7 @@ const OrderDetails = () => {
                                 const cartId = localStorage.getItem("cartId");
                                 const res = await dispatch(DeleteCart(cartId)).unwrap();
 
-                                console.log("Delelele", res)
+                                ////console.log("Delelele", res)
 
                                 toast.success("Payment successful!");
                                 // Clear localStorage after successful payment
@@ -326,11 +328,11 @@ const OrderDetails = () => {
         try {
             const productIds = orderData.items.map(item => item.productID._id);
             await dispatch(DeleteFullCart({ ids: productIds })).then((res) => {
-                console.log("Cart cleared successfully", res);
+                ////console.log("Cart cleared successfully", res);
                 toast.success("Cart cleared successfully");
                 router.push('/cart'); // Redirect to cart page after clearing
             }).catch((error) => {
-                console.log("Error clearing cart:", error);
+                ////console.log("Error clearing cart:", error);
                 toast.error("Failed to clear cart");
             });
         } catch (error) {
@@ -394,7 +396,7 @@ const OrderDetails = () => {
                                                 <div className={styles.itemInfo}>
                                                     <span>Quantity: {item.quantity || 1}</span>
                                                     <span className={styles.price}>
-                                                        ₹{(item.productID?.price * (item.quantity || 1)).toLocaleString('en-IN')}
+                                                        ₹{((item.productID?.crossPrice != null ? item.productID.crossPrice : item.productID?.price) * (item.quantity || 1)).toLocaleString('en-IN')}
                                                     </span>
                                                 </div>
                                             ) : (
@@ -406,7 +408,7 @@ const OrderDetails = () => {
                                                         </div>
                                                     )}
                                                     <span className={styles.price}>
-                                                        ₹{item.productID?.price?.toLocaleString('en-IN')}
+                                                        ₹{(item.productID?.crossPrice != null ? item.productID.crossPrice : item.productID?.price)?.toLocaleString('en-IN')}
                                                     </span>
                                                 </div>
                                             )}
@@ -508,7 +510,7 @@ const OrderDetails = () => {
                                     <div key={index} className={styles.itemSummary}>
                                         <div className={styles.summaryItem}>
                                             <span>{item.productID.name || 'Product'}</span>
-                                            <span>₹{(item.productID.price || 0).toLocaleString('en-IN')}</span>
+                                            <span>₹{((item.productID.crossPrice != null ? item.productID.crossPrice : item.productID.price) || 0).toLocaleString('en-IN')}</span>
                                         </div>
                                         {item.lensType && item.lensType.price && (
                                             <div className={styles.summaryItem}>
@@ -525,7 +527,7 @@ const OrderDetails = () => {
                                         {from === 'cart' && item.numberOfItems > 1 && (
                                             <div className={styles.summaryItem}>
                                                 <span>Quantity: {item.numberOfItems}</span>
-                                                <span>₹{((item.productID.price || 0) + (item.lensType?.price || 0) + (item.lensCoating?.price || 0)) * item.numberOfItems}</span>
+                                                <span>₹{(((item.productID.crossPrice != null ? item.productID.crossPrice : item.productID.price) || 0) + (item.lensType?.price || 0) + (item.lensCoating?.price || 0)) * item.numberOfItems}</span>
                                             </div>
                                         )}
                                         {index < orderData.items.length - 1 && <hr className={styles.summaryDivider} />}

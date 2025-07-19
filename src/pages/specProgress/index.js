@@ -9,7 +9,7 @@ import *as yup from "yup"
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useRef } from 'react';
 import { useDispatch } from 'react-redux';
-import { FileUpload, SavePrescription, AddCart, GetUser, UpdateCart, GetLensType, GetLensDeatil, UpdateCartFlag } from '../../store/authSlice';
+import { FileUpload, SavePrescription, AddCart, GetUser, UpdateCart, GetLensType, GetLensDeatil, UpdateCartFlag, getDisplayPrices } from '../../store/authSlice';
 import { ToastContainer, toast } from 'react-toastify';
 import ProgressBar from "@ramonak/react-progress-bar";
 import Preloader from '../../Component/Animated';
@@ -54,7 +54,14 @@ export default function index() {
         if (storedProduct) {
             const product = JSON.parse(storedProduct);
             setSelectedProduct(product);
-            setTotalPrice(product.price);
+            ////console.log("Prod", product)
+            if (product.crossPrice != null) {
+                setTotalPrice(product.crossPrice);
+            }
+            else {
+                setTotalPrice(product.price)
+            }
+
         }
     }, [])
     const [Data, setData] = useState([])
@@ -63,14 +70,14 @@ export default function index() {
         setIsLoading(true)
         dispatch(GetLensDeatil(LensName)).then((res) => {
 
-            console.log("Res", res)
+            ////console.log("Res", res)
             if (res.payload.status == 200) {
                 setData(res.payload.lensTypes)
                 setIsLoading(false)
             }
             setIsLoading(false)
         }).catch((error) => {
-            console.log("Error", error)
+            ////console.log("Error", error)
             setIsLoading(false)
         })
     }
@@ -134,7 +141,7 @@ export default function index() {
 
 
     useEffect(() => {
-        ////console.log("Is", isFile)
+        ////////console.log("Is", isFile)
     }, [isFile])
 
 
@@ -144,7 +151,7 @@ export default function index() {
             try {
                 setIsLoading(true);
                 const response = await dispatch(GetLensType(type)).unwrap();
-                console.log("Response:", response);
+                ////console.log("Response:", response);
                 if (response.status == 200) {
                     setLensTypeData(response.data);
                     localStorage.setItem('lensTypeData', JSON.stringify(response.data));
@@ -367,7 +374,7 @@ export default function index() {
                 };
 
                 const res = await dispatch(UpdateCart({ cartId, data: responseObject })).unwrap();
-                console.log("Update Cart Response:", res);
+                ////console.log("Update Cart Response:", res);
 
                 if (res.status === 200) {
                     toast.success("Prescription added successfully");
@@ -423,10 +430,10 @@ export default function index() {
                     lensCoating: selectedCoating && selectedCoating._id ? selectedCoating._id : null,
                 };
 
-                console.log("ResJson", responseObject)
+                ////console.log("ResJson", responseObject)
 
                 const res = await dispatch(AddCart(responseObject)).unwrap();
-                console.log("CartAdd", res)
+                ////console.log("CartAdd", res)
                 if (res.status == 200) {
                     toast.success("Product added to cart successfully");
                     localStorage.setItem("cartId", res.cart._id)
@@ -434,7 +441,7 @@ export default function index() {
                     // Update cart flag before proceeding to payment
                     try {
                         await dispatch(UpdateCartFlag(res.cart._id)).unwrap();
-                        console.log("Cart flag updated successfully");
+                        ////console.log("Cart flag updated successfully");
                     } catch (flagError) {
                         console.error("Error updating cart flag:", flagError);
                         // Continue with payment even if flag update fails
@@ -469,6 +476,16 @@ export default function index() {
             setTotalPrice(productPrice + lensPrice + coatingPrice);
         }, [selectedProduct, selectedLens, selectedCoating]);
 
+        let mainPrice = selectedProduct && selectedProduct.crossPrice
+            ? selectedProduct.crossPrice
+            : selectedProduct.price;
+        let originalPrice = null;
+        if (selectedProduct) {
+            const prices = getDisplayPrices(selectedProduct.price, selectedProduct.crossPrice);
+            mainPrice = prices.mainPrice;
+            originalPrice = prices.originalPrice;
+        }
+
         return (
             <motion.div
                 className={styles.thiredMain}
@@ -493,7 +510,12 @@ export default function index() {
                                 <img src={selectedProduct.image} alt={selectedProduct.name} />
                                 <div className={styles.productInfo}>
                                     <h2>{selectedProduct.name}</h2>
-                                    <p>Base Price: ₹{selectedProduct.price}</p>
+                                    <p>Base Price: ₹{mainPrice}</p>
+                                    {originalPrice && (
+                                        <span className={styles.crossPrice} style={{ marginLeft: 8, color: '#ff5252', textDecoration: 'line-through', fontWeight: 600, fontSize: '1rem', background: 'rgba(255,82,82,0.08)', padding: '2px 8px', borderRadius: 4 }}>
+                                            ₹{originalPrice}
+                                        </span>
+                                    )}
                                 </div>
                             </div>
 
@@ -501,7 +523,12 @@ export default function index() {
                                 <h3>Price Breakdown</h3>
                                 <div className={styles.priceItem}>
                                     <span>Base Frame</span>
-                                    <span>₹{selectedProduct.price}</span>
+                                    <span>₹{mainPrice}</span>
+                                    {originalPrice && (
+                                        <span className={styles.crossPrice} style={{ marginLeft: 8, color: '#ff5252', textDecoration: 'line-through', fontWeight: 600, fontSize: '1rem', background: 'rgba(255,82,82,0.08)', padding: '2px 8px', borderRadius: 4 }}>
+                                            ₹{originalPrice}
+                                        </span>
+                                    )}
                                 </div>
                                 {selectedLens && (
                                     <div className={styles.priceItem}>
@@ -572,7 +599,7 @@ export default function index() {
         };
         const isMobile = useIsMobile();
 
-        ////console.log("Is", isMobile)
+        ////////console.log("Is", isMobile)
         const validationSchema = yup.object().shape({
             rightsph: yup.string().required("Right SPH is required"),
             rightcyl: yup.string().required("Right CYL is required"),
@@ -695,9 +722,9 @@ export default function index() {
                 }
 
                 const res = await dispatch(SavePrescription(responseObject)).unwrap();
-                console.log("ResSavePrescription", res);
+                ////console.log("ResSavePrescription", res);
                 if (res.status == 200) {
-                    console.log("ResSavePrescription2", res);
+                    ////console.log("ResSavePrescription2", res);
                     localStorage.setItem("PrescriptionId", res.prescription._id)
 
                     toast.success("Details added successfully.");
@@ -732,13 +759,13 @@ export default function index() {
         };
 
         const handleHiddenButtonClick = () => {
-            // ////console.log("Hidden button clicked!");
+            // ////////console.log("Hidden button clicked!");
             // alert("Hidden button was triggered!");
         };
         const handleUpload = (e) => {
             e.preventDefault()
             if (buttonRef.current) {
-                //console.log("Triggering hidden button click..."); // Debugging log
+                //////console.log("Triggering hidden button click..."); // Debugging log
                 buttonRef.current.click();
             } else {
                 console.error("buttonRef is undefined!"); // Debugging log
@@ -746,7 +773,7 @@ export default function index() {
         }
         const HandleSaveFile = (e) => {
             e.preventDefault()
-            console.log("Callssss")
+            ////console.log("Callssss")
             e.preventDefault();
             if (!selectedFile) {
                 setIsLoading(false); // Stop loader before showing alert
@@ -785,9 +812,9 @@ export default function index() {
                     }
                 })
                 .then((res) => {
-                    console.log("R", res)
+                    ////console.log("R", res)
                     if (res && res.payload && res.payload.status == 200) {
-                        console.log("PPPPPPP2", res.payload.prescription._id)
+                        ////console.log("PPPPPPP2", res.payload.prescription._id)
                         localStorage.setItem("PrescriptionId", res.payload.prescription._id)
                         toast.success("Prescription added successfully!");
                         setIsLoading(false);
