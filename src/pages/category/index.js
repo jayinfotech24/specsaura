@@ -66,13 +66,13 @@ export default function CategoryIndexPage() {
     useEffect(() => {
         if (Products) {
             let filtered = [...Products];
-            ////console.log("Prduicts", Products)
+
             // Filter by collection_type from URL if present
             if (router.query.type) {
                 const urlType = router.query.type.toLowerCase();
+                console.log("Prduicts", Products, urlType)
                 filtered = filtered.filter(product =>
-
-                    product.collection_type.toLowerCase() === urlType
+                    product.collection_type && product.collection_type.toLowerCase() === urlType
                 );
             }
 

@@ -3,12 +3,13 @@ import styles from "../styles/Custom.module.css";
 import { motion } from "framer-motion";
 import { useDispatch } from "react-redux";
 import { WallPaperList } from "../store/authSlice";
+import { useRouter } from "next/router";
 
 export default function CustomCarousle() {
     const [currentIndex, setCurrentIndex] = useState(0);
     const [Images, setImages] = useState([]);
     const dispatch = useDispatch();
-
+    const router = useRouter()
     useEffect(() => {
         const GetData = async () => {
             const res = await dispatch(WallPaperList());
@@ -36,6 +37,21 @@ export default function CustomCarousle() {
         visible: { opacity: 1, y: 0, transition: { duration: 0.9, ease: "easeOut" } },
     };
 
+
+    const handleRedirect = (type , value) => {
+        if (type == "Collection") {
+            router.push({
+               pathname:`/category/${value}`
+           })
+        }   
+        if (type == "Brands") {
+            router.push({
+                pathname: '/category',
+                query: { type: value }
+            });
+        }
+    }
+
     return (
         <div className={styles.main}>
             <div className={styles.inner} style={{ transform: `translateX(-${currentIndex * 100}%)` }}>
@@ -58,7 +74,7 @@ export default function CustomCarousle() {
                 >
                     <h1>{Images[currentIndex]?.title}</h1>
                     <p>{Images[currentIndex]?.description}</p>
-                    <button>Shop Now</button>
+                    <button onClick={()=>handleRedirect(Images[currentIndex]?.type , Images[currentIndex]?.navigation)}>Shop Now</button>
                 </motion.div>
             )}
 
