@@ -7,7 +7,8 @@ import { useNavigate } from "react-router-dom";
 const initialState = {
     count: 0,
     loading: false,
-    error: null
+    error: null,
+    gstRates: [] // Add GST rates to state
 };
 
 // Utility function to handle 401 responses
@@ -348,12 +349,37 @@ export const GetLensDeatil = createAsyncThunk(
     }
 );
 
+export const GetGstRates = createAsyncThunk(
+    "api/getGstRates",
+    async (credentials, { rejectWithValue }) => {
+        try {
+            const response = await axiosInstance.get(`${Appapis.Basurl}${Appapis.getRate}`);
+            return response.data;
+        } catch (error) {
+            return rejectWithValue(error.response?.data || "Failed to get lens type data");
+        }
+    }
+);
+
 // Utility function to get display prices for product cards and detail
 export function getDisplayPrices(price, crossPrice) {
     if (!crossPrice || crossPrice === 0) {
         return { mainPrice: price, originalPrice: null };
     }
     return { mainPrice: crossPrice, originalPrice: price };
+}
+
+// Utility function to calculate price with GST based on type and gstRates from state
+export function calculateGstPrice(type, originalPrice, gstRates = []) {
+    let gstRate = 8; // Default GST
+    if (Array.isArray(gstRates) && type) {
+        const found = gstRates.find(rate => rate.name === type);
+        if (found && found.gst) {
+            gstRate = found.gst;
+        }
+    }
+    const gstAmount = (originalPrice * gstRate) / 100;
+    return originalPrice + gstAmount;
 }
 
 
@@ -684,6 +710,17 @@ const counterSlice = createSlice({
                 state.loading = false;
             })
             .addCase(sendOrder.rejected, (state, action) => {
+                state.loading = false;
+                state.error = handleUnauthorized(action.payload);
+            })
+            .addCase(GetGstRates.pending, (state, action) => {
+                state.loading = true
+            })
+            .addCase(GetGstRates.fulfilled, (state, action) => {
+                state.loading = false;
+                state.gstRates = action.payload;
+            })
+            .addCase(GetGstRates.rejected, (state, action) => {
                 state.loading = false;
                 state.error = handleUnauthorized(action.payload);
             })

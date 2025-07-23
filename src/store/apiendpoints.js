@@ -27,7 +27,8 @@ const Appapis = {
     lenseType: (name) => `/lenseType/${name}`,
     getBlog: `/blog`,
     lensDetail: (name) => `/lens/${name}`,
-    sendorder: "/order/email"
+    sendorder: "/order/email",
+    getRate: "/gstrate"
 }
 
 export default Appapis

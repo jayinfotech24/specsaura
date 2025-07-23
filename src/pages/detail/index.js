@@ -5,7 +5,7 @@ import Footer from "../../Component/Footer";
 import { useRouter } from 'next/router';
 import { handlePayment, IncreasePrice, Validate } from '../../store/commonFunction';
 import { useDispatch } from 'react-redux';
-import { AddCart, getProductDetail, getDisplayPrices } from '../../store/authSlice';
+import { AddCart, getProductDetail, getDisplayPrices, GetGstRates, calculateGstPrice } from '../../store/authSlice';
 import Preloader from '../../Component/Animated';
 import { ToastContainer, toast } from 'react-toastify';
 import { FaArrowLeft, FaArrowRight, FaShoppingCart, FaShoppingBag, FaExpand } from 'react-icons/fa';
@@ -19,12 +19,13 @@ export default function Index() {
     const [isLoading, setIsLoading] = useState(false);
     const [isFullscreen, setIsFullscreen] = useState(false);
     const dispatch = useDispatch();
+    const [GstRates, setGstRates] = useState([])
     const [powerSunglassesOption, setPowerSunglassesOption] = useState(null);
 
     const GetProduct = (Id) => {
         setIsLoading(true);
         dispatch(getProductDetail(Id)).then((res) => {
-            ////console.log("Res", res)
+            console.log("ResProduct", res)
             setData(res.payload.product);
             setIsLoading(false);
         }).catch((error) => {
@@ -178,6 +179,22 @@ export default function Index() {
         setIsFullscreen(!isFullscreen);
     };
 
+    const GetGstData = () => {
+        dispatch(GetGstRates()).then((res) => {
+            console.log("Res", res)
+            if (res.payload.status == 200) {
+                setGstRates(res.payload.items)
+            }
+        }).catch((err) => {
+            consol.log("Err", err)
+        })
+    }
+
+
+    useEffect(() => {
+        GetGstData()
+    }, [])
+
     // Small frames: 50-53mm
     // Medium frames: 54-56mm  
     // Large frames: 57-60mm
@@ -185,6 +202,9 @@ export default function Index() {
 
     const { mainPrice, originalPrice } = getDisplayPrices(Data?.price, Data?.crossPrice);
 
+    // Calculate GST-inclusive price
+    const gstType = Data?.category?.description?.toLowerCase();
+    const gstInclusivePrice = calculateGstPrice(gstType, Data?.price || 0, GstRates);
 
     return (
         <div className={styles.main}>
@@ -280,6 +300,10 @@ export default function Index() {
                             <span className={styles.stockStatus}>
                                 {Data.availableItems > 0 ? 'In Stock' : 'Out of Stock'}
                             </span>
+                            {/* <div className={styles.gstPrice}>
+                                <span>Price (incl. GST): </span>
+                                <span>₹ {Math.round(gstInclusivePrice)}</span>
+                            </div> */}
                         </div>
                     </div>
 
