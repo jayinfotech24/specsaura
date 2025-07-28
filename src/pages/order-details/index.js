@@ -41,7 +41,7 @@ const OrderDetails = () => {
 
     const GetGstData = () => {
         dispatch(GetGstRates()).then((res) => {
-            console.log("Res", res)
+            //console.log("Res", res)
             if (res.payload.status == 200) {
                 setGstRates(res.payload.items)
             }
@@ -64,11 +64,11 @@ const OrderDetails = () => {
                 if (from == "cart") {
                     // CASE 1
                     const response = await dispatch(getCartDetail(userId)).unwrap();
-                    ////console.log("Cart Response", response);
+                    //////console.log("Cart Response", response);
 
                     const total = response.items.reduce((acc, item) => {
 
-                        console.log("Item", item)
+                        //console.log("Item", item)
                         const itemPrice = Number(item.productID.crossPrice != null ? item.productID.crossPrice : item.productID.price) || 0;
                         const lensTypePrice = item.lensType && item.lensType.price ? Number(item.lensType.price) : 0;
                         const lensCoatingPrice = item.lensCoating && item.lensCoating.price ? Number(item.lensCoating.price) : 0;
@@ -90,7 +90,7 @@ const OrderDetails = () => {
                     if (!cartId) throw new Error("Cart ID missing from localStorage");
 
                     const res = await dispatch(GetSingleCart(cartId)).unwrap();
-                    ////console.log("Res", res)
+                    //////console.log("Res", res)
                     const selectedProduct = res?.carts?.productID;
 
                     const basePrice = Number(selectedProduct.crossPrice != null ? selectedProduct.crossPrice : selectedProduct.price) || 0;
@@ -123,7 +123,7 @@ const OrderDetails = () => {
                     const cartId = localStorage.getItem("cartId");
 
                     const res = await dispatch(GetSingleCart(cartId)).unwrap();
-                    ////console.log("Res", res)
+                    //////console.log("Res", res)
                     const selectedProduct = res?.carts?.productID;
 
                     if (selectedProduct && selectedProduct.price) {
@@ -166,7 +166,7 @@ const OrderDetails = () => {
 
 
     useEffect(() => {
-        ////console.log("Ord", orderData)
+        //////console.log("Ord", orderData)
     }, [orderData])
 
 
@@ -218,7 +218,7 @@ const OrderDetails = () => {
             }
 
 
-            ////console.log("Is", isRazorpayLoaded)
+            //////console.log("Is", isRazorpayLoaded)
             // Get the GST-inclusive total amount
             const amount = getGstTotalAmount();
 
@@ -247,7 +247,7 @@ const OrderDetails = () => {
 
                     try {
                         const verifyRes = await dispatch(VerifyPayment(payload)).unwrap();
-                        ////console.log("Verify Response", verifyRes);
+                        //////console.log("Verify Response", verifyRes);
                         let orderPayload;
                         if (from == "cart") {
                             orderPayload = {
@@ -285,12 +285,12 @@ const OrderDetails = () => {
                         // Create order after successful payment verification
 
 
-                        ////console.log("Order Payload", orderPayload);
+                        //////console.log("Order Payload", orderPayload);
                         try {
 
                             setIsLoading(true)
                             const orderRes = await dispatch(CreateOrder(orderPayload)).unwrap();
-                            ////console.log("Order created successfully", orderRes);
+                            //////console.log("Order created successfully", orderRes);
 
                             if (from == "cart") {
                                 const productIds = orderData.items.map(item => item._id);
@@ -298,9 +298,9 @@ const OrderDetails = () => {
                                     ids: productIds
                                 };
                                 await dispatch(DeleteFullCart(cartPayload)).then((res) => {
-                                    ////console.log("Cart cleared successfully", res);
+                                    //////console.log("Cart cleared successfully", res);
                                 }).catch((error) => {
-                                    ////console.log("Error clearing cart:", error);
+                                    //////console.log("Error clearing cart:", error);
                                 });
 
                                 toast.success("Payment successful!");
@@ -314,7 +314,7 @@ const OrderDetails = () => {
                                 const cartId = localStorage.getItem("cartId");
                                 const res = await dispatch(DeleteCart(cartId)).unwrap();
 
-                                ////console.log("Delelele", res)
+                                //////console.log("Delelele", res)
 
                                 toast.success("Payment successful!");
                                 // Clear localStorage after successful payment
@@ -358,11 +358,11 @@ const OrderDetails = () => {
         try {
             const productIds = orderData.items.map(item => item.productID._id);
             await dispatch(DeleteFullCart({ ids: productIds })).then((res) => {
-                ////console.log("Cart cleared successfully", res);
+                //////console.log("Cart cleared successfully", res);
                 toast.success("Cart cleared successfully");
                 router.push('/cart'); // Redirect to cart page after clearing
             }).catch((error) => {
-                ////console.log("Error clearing cart:", error);
+                //////console.log("Error clearing cart:", error);
                 toast.error("Failed to clear cart");
             });
         } catch (error) {
@@ -424,14 +424,20 @@ const OrderDetails = () => {
                                             <h3>{item.productID?.name || 'Product Name'}</h3>
                                             {/* GST-inclusive price */}
                                             <div className={styles.gstPrice}>
-                                                <span>Price (incl. GST): </span>
-                                                <span>
-                                                    ₹{calculateGstPrice(
-                                                        item.productID?.category?.description?.toLowerCase(),
-                                                        item.productID?.crossPrice != null ? item.productID.crossPrice : item.productID?.price,
-                                                        GstRates
-                                                    ).toLocaleString('en-IN')}
-                                                </span>
+                                                {(() => {
+                                                    const gstType = item.productID?.category?.description?.toLowerCase();
+                                                    const basePrice = item.productID?.crossPrice != null ? item.productID.crossPrice : item.productID?.price;
+                                                    const gstObj = Array.isArray(GstRates) ? GstRates.find(rate => rate.name?.toLowerCase() === gstType) : null;
+                                                    //console.log("G", GstRates, item)
+                                                    const gstPercent = gstObj?.gst || 8;
+                                                    const gstIncl = calculateGstPrice(gstType, basePrice, GstRates);
+                                                    return (
+                                                        <>
+                                                            <span>Price (incl. {gstPercent}% GST): </span>
+                                                            <span>₹{gstIncl.toLocaleString('en-IN')}</span>
+                                                        </>
+                                                    );
+                                                })()}
                                             </div>
                                             {from === 'cart' ? (
                                                 <div className={styles.itemInfo}>
@@ -551,14 +557,23 @@ const OrderDetails = () => {
                                     <div key={index} className={styles.itemSummary}>
                                         <div className={styles.summaryItem}>
                                             <span>{item.productID.name || 'Product'}</span>
-                                            <span>
-                                                ₹{calculateGstPrice(
-                                                    item.productID?.category?.description?.toLowerCase(),
-                                                    item.productID?.crossPrice != null ? item.productID.crossPrice : item.productID?.price,
-                                                    GstRates
-                                                ).toLocaleString('en-IN')}
-                                                <span style={{ fontSize: '12px', color: '#888', marginLeft: '4px' }}>(incl. GST)</span>
-                                            </span>
+                                            {(() => {
+                                                const gstType = item.productID?.category?.description?.toLowerCase();
+                                                const basePrice = item.productID?.crossPrice != null ? item.productID.crossPrice : item.productID?.price;
+                                                const gstObj = Array.isArray(GstRates) ? GstRates.find(rate => rate.name?.toLowerCase() === gstType) : null;
+                                                const gstPercent = gstObj?.gst || 8;
+                                                const gstIncl = calculateGstPrice(gstType, basePrice, GstRates);
+                                                return (
+                                                    <>
+                                                        <span>
+                                                            ₹{gstIncl.toLocaleString('en-IN')}
+                                                            <span style={{ fontSize: '12px', color: '#888', marginLeft: '4px' }}>
+                                                                (incl. {gstPercent}% GST)
+                                                            </span>
+                                                        </span>
+                                                    </>
+                                                );
+                                            })()}
                                         </div>
                                         {item.lensType && item.lensType.price && (
                                             <div className={styles.summaryItem}>

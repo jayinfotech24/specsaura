@@ -3,17 +3,19 @@ import { useRouter } from 'next/router';
 import styles from '../../styles/orderConfirmation.module.css';
 import Header from '../../Component/Header';
 import Footer from '../../Component/Footer';
-import { getCartDetail } from '../../store/authSlice';
+import { getCartDetail, GetGstRates } from '../../store/authSlice';
 import { useDispatch } from 'react-redux';
 import Preloader from '../../Component/Animated';
 import { FaPrint } from 'react-icons/fa';
 import { sendOrder } from '../../store/authSlice'; // Adjust the path as needed
+import { calculateGstPrice } from '../../store/authSlice';
 
 
 const OrderConfirmation = () => {
     const router = useRouter();
     const dispatch = useDispatch();
     const [isLoading, setIsLoading] = useState(false);
+    const [GstRates, setGstRates] = useState([])
     const { amount } = router.query;
 
     const [orderData, setOrderData] = useState({
@@ -35,6 +37,21 @@ const OrderConfirmation = () => {
         }
     };
 
+    const GetGstData = () => {
+        dispatch(GetGstRates()).then((res) => {
+            //console.log("Res", res)
+            if (res.payload.status == 200) {
+                setGstRates(res.payload.items)
+            }
+        }).catch((err) => {
+            consol.log("Err", err)
+        })
+    }
+
+
+    useEffect(() => {
+        GetGstData()
+    }, [])
 
     useEffect(() => {
         const savedOrder = JSON.parse(localStorage.getItem("OrderData")); // your actual source
@@ -45,7 +62,7 @@ const OrderConfirmation = () => {
             day: 'numeric'
         });
 
-        ////console.log("DD", savedOrder)
+        //////console.log("DD", savedOrder)
 
         if (savedOrder) {
             setOrderData({
@@ -58,7 +75,7 @@ const OrderConfirmation = () => {
 
 
     useEffect(() => {
-        ////console.log("ORderData", orderData)
+        //////console.log("ORderData", orderData)
     }, [orderData])
     // useEffect(() => {
     //     if (amount) {
@@ -78,6 +95,26 @@ const OrderConfirmation = () => {
             return total + productPrice + lensTypePrice + lensCoatingPrice;
         }, 0);
     };
+
+    // Helper to get GST percent and GST-inclusive price for a product
+    const getGstInfo = (item, gstRates) => {
+        const gstType = item.productID?.category?.description?.toLowerCase();
+
+        const basePrice = item.productID?.crossPrice != null ? item.productID.crossPrice : item.productID?.price;
+        const gstObj = Array.isArray(gstRates) ? gstRates.find(rate => rate.name?.toLowerCase() === gstType) : null;
+        const gstPercent = gstObj?.gst || 8;
+        const gstIncl = calculateGstPrice(gstType, basePrice, gstRates || []);
+        return { gstPercent, gstIncl };
+    };
+
+    // Calculate GST-inclusive total
+    const gstTotal = Math.round(
+        (orderData.items || []).reduce((acc, item) => {
+            const { gstIncl } = getGstInfo(item, GstRates);
+            const qty = item.numberOfItems || item.quantity || 1;
+            return acc + (gstIncl * qty);
+        }, 0)
+    );
 
     useEffect(() => {
         if (orderData && orderData.orderId && orderData.items.length > 0) {
@@ -310,6 +347,8 @@ const OrderConfirmation = () => {
                                     <th>Lens Price</th>
                                     <th>Coating Price</th>
                                     <th>Total</th>
+                                    <th>GST %</th>
+                                    <th>GST Incl.</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -318,6 +357,10 @@ const OrderConfirmation = () => {
                 const lensTypePrice = item.lensType && item.lensType.price ? Number(item.lensType.price) : 0;
                 const lensCoatingPrice = item.lensCoating && item.lensCoating.price ? Number(item.lensCoating.price) : 0;
                 const itemTotal = productPrice + lensTypePrice + lensCoatingPrice;
+                const gstType = item.productID?.category?.description?.toLowerCase();
+                const gstObj = Array.isArray(orderData.gstRates) ? orderData.gstRates.find(rate => rate.name?.toLowerCase() === gstType) : null;
+                const gstPercent = gstObj?.gst || 8;
+                const gstIncl = calculateGstPrice(gstType, productPrice, orderData.gstRates || []);
                 return `
                                     <tr>
                                         <td>${item.productID?.name || 'Product Name'}</td>
@@ -325,6 +368,8 @@ const OrderConfirmation = () => {
                                         <td>₹${lensTypePrice ? lensTypePrice.toLocaleString('en-IN') : '0'}</td>
                                         <td>₹${lensCoatingPrice ? lensCoatingPrice.toLocaleString('en-IN') : '0'}</td>
                                         <td>₹${itemTotal.toLocaleString('en-IN')}</td>
+                                        <td>${gstPercent}%</td>
+                                        <td>₹${gstIncl.toLocaleString('en-IN')}</td>
                                     </tr>
                                     `;
             }).join('')}
@@ -338,8 +383,8 @@ const OrderConfirmation = () => {
                             <span>Free</span>
                         </div>
                         <div class="total">
-                            <span>Total Amount</span>
-                            <span>₹${subtotal.toLocaleString('en-IN')}</span>
+                            <span>Total Amount (incl. GST)</span>
+                            <span>₹${gstTotal.toLocaleString('en-IN')}</span>
                         </div>
                     </div>
 
@@ -366,11 +411,11 @@ const OrderConfirmation = () => {
                 orderId: orderData.orderId
             }
 
-            ////console.log("Ob", jsonObject)
+            //////console.log("Ob", jsonObject)
             dispatch(sendOrder(jsonObject)).then((res) => {
-                ////console.log("Res", res)
+                //////console.log("Res", res)
                 // Optionally show a toast or log success
-                ////console.log('Order confirmation email sent!');
+                //////console.log('Order confirmation email sent!');
             }).catch((err) => {
                 // Optionally handle error
                 console.error('Failed to send order email:', err);
@@ -615,7 +660,9 @@ const OrderConfirmation = () => {
                                     <th>Product Price</th>
                                     <th>Lens Price</th>
                                     <th>Coating Price</th>
+                                      <th>GST</th>
                                     <th>Total</th>
+                                  
                                 </tr>
                             </thead>
                             <tbody>
@@ -630,7 +677,9 @@ const OrderConfirmation = () => {
                                         <td>₹${productPrice.toLocaleString('en-IN')}</td>
                                         <td>₹${lensTypePrice ? lensTypePrice.toLocaleString('en-IN') : '0'}</td>
                                         <td>₹${lensCoatingPrice ? lensCoatingPrice.toLocaleString('en-IN') : '0'}</td>
-                                        <td>₹${itemTotal.toLocaleString('en-IN')}</td>
+                                          <td>${getGstInfo(item, GstRates).gstPercent}%</td>
+                                        <td>₹${getGstInfo(item, GstRates).gstIncl.toLocaleString('en-IN')}</td>
+                                      
                                     </tr>
                                     `;
         }).join('')}
@@ -644,8 +693,8 @@ const OrderConfirmation = () => {
                             <span>Free</span>
                         </div>
                         <div class="total">
-                            <span>Total Amount</span>
-                            <span>₹${subtotal.toLocaleString('en-IN')}</span>
+                            <span>Total Amount (incl. GST)</span>
+                            <span>₹${gstTotal.toLocaleString('en-IN')}</span>
                         </div>
                     </div>
 
@@ -713,6 +762,18 @@ const OrderConfirmation = () => {
                                         <div className={styles.itemInfo}>
                                             <span>Color: {item.productID?.color || 'N/A'}</span>
                                             <span className={styles.price}>₹{(item.productID?.crossPrice != null ? item.productID.crossPrice : item.productID?.price)?.toLocaleString('en-IN') || '0'}</span>
+                                            {(() => {
+                                                const gstType = item.productID?.category?.description?.toLowerCase();
+                                                const basePrice = item.productID?.crossPrice != null ? item.productID.crossPrice : item.productID?.price;
+                                                const gstObj = Array.isArray(orderData.gstRates) ? orderData.gstRates.find(rate => rate.name?.toLowerCase() === gstType) : null;
+                                                const gstPercent = gstObj?.gst || 8;
+                                                const gstIncl = calculateGstPrice(gstType, basePrice, orderData.gstRates || []);
+                                                return (
+                                                    <span className={styles.gstPrice}>
+                                                        Price (incl. {gstPercent}% GST): ₹{gstIncl.toLocaleString('en-IN')}
+                                                    </span>
+                                                );
+                                            })()}
                                         </div>
                                     </div>
                                 </div>
@@ -727,7 +788,18 @@ const OrderConfirmation = () => {
                                 <>
                                     <div className={styles.summaryItem}>
                                         <span>Product Price</span>
-                                        <span>₹{((orderData.items[0].productID.crossPrice != null ? orderData.items[0].productID.crossPrice : orderData.items[0].productID.price) || 0).toLocaleString('en-IN')}</span>
+                                        {(() => {
+                                            const gstType = orderData.items[0].productID?.category?.description?.toLowerCase();
+                                            const basePrice = orderData.items[0].productID?.crossPrice != null ? orderData.items[0].productID.crossPrice : orderData.items[0].productID?.price;
+                                            const gstObj = Array.isArray(orderData.gstRates) ? orderData.gstRates.find(rate => rate.name?.toLowerCase() === gstType) : null;
+                                            const gstPercent = gstObj?.gst || 8;
+                                            const gstIncl = calculateGstPrice(gstType, basePrice, orderData.gstRates || []);
+                                            return (
+                                                <span>
+                                                    ₹{gstIncl.toLocaleString('en-IN')} (incl. {gstPercent}% GST)
+                                                </span>
+                                            );
+                                        })()}
                                     </div>
                                     {orderData.items[0].lensType && orderData.items[0].lensType.price && (
                                         <div className={styles.summaryItem}>
@@ -748,9 +820,9 @@ const OrderConfirmation = () => {
                                 <span>Free</span>
                             </div>
                             <div className={styles.total}>
-                                <span>Total Amount</span>
+                                <span>Total Amount (incl. GST)</span>
                                 <span className={styles.totalAmount}>
-                                    ₹{subtotal.toLocaleString('en-IN')}
+                                    ₹{gstTotal.toLocaleString('en-IN')}
                                 </span>
                             </div>
                         </div>

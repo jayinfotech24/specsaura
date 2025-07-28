@@ -42,12 +42,12 @@ const Blog = () => {
 
     const BlogDetail = () => {
         dispatch(GetBlog()).then((res) => {
-            ////console.log("res", res)
+            //////console.log("res", res)
             if (res.payload.status == 200) {
                 setBlogData(res.payload.items)
             }
         }).catch((err) => {
-            ////console.log("err", err)
+            //////console.log("err", err)
         })
     }
 

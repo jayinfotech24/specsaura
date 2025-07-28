@@ -5,7 +5,7 @@ import Header from '../../Component/Header';
 import Footer from '../../Component/Footer';
 import { FaUser, FaShoppingBag, FaHeart, FaMapMarkerAlt, FaPhone, FaEnvelope } from 'react-icons/fa';
 import UpdateProfileForm from '../../Component/UpdateProfileForm';
-import { GetOrderById } from '../../store/authSlice';
+import { GetGstRates, GetOrderById } from '../../store/authSlice';
 import { useDispatch } from 'react-redux';
 import { GetUser } from '../../store/authSlice';
 import { UpdateUser } from '../../store/authSlice';
@@ -18,7 +18,7 @@ const Profile = () => {
     const [userData, setUserData] = useState({});
     const [orderData, setOrderData] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
-
+    const [GstRates, setGstRates] = useState([])
     useEffect(() => {
         const userToken = localStorage.getItem('userToken');
         if (!userToken) {
@@ -41,10 +41,10 @@ const Profile = () => {
             number: updatedData?.number,
             address: updatedData?.address,
         };
-        ////console.log("UpdatedData", updatePayload);
+        //////console.log("UpdatedData", updatePayload);
 
         dispatch(UpdateUser(updatePayload)).then((res) => {
-            ////console.log("ResponseUpdate", res);
+            //////console.log("ResponseUpdate", res);
             if (res.payload.status === 200) {
                 setUserData(res.payload.user);
             }
@@ -57,7 +57,7 @@ const Profile = () => {
         try {
             setIsLoading(true);
             const response = await dispatch(GetUser()).unwrap();
-            ////console.log(response);
+            //////console.log(response);
             if (response.status === 200) {
                 setUserData(response.mainUser);
             }
@@ -69,12 +69,12 @@ const Profile = () => {
     };
 
     const GetOrderDetail = async (userId) => {
-        ////console.log("Call", userId);
+        //////console.log("Call", userId);
         if (!userId) return;
 
         try {
             const response = await dispatch(GetOrderById(userId)).unwrap();
-            ////console.log(response);
+            //////console.log(response);
             if (response.status === 200) {
 
                 setOrderData(response.items || []);
@@ -88,6 +88,20 @@ const Profile = () => {
     useEffect(() => {
         GetUserDetails();
     }, []);
+    function calculateGstPrice(type, originalPrice, gstRates = []) {
+
+        console.log("BB", originalPrice, type, gstRates)
+        let gstRate = 8; // Default GST
+        if (Array.isArray(gstRates) && type) {
+            const found = gstRates.find(rate => rate.name === type);
+            if (found && found.gst) {
+                gstRate = found.gst;
+            }
+        }
+        const gstAmount = (originalPrice * gstRate) / 100;
+        return originalPrice + gstAmount;
+    }
+
 
     // Fetch order data when userData is available
     useEffect(() => {
@@ -96,6 +110,31 @@ const Profile = () => {
         }
     }, [userData]);
 
+    const GetGstData = () => {
+        dispatch(GetGstRates()).then((res) => {
+            //console.log("Res", res)
+            if (res.payload.status == 200) {
+                setGstRates(res.payload.items)
+            }
+        }).catch((err) => {
+            consol.log("Err", err)
+        })
+    }
+
+    useEffect(() => {
+        GetGstData()
+    }, [])
+
+    const getGstInfo = (item, gstRates) => {
+        const gstType = item.product?.category?.description?.toLowerCase();
+
+        const basePrice = item.product?.crossPrice != null ? item.product.crossPrice : item.product?.price;
+        const gstObj = Array.isArray(gstRates) ? gstRates.find(rate => rate.name?.toLowerCase() === gstType) : null;
+        const gstPercent = gstObj?.gst || 8;
+        const gstIncl = calculateGstPrice(gstType, basePrice, gstRates || []);
+        console.log("In", item)
+        return { gstPercent, gstIncl };
+    };
     return (
         <div className={styles.main}>
             <Header isHeaderVisible={true} />
@@ -174,7 +213,7 @@ const Profile = () => {
                                                                     />
                                                                     <div className={styles.itemDetails}>
                                                                         <p className={styles.itemName}>{item.product?.name}</p>
-                                                                        <p className={styles.itemPrice}>₹{item.product?.crossPrice != null ? item.product.crossPrice : item.product?.price}</p>
+                                                                        <p className={styles.itemPrice}>₹{Math.floor(getGstInfo(item, GstRates).gstIncl)}</p>
                                                                         <p className={styles.itemQuantity}>Quantity: {item.quantity}</p>
                                                                     </div>
                                                                 </div>

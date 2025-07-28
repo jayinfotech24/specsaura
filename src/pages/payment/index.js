@@ -31,7 +31,7 @@ export default function PaymentPage() {
             // 1. Create Razorpay order via backend
             const result = await dispatch(MakePayment({ amount })).unwrap();
 
-            ////console.log("Res", result)
+            //////console.log("Res", result)
 
             const options = {
                 key: "rzp_test_Rw4M9MaWvEHg8C",
@@ -48,7 +48,7 @@ export default function PaymentPage() {
                     };
                     try {
                         const verifyRes = await dispatch(VerifyPayment(payload)).unwrap();
-                        ////console.log("✅ Verified:", verifyRes);
+                        //////console.log("✅ Verified:", verifyRes);
                         alert("✅ Payment Successful");
                     } catch (error) {
                         console.error("❌ Verification Error:", error);

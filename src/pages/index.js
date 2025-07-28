@@ -28,7 +28,7 @@ export default function index() {
     const [Procucts, setProducts] = useState([])
     const router = useRouter();
     // useEffect(() => {
-    //     ////////console.log("Scroll", window.scrollY, carouselRef.current.offsetHeight)
+    //     //////////console.log("Scroll", window.scrollY, carouselRef.current.offsetHeight)
     // }, [lastScrollY])
     const dispatch = useDispatch();
 
@@ -38,7 +38,7 @@ export default function index() {
 
     const GetCategory = () => {
         dispatch(CategoryList()).then((res) => {
-            ////console.log("res", res.payload.items)
+            //////console.log("res", res.payload.items)
             setCategory(res.payload.items)
 
         })
@@ -47,20 +47,20 @@ export default function index() {
     const GetProduct = () => {
         setIsLoading(true)
         dispatch(ProductList()).then((res) => {
-            //console.log("resProduct", res.payload)
+            ////console.log("resProduct", res.payload)
             if (res.payload.status == 200) {
                 setProducts(res.payload.products)
                 setIsLoading(false)
             }
         }).catch((error) => {
-            ////console.log("Error", error)
+            //////console.log("Error", error)
             setIsLoading(false)
         })
     }
 
 
     useEffect(() => {
-        ////console.log("Products", Procucts)
+        //////console.log("Products", Procucts)
     }, [Procucts])
     useEffect(() => {
         GetCategory()
@@ -94,8 +94,8 @@ export default function index() {
     }, [lastScrollY]);
 
     const handleSlideChange = (eventKey, direction) => {
-        ////////console.log("Current Slide Index:", eventKey);
-        ////////console.log("Slide Direction:", direction);
+        //////////console.log("Current Slide Index:", eventKey);
+        //////////console.log("Slide Direction:", direction);
         setActiveSlide(eventKey)
     };
 

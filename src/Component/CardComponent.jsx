@@ -40,7 +40,7 @@ export default function CardComponent({ id, src, name, price, crossPrice, discou
 
 
 
-    ////console.log("CCC" , crossPrice  , price)
+    //////console.log("CCC" , crossPrice  , price)
     const AddTocart = async () => {
         try {
             // First check user authentication
@@ -93,7 +93,7 @@ export default function CardComponent({ id, src, name, price, crossPrice, discou
 
     // Use getDisplayPrices to determine which price to show
     const { mainPrice, originalPrice } = getDisplayPrices(price, crossPrice);
-    //console.log("OO" ,  originalPrice)
+    ////console.log("OO" ,  originalPrice)
     return (
         <div className={styles.main} onClick={GetDetail}>
             <div className={styles.inner}>

@@ -25,11 +25,11 @@ export default function Index() {
     const GetProduct = (Id) => {
         setIsLoading(true);
         dispatch(getProductDetail(Id)).then((res) => {
-            console.log("ResProduct", res)
+            //console.log("ResProduct", res)
             setData(res.payload.product);
             setIsLoading(false);
         }).catch((error) => {
-            ////console.log("Error", error);
+            //////console.log("Error", error);
             setIsLoading(false);
         });
     };
@@ -76,7 +76,7 @@ export default function Index() {
             };
 
             const res = await dispatch(AddCart(responseObject)).unwrap();
-            ////console.log("Res2", res)
+            //////console.log("Res2", res)
             if (res.status === 200) {
                 toast.success("Product added to cart successfully");
                 // Clear the stored data
@@ -131,7 +131,7 @@ export default function Index() {
 
 
     const BuyNow = async () => {
-        //console.log("Data", Data)
+        ////console.log("Data", Data)
         try {
             const isAuthenticated = await checkUserAuth();
             if (!isAuthenticated) {
@@ -181,7 +181,7 @@ export default function Index() {
 
     const GetGstData = () => {
         dispatch(GetGstRates()).then((res) => {
-            console.log("Res", res)
+            //console.log("Res", res)
             if (res.payload.status == 200) {
                 setGstRates(res.payload.items)
             }

@@ -42,7 +42,7 @@ export default function index() {
                 }
             }
 
-            ////console.log("Array", productArray);
+            //////console.log("Array", productArray);
             setProductDetails(productArray);
             setIsLoading(false)
         };
@@ -78,11 +78,11 @@ export default function index() {
 
         const userId = localStorage.getItem("userId");
         dispatch(getCartDetail(userId)).then((res) => {
-            ////console.log("Res", res)
+            //////console.log("Res", res)
             setCartData(res.payload.items);
             setIsLoading(false)
         }).catch((error) => {
-            ////console.log("Err", error)
+            //////console.log("Err", error)
             setIsLoading(false)
         })
     }
@@ -99,7 +99,7 @@ export default function index() {
         return acc + itemTotal;
     }, 0);
 
-    ////console.log("Total Amount:", totalAmount);
+    //////console.log("Total Amount:", totalAmount);
 
     useEffect(() => {
         // Check if any items require prescription
@@ -142,7 +142,7 @@ export default function index() {
                 try {
                     setIsLoading(true);
                     const res = await dispatch(DeleteCart(id)).unwrap();
-                    ////console.log("Delete successful:", res);
+                    //////console.log("Delete successful:", res);
 
                     setAlertState(prev => ({
                         ...prev,
@@ -227,16 +227,16 @@ export default function index() {
     const handleClearCart = async () => {
         try {
             const productIds = CartData?.map(item => item._id);
-            ////console.log("Product IDs", productIds);
+            //////console.log("Product IDs", productIds);
             const payload = {
                 ids: productIds
             };
             await dispatch(DeleteFullCart(payload)).then((res) => {
-                ////console.log("Cart cleared successfully", res);
+                //////console.log("Cart cleared successfully", res);
                 toast.success("Cart cleared successfully");
                 getDeatail(); // Refresh cart data
             }).catch((error) => {
-                ////console.log("Error clearing cart:", error);
+                //////console.log("Error clearing cart:", error);
                 toast.error("Failed to clear cart");
             });
         } catch (error) {
@@ -288,7 +288,7 @@ export default function index() {
                                 </thead>
                                 <tbody>
                                     {CartData?.map((item) => {
-                                        ////console.log("Item", item)
+                                        //////console.log("Item", item)
                                         const itemPrice = Number(item.productID.price) || 0;
                                         const lensTypePrice = item.lensType && item.lensType.price ? Number(item.lensType.price) : 0;
                                         const lensCoatingPrice = item.lensCoating && item.lensCoating.price ? Number(item.lensCoating.price) : 0;

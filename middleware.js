@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
 
 export function middleware(request) {
-    ////console.log('✅ Middleware triggered:', request.nextUrl.pathname)
+    //////console.log('✅ Middleware triggered:', request.nextUrl.pathname)
 
     const token = request.cookies.get('usertoken')?.value
     const publicPaths = ['/login', '/register', '/_next', '/api']

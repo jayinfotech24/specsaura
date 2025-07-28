@@ -31,7 +31,7 @@ export default function CategoryPage() {
                 setIsLoading(false)
             }
         }).catch((error) => {
-            ////console.log("Error", error)
+            //////console.log("Error", error)
             setIsLoading(false)
         })
     }
@@ -64,8 +64,8 @@ export default function CategoryPage() {
     useEffect(() => {
         if (Products) {
             let filtered = [...Products];
-            ////console.log("All Products:", Products);
-            ////console.log("Current Category ID (slug):", router.query.slug);
+            //////console.log("All Products:", Products);
+            //////console.log("Current Category ID (slug):", router.query.slug);
 
             // Filter by category ID if slug is present and not empty
             if (router.query.slug && router.query.slug !== '' && router.query.slug !== undefined) {
@@ -74,7 +74,7 @@ export default function CategoryPage() {
                     return product.category && product.category._id == router.query.slug;
                 });
 
-                ////console.log("Filtered Products by Category:", categoryFiltered);
+                //////console.log("Filtered Products by Category:", categoryFiltered);
 
                 // If no products found for the category, show all products
                 if (categoryFiltered.length === 0) {
