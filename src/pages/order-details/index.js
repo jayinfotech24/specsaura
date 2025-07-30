@@ -3,7 +3,7 @@ import { useRouter } from 'next/router';
 import styles from '../../styles/orderDetails.module.css';
 import Header from '../../Component/Header';
 import Footer from '../../Component/Footer';
-import { CreateOrder, getCartDetail, DeleteFullCart, GetOrderById, GetSingleCart, DeleteCart, GetGstRates, calculateGstPrice } from '../../store/authSlice';
+import { CreateOrder, getCartDetail, DeleteFullCart, GetOrderById, GetSingleCart, DeleteCart, GetGstRates, calculateGstPrice, calculateOrderWithGst } from '../../store/authSlice';
 import { useDispatch } from 'react-redux';
 import Preloader from '../../Component/Animated';
 import { handlePayment } from '../../store/commonFunction';
@@ -20,7 +20,7 @@ const OrderDetails = () => {
     const { from } = router.query;
     const [isRazorpayLoaded, setIsRazorpayLoaded] = useState(false);
     const [GstRates, setGstRates] = useState([])
-
+    const [SummeryData, setSummeryData] = useState([])
     const [formData, setFormData] = useState({
         shippingAddress: {
             fullName: '',
@@ -39,9 +39,11 @@ const OrderDetails = () => {
     });
 
 
+    console.log("Orr", orderData)
+
     const GetGstData = () => {
         dispatch(GetGstRates()).then((res) => {
-            //console.log("Res", res)
+            console.log("Res", res)
             if (res.payload.status == 200) {
                 setGstRates(res.payload.items)
             }
@@ -64,7 +66,7 @@ const OrderDetails = () => {
                 if (from == "cart") {
                     // CASE 1
                     const response = await dispatch(getCartDetail(userId)).unwrap();
-                    //////console.log("Cart Response", response);
+                    console.log("Cart Response", response);
 
                     const total = response.items.reduce((acc, item) => {
 
@@ -90,7 +92,7 @@ const OrderDetails = () => {
                     if (!cartId) throw new Error("Cart ID missing from localStorage");
 
                     const res = await dispatch(GetSingleCart(cartId)).unwrap();
-                    //////console.log("Res", res)
+                    console.log("Res", res)
                     const selectedProduct = res?.carts?.productID;
 
                     const basePrice = Number(selectedProduct.crossPrice != null ? selectedProduct.crossPrice : selectedProduct.price) || 0;
@@ -123,7 +125,7 @@ const OrderDetails = () => {
                     const cartId = localStorage.getItem("cartId");
 
                     const res = await dispatch(GetSingleCart(cartId)).unwrap();
-                    //////console.log("Res", res)
+                    console.log("Res", res)
                     const selectedProduct = res?.carts?.productID;
 
                     if (selectedProduct && selectedProduct.price) {
@@ -189,17 +191,23 @@ const OrderDetails = () => {
         }
     };
 
+
+    console.log("Cal", calculateOrderWithGst(orderData.items, GstRates));
+    useEffect(() => {
+        if (orderData) {
+            setSummeryData(calculateOrderWithGst(orderData.items, GstRates))
+        }
+    }, [orderData.items])
+
     const getGstTotalAmount = () => {
         return Math.round(
-            orderData.items.reduce((acc, item) => {
-                const basePrice = item.productID?.crossPrice != null ? item.productID.crossPrice : item.productID?.price;
-                const gstType = item.productID?.category?.description?.toLowerCase();
-                const gstIncl = calculateGstPrice(gstType, basePrice, GstRates);
+            (SummeryData || []).reduce((acc, item) => {
                 const qty = item.numberOfItems || item.quantity || 1;
-                return acc + (gstIncl * qty);
+                return acc + (item.totalWithGst * qty);
             }, 0)
         );
     };
+
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -553,71 +561,60 @@ const OrderDetails = () => {
                         <div className={styles.section}>
                             <h2>Order Summary</h2>
                             <div className={styles.summary}>
-                                {orderData.items.map((item, index) => (
+                                {SummeryData.map((item, index) => (
                                     <div key={index} className={styles.itemSummary}>
                                         <div className={styles.summaryItem}>
-                                            <span>{item.productID.name || 'Product'}</span>
-                                            {(() => {
-                                                const gstType = item.productID?.category?.description?.toLowerCase();
-                                                const basePrice = item.productID?.crossPrice != null ? item.productID.crossPrice : item.productID?.price;
-                                                const gstObj = Array.isArray(GstRates) ? GstRates.find(rate => rate.name?.toLowerCase() === gstType) : null;
-                                                const gstPercent = gstObj?.gst || 8;
-                                                const gstIncl = calculateGstPrice(gstType, basePrice, GstRates);
-                                                return (
-                                                    <>
-                                                        <span>
-                                                            ₹{gstIncl.toLocaleString('en-IN')}
-                                                            <span style={{ fontSize: '12px', color: '#888', marginLeft: '4px' }}>
-                                                                (incl. {gstPercent}% GST)
-                                                            </span>
-                                                        </span>
-                                                    </>
-                                                );
-                                            })()}
+                                            <span>{item.productName || 'Product'}</span>
+                                            <span>
+                                                ₹{item.totalWithGst.toLocaleString('en-IN')}
+                                                <span style={{ fontSize: '12px', color: '#888', marginLeft: '4px' }}>
+                                                    (incl. {item.gstPercent}% GST)
+                                                </span>
+                                            </span>
                                         </div>
-                                        {item.lensType && item.lensType.price && (
+
+                                        {/* Show frame price */}
+                                        <div className={styles.summaryItem}>
+                                            <span>Frame Price</span>
+                                            <span>₹{item.framePrice.toLocaleString('en-IN')}</span>
+                                        </div>
+
+                                        {/* Show lens price only if hasLens is true and lensPrice > 0 */}
+                                        {item.hasLens && item.lensPrice > 0 && (
                                             <div className={styles.summaryItem}>
-                                                <span>Lens ({item.lensType.name})</span>
-                                                <span>₹{item.lensType.price.toLocaleString('en-IN')}</span>
+                                                <span>Lens Price</span>
+                                                <span>₹{item.lensPrice.toLocaleString('en-IN')}</span>
                                             </div>
                                         )}
-                                        {item.lensCoating && item.lensCoating.price && (
-                                            <div className={styles.summaryItem}>
-                                                <span>Coating ({item.lensCoating.title})</span>
-                                                <span>₹{item.lensCoating.price.toLocaleString('en-IN')}</span>
-                                            </div>
-                                        )}
-                                        {from === 'cart' && item.numberOfItems > 1 && (
-                                            <div className={styles.summaryItem}>
-                                                <span>Quantity: {item.numberOfItems}</span>
-                                                <span>₹{(((item.productID.crossPrice != null ? item.productID.crossPrice : item.productID.price) || 0) + (item.lensType?.price || 0) + (item.lensCoating?.price || 0)) * item.numberOfItems}</span>
-                                            </div>
-                                        )}
+
+                                        {/* Optionally you could add quantity if your data supports it */}
+                                        {/* {item.quantity && item.quantity > 1 && (
+          <div className={styles.summaryItem}>
+            <span>Quantity: {item.quantity}</span>
+          </div>
+        )} */}
+
                                         {index < orderData.items.length - 1 && <hr className={styles.summaryDivider} />}
                                     </div>
                                 ))}
+
                                 <div className={styles.summaryItem}>
                                     <span>Shipping</span>
                                     <span>Free</span>
                                 </div>
+
                                 <div className={styles.total}>
                                     <span>Total Amount</span>
                                     <span className={styles.totalAmount}>
-                                        ₹{
-                                            Math.round(
-                                                orderData.items.reduce((acc, item) => {
-                                                    const basePrice = item.productID?.crossPrice != null ? item.productID.crossPrice : item.productID?.price;
-                                                    const gstType = item.productID?.category?.description?.toLowerCase();
-                                                    const gstIncl = calculateGstPrice(gstType, basePrice, GstRates);
-                                                    const qty = item.numberOfItems || item.quantity || 1;
-                                                    return acc + (gstIncl * qty);
-                                                }, 0)
-                                            ).toLocaleString('en-IN')
-                                        }
+                                        ₹
+                                        {SummeryData
+                                            .reduce((acc, item) => acc + (item.totalWithGst || 0) * (item.quantity || 1), 0)
+                                            .toLocaleString('en-IN')}
                                     </span>
                                 </div>
                             </div>
                         </div>
+
                     </div>
 
                     <div className={styles.actions}>

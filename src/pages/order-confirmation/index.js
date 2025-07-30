@@ -3,7 +3,7 @@ import { useRouter } from 'next/router';
 import styles from '../../styles/orderConfirmation.module.css';
 import Header from '../../Component/Header';
 import Footer from '../../Component/Footer';
-import { getCartDetail, GetGstRates } from '../../store/authSlice';
+import { calculateOrderWithGst, getCartDetail, GetGstRates } from '../../store/authSlice';
 import { useDispatch } from 'react-redux';
 import Preloader from '../../Component/Animated';
 import { FaPrint } from 'react-icons/fa';
@@ -17,6 +17,7 @@ const OrderConfirmation = () => {
     const [isLoading, setIsLoading] = useState(false);
     const [GstRates, setGstRates] = useState([])
     const { amount } = router.query;
+    const [SummeryData, setSummeryData] = useState([])
 
     const [orderData, setOrderData] = useState({
         items: [],  // you can fill this with real item data from props or localStorage if needed
@@ -109,12 +110,12 @@ const OrderConfirmation = () => {
 
     // Calculate GST-inclusive total
     const gstTotal = Math.round(
-        (orderData.items || []).reduce((acc, item) => {
-            const { gstIncl } = getGstInfo(item, GstRates);
+        (SummeryData || []).reduce((acc, item) => {
             const qty = item.numberOfItems || item.quantity || 1;
-            return acc + (gstIncl * qty);
+            return acc + (item.totalWithGst * qty);
         }, 0)
     );
+
 
     useEffect(() => {
         if (orderData && orderData.orderId && orderData.items.length > 0) {
@@ -425,6 +426,11 @@ const OrderConfirmation = () => {
         }
     }, [orderData]);
 
+    useEffect(() => {
+        console.log("Cooo", calculateOrderWithGst(orderData.items, GstRates))
+        setSummeryData(calculateOrderWithGst(orderData.items, GstRates))
+    }, [orderData])
+
     if (isLoading) {
         return <Preloader />;
     }
@@ -666,24 +672,24 @@ const OrderConfirmation = () => {
                                 </tr>
                             </thead>
                             <tbody>
-                                ${orderData.items.map(item => {
-            const productPrice = item.productID?.crossPrice != null ? item.productID.crossPrice : item.productID?.price || 0;
-            const lensTypePrice = item.lensType && item.lensType.price ? Number(item.lensType.price) : 0;
-            const lensCoatingPrice = item.lensCoating && item.lensCoating.price ? Number(item.lensCoating.price) : 0;
-            const itemTotal = productPrice + lensTypePrice + lensCoatingPrice;
+  ${SummeryData.map(item => {
+            const framePrice = item.framePrice || 0;
+            const lensPrice = item.lensPrice || 0;
+            const gstPercent = item.gstPercent || 0;
+            const totalWithGst = item.totalWithGst || 0;
+
             return `
-                                    <tr>
-                                        <td>${item.productID?.name || 'Product Name'}</td>
-                                        <td>₹${productPrice.toLocaleString('en-IN')}</td>
-                                        <td>₹${lensTypePrice ? lensTypePrice.toLocaleString('en-IN') : '0'}</td>
-                                        <td>₹${lensCoatingPrice ? lensCoatingPrice.toLocaleString('en-IN') : '0'}</td>
-                                          <td>${getGstInfo(item, GstRates).gstPercent}%</td>
-                                        <td>₹${getGstInfo(item, GstRates).gstIncl.toLocaleString('en-IN')}</td>
-                                      
-                                    </tr>
-                                    `;
+      <tr>
+        <td>${item.productName || 'Product Name'}</td>
+        <td>₹${framePrice.toLocaleString('en-IN')}</td>
+        <td>₹${lensPrice.toLocaleString('en-IN')}</td>
+        <td>${gstPercent}%</td>
+        <td>₹${totalWithGst.toLocaleString('en-IN')}</td>
+      </tr>
+    `;
         }).join('')}
-                            </tbody>
+</tbody>
+
                         </table>
                     </div>
 
@@ -762,18 +768,18 @@ const OrderConfirmation = () => {
                                         <div className={styles.itemInfo}>
                                             <span>Color: {item.productID?.color || 'N/A'}</span>
                                             <span className={styles.price}>₹{(item.productID?.crossPrice != null ? item.productID.crossPrice : item.productID?.price)?.toLocaleString('en-IN') || '0'}</span>
-                                            {(() => {
+                                            {/* {(() => {
                                                 const gstType = item.productID?.category?.description?.toLowerCase();
                                                 const basePrice = item.productID?.crossPrice != null ? item.productID.crossPrice : item.productID?.price;
                                                 const gstObj = Array.isArray(orderData.gstRates) ? orderData.gstRates.find(rate => rate.name?.toLowerCase() === gstType) : null;
                                                 const gstPercent = gstObj?.gst || 8;
-                                                const gstIncl = calculateGstPrice(gstType, basePrice, orderData.gstRates || []);
+                                                const gstIncl = basePrice;
                                                 return (
                                                     <span className={styles.gstPrice}>
-                                                        Price (incl. {gstPercent}% GST): ₹{gstIncl.toLocaleString('en-IN')}
+                                                        ₹{gstIncl.toLocaleString('en-IN')}
                                                     </span>
                                                 );
-                                            })()}
+                                            })()} */}
                                         </div>
                                     </div>
                                 </div>
@@ -784,49 +790,71 @@ const OrderConfirmation = () => {
                     <div className={styles.section}>
                         <h2>Order Summary</h2>
                         <div className={styles.summary}>
-                            {orderData.items.length > 0 && (
-                                <>
+                            {SummeryData.map((item, index) => (
+                                <div key={index} className={styles.itemSummary}>
+                                    {/* Product Name and total price with GST */}
                                     <div className={styles.summaryItem}>
-                                        <span>Product Price</span>
-                                        {(() => {
-                                            const gstType = orderData.items[0].productID?.category?.description?.toLowerCase();
-                                            const basePrice = orderData.items[0].productID?.crossPrice != null ? orderData.items[0].productID.crossPrice : orderData.items[0].productID?.price;
-                                            const gstObj = Array.isArray(orderData.gstRates) ? orderData.gstRates.find(rate => rate.name?.toLowerCase() === gstType) : null;
-                                            const gstPercent = gstObj?.gst || 8;
-                                            const gstIncl = calculateGstPrice(gstType, basePrice, orderData.gstRates || []);
-                                            return (
-                                                <span>
-                                                    ₹{gstIncl.toLocaleString('en-IN')} (incl. {gstPercent}% GST)
-                                                </span>
-                                            );
-                                        })()}
+                                        <span>{item.productName || 'Product'}</span>
+                                        <span>
+                                            ₹{item.totalWithGst.toLocaleString('en-IN')}
+                                            <span style={{ fontSize: '12px', color: '#888', marginLeft: '4px' }}>
+                                                (incl. {item.gstPercent}% GST)
+                                            </span>
+                                        </span>
                                     </div>
-                                    {orderData.items[0].lensType && orderData.items[0].lensType.price && (
+
+                                    {/* Frame Price */}
+                                    <div className={styles.summaryItem}>
+                                        <span>Frame Price</span>
+                                        <span>₹{item.framePrice.toLocaleString('en-IN')}</span>
+                                    </div>
+
+                                    {/* Lens Price (if present and > 0) */}
+                                    {item.hasLens && item.lensPrice > 0 && (
                                         <div className={styles.summaryItem}>
                                             <span>Lens Price</span>
-                                            <span>₹{orderData.items[0].lensType.price.toLocaleString('en-IN')}</span>
+                                            <span>₹{item.lensPrice.toLocaleString('en-IN')}</span>
                                         </div>
                                     )}
-                                    {orderData.items[0].lensCoating && orderData.items[0].lensCoating.price && (
+
+                                    {/* Accessories Price if present */}
+                                    {item.accessoriesPrice > 0 && (
                                         <div className={styles.summaryItem}>
-                                            <span>Coating Price</span>
-                                            <span>₹{orderData.items[0].lensCoating.price.toLocaleString('en-IN')}</span>
+                                            <span>Accessories Price</span>
+                                            <span>₹{item.accessoriesPrice.toLocaleString('en-IN')}</span>
                                         </div>
                                     )}
-                                </>
-                            )}
+
+                                    {/* Quantity if available */}
+                                    {item.quantity && item.quantity > 1 && (
+                                        <div className={styles.summaryItem}>
+                                            <span>Quantity: {item.quantity}</span>
+                                            <span>₹{(item.totalWithGst * item.quantity).toLocaleString('en-IN')}</span>
+                                        </div>
+                                    )}
+
+                                    {/* Divider except for last item */}
+                                    {index < SummeryData.length - 1 && <hr className={styles.summaryDivider} />}
+                                </div>
+                            ))}
+
                             <div className={styles.summaryItem}>
                                 <span>Shipping</span>
                                 <span>Free</span>
                             </div>
+
                             <div className={styles.total}>
-                                <span>Total Amount (incl. GST)</span>
+                                <span>Total Amount</span>
                                 <span className={styles.totalAmount}>
-                                    ₹{gstTotal.toLocaleString('en-IN')}
+                                    ₹
+                                    {SummeryData
+                                        .reduce((acc, item) => acc + (item.totalWithGst || 0) * (item.quantity || 1), 0)
+                                        .toLocaleString('en-IN')}
                                 </span>
                             </div>
                         </div>
                     </div>
+
                 </div>
 
                 <div className={styles.actions}>

@@ -371,16 +371,91 @@ export function getDisplayPrices(price, crossPrice) {
 
 // Utility function to calculate price with GST based on type and gstRates from state
 export function calculateGstPrice(type, originalPrice, gstRates = []) {
-    let gstRate = 8; // Default GST
+    let gstRate = 0;
+
     if (Array.isArray(gstRates) && type) {
-        const found = gstRates.find(rate => rate.name === type);
-        if (found && found.gst) {
+        const found = gstRates.find(rate => rate.name?.toLowerCase() === type.toLowerCase());
+        if (found && found.gst != null) {
             gstRate = found.gst;
         }
     }
+
+    if (!gstRate) {
+        const defaultRates = {
+            frame: 12,
+            lens: 12,
+            sunglasses: 18,
+            accessories: 18,
+            fitting: 18
+        };
+        gstRate = defaultRates[type?.toLowerCase()] || 0;
+    }
+
     const gstAmount = (originalPrice * gstRate) / 100;
     return originalPrice + gstAmount;
 }
+
+export function calculateOrderWithGst(orderItems = [], gstRates = []) {
+    console.log("III", orderItems)
+    const getGstPercent = (name) => {
+        const gstObj = gstRates.find(
+            (rate) => rate.name.toLowerCase() === name.toLowerCase() && !rate.isDelete
+        );
+        return gstObj ? gstObj.gst : 18;
+    };
+
+    return orderItems.map((item) => {
+        const framePrice = item.productID?.crossPrice ?? item.productID?.price ?? 0;
+        const lensPrice = item.lensType?.price ?? 0;
+        const accessoriesPrice = item.accessoriesPrice ?? 0;
+
+        const isSunglasses = item.productID?.category?.description?.toLowerCase() === 'sunglasses';
+        const hasLens = !!item.lensType;
+        const hasAccessories = accessoriesPrice > 0;
+        const isPowerSunglass = item.productID?.powerSunglasses || false;
+        const isAccessory = item.productID?.isAccessory || false;
+
+        const totalBasePrice = framePrice + lensPrice + accessoriesPrice;
+
+        // Determine GST Type
+        let gstType = 'sunglasses'; // default
+
+        if (isAccessory) {
+            gstType = 'accessories';
+        } else if (isPowerSunglass) {
+            gstType = 'powerSunglasses';
+        } else if (hasAccessories) {
+            gstType = 'accessories';
+        } else if (isSunglasses && lensPrice > 0) {
+            gstType = 'sunglasses';
+        } else if (isSunglasses && lensPrice === 0) {
+            gstType = 'sunglasses';
+        } else if (!isSunglasses && lensPrice > 0) {
+            gstType = 'lens';
+        } else if (!isSunglasses && lensPrice === 0) {
+            gstType = 'frame';
+        }
+
+        const gstPercent = getGstPercent(gstType);
+        const gstAmount = (totalBasePrice * gstPercent) / 100;
+        const totalWithGst = totalBasePrice + gstAmount;
+
+        return {
+            productName: item.productID?.name || 'Unknown Product',
+            hasLens,
+            isPowerSunglass,
+            isAccessory,
+            framePrice,
+            lensPrice,
+            accessoriesPrice,
+            gstPercent,
+            totalBasePrice,
+            gstAmount: Math.round(gstAmount),
+            totalWithGst: Math.round(totalWithGst),
+        };
+    });
+}
+
 
 
 const counterSlice = createSlice({
