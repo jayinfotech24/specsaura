@@ -8,7 +8,7 @@ async function testDeleteCart() {
                 'Content-Type': 'application/json'
             }
         });
-        //////console.log('Response:', response.data);
+        ////////console.log('Response:', response.data);
     } catch (error) {
         console.error('Error:', {
             message: error.message,

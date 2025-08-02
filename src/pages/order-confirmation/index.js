@@ -40,7 +40,7 @@ const OrderConfirmation = () => {
 
     const GetGstData = () => {
         dispatch(GetGstRates()).then((res) => {
-            //console.log("Res", res)
+            ////console.log("Res", res)
             if (res.payload.status == 200) {
                 setGstRates(res.payload.items)
             }
@@ -63,7 +63,7 @@ const OrderConfirmation = () => {
             day: 'numeric'
         });
 
-        //////console.log("DD", savedOrder)
+        ////////console.log("DD", savedOrder)
 
         if (savedOrder) {
             setOrderData({
@@ -76,7 +76,7 @@ const OrderConfirmation = () => {
 
 
     useEffect(() => {
-        //////console.log("ORderData", orderData)
+        ////////console.log("ORderData", orderData)
     }, [orderData])
     // useEffect(() => {
     //     if (amount) {
@@ -412,11 +412,11 @@ const OrderConfirmation = () => {
                 orderId: orderData.orderId
             }
 
-            //////console.log("Ob", jsonObject)
+            ////////console.log("Ob", jsonObject)
             dispatch(sendOrder(jsonObject)).then((res) => {
-                //////console.log("Res", res)
+                ////////console.log("Res", res)
                 // Optionally show a toast or log success
-                //////console.log('Order confirmation email sent!');
+                ////////console.log('Order confirmation email sent!');
             }).catch((err) => {
                 // Optionally handle error
                 console.error('Failed to send order email:', err);
@@ -427,7 +427,7 @@ const OrderConfirmation = () => {
     }, [orderData]);
 
     useEffect(() => {
-        console.log("Cooo", calculateOrderWithGst(orderData.items, GstRates))
+        //console.log("Cooo", calculateOrderWithGst(orderData.items, GstRates))
         setSummeryData(calculateOrderWithGst(orderData.items, GstRates))
     }, [orderData])
 

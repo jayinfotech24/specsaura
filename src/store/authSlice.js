@@ -111,7 +111,7 @@ export const ProductList = createAsyncThunk("api/productList", async (credential
 
 })
 export const AddCart = createAsyncThunk("api/cart", async (credentials, { rejectWithValue }) => {
-    //////console.log("Credentials", credentials)
+    ////////console.log("Credentials", credentials)
     try {
         const response = await axiosInstance.post(`${Appapis.Basurl}${Appapis.cart}`, credentials)
         return response.data
@@ -140,7 +140,7 @@ export const MakePayment = createAsyncThunk(
             const response = await axiosInstance.post(`${Appapis.Basurl}${Appapis.createPayment}`, credentials);
             return response.data;
         } catch (error) {
-            //////console.log("Error", error)
+            ////////console.log("Error", error)
             return rejectWithValue(error.response?.data || "Something went wrong");
         }
     }
@@ -148,7 +148,7 @@ export const MakePayment = createAsyncThunk(
 export const VerifyPayment = createAsyncThunk(
     "api/verifyPayment",
     async (credentials, { rejectWithValue }) => {
-        //////console.log("Inside Verify:", credentials);
+        ////////console.log("Inside Verify:", credentials);
 
         try {
             const response = await axiosInstance.post(
@@ -158,7 +158,7 @@ export const VerifyPayment = createAsyncThunk(
 
             return response.data;
         } catch (error) {
-            //////console.log("Error", error)
+            ////////console.log("Error", error)
             return rejectWithValue(error.response?.data || "Payment verification failed");
         }
     }
@@ -182,7 +182,7 @@ export const DeleteCart = createAsyncThunk(
             const response = await axiosInstance.delete(`${Appapis.Basurl}${Appapis.deleteCart(id)}`);
             return response.data;
         } catch (error) {
-            //////console.log("DeleteCartError", error)
+            ////////console.log("DeleteCartError", error)
             return rejectWithValue(error.response?.data || "Something went wrong");
         }
     }
@@ -195,7 +195,7 @@ export const CreateOrder = createAsyncThunk(
             const response = await axiosInstance.post(`${Appapis.Basurl}${Appapis.createOrder}`, credentials);
             return response.data;
         } catch (error) {
-            //////console.log("CreateOrderError", error)
+            ////////console.log("CreateOrderError", error)
             return rejectWithValue(error.response?.data || "Something went wrong");
         }
     }
@@ -217,7 +217,7 @@ export const GetOrderById = createAsyncThunk(
             const response = await axiosInstance.get(`${Appapis.Basurl}${Appapis.getOrder(id)}`);
             return response.data;
         } catch (error) {
-            //////console.log("GetOrderErroor", error.message)
+            ////////console.log("GetOrderErroor", error.message)
             return rejectWithValue(error.response?.data || "Something went wrong");
         }
     }
@@ -270,7 +270,7 @@ export const sendOrder = createAsyncThunk(
             const response = await axiosInstance.post(`${Appapis.Basurl}${Appapis.sendorder}`, credentials);
             return response.data;
         } catch (error) {
-            //////console.log("sendOrder", error)
+            ////////console.log("sendOrder", error)
             return rejectWithValue(error.response?.data || "Something went wrong");
         }
     }
@@ -396,7 +396,7 @@ export function calculateGstPrice(type, originalPrice, gstRates = []) {
 }
 
 export function calculateOrderWithGst(orderItems = [], gstRates = []) {
-    console.log("III", orderItems)
+    console.log("III", gstRates)
     const getGstPercent = (name) => {
         const gstObj = gstRates.find(
             (rate) => rate.name.toLowerCase() === name.toLowerCase() && !rate.isDelete
@@ -423,7 +423,7 @@ export function calculateOrderWithGst(orderItems = [], gstRates = []) {
         if (isAccessory) {
             gstType = 'accessories';
         } else if (isPowerSunglass) {
-            gstType = 'powerSunglasses';
+            gstType = 'sunglasses';
         } else if (hasAccessories) {
             gstType = 'accessories';
         } else if (isSunglasses && lensPrice > 0) {
@@ -640,7 +640,7 @@ const counterSlice = createSlice({
 
             })
             .addCase(DeleteCart.rejected, (state, action) => {
-                //////console.log("DeleteCart", action)
+                ////////console.log("DeleteCart", action)
                 state.loading = false;
                 state.error = handleUnauthorized(action.payload);
             })
@@ -687,7 +687,7 @@ const counterSlice = createSlice({
 
             })
             .addCase(UpdateUser.rejected, (state, action) => {
-                //////console.log("UpdateUserError", action)
+                ////////console.log("UpdateUserError", action)
                 state.loading = false;
                 state.error = handleUnauthorized(action.payload);
             })

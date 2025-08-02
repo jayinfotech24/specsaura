@@ -25,11 +25,11 @@ export default function Index() {
     const GetProduct = (Id) => {
         setIsLoading(true);
         dispatch(getProductDetail(Id)).then((res) => {
-            //console.log("ResProduct", res)
+            ////console.log("ResProduct", res)
             setData(res.payload.product);
             setIsLoading(false);
         }).catch((error) => {
-            //////console.log("Error", error);
+            ////////console.log("Error", error);
             setIsLoading(false);
         });
     };
@@ -72,11 +72,11 @@ export default function Index() {
                 numberOfItems: 1,
 
                 prescriptionID: null,
-                powerSunglasses: powerSunglassesOption // <-- add value here
+                powerSunglasses: powerSunglassesOption == "yes" ? true : false // <-- add value here
             };
-
+            console.log("Obb", responseObject)
             const res = await dispatch(AddCart(responseObject)).unwrap();
-            //////console.log("Res2", res)
+            console.log("Res2", res)
             if (res.status === 200) {
                 toast.success("Product added to cart successfully");
                 // Clear the stored data
@@ -131,7 +131,7 @@ export default function Index() {
 
 
     const BuyNow = async () => {
-        ////console.log("Data", Data)
+        //////console.log("Data", Data)
         try {
             const isAuthenticated = await checkUserAuth();
             if (!isAuthenticated) {
@@ -148,6 +148,7 @@ export default function Index() {
                 url: Data.url || '/Images/placeholder.webp',
                 powerSunglasses: powerSunglassesOption // <-- add value here
             }));
+            localStorage.setItem('powerSunglassesOption', powerSunglassesOption);
             localStorage.setItem("productId", id);
             router.push("/specProgress")
         } catch (error) {
@@ -181,7 +182,7 @@ export default function Index() {
 
     const GetGstData = () => {
         dispatch(GetGstRates()).then((res) => {
-            //console.log("Res", res)
+            ////console.log("Res", res)
             if (res.payload.status == 200) {
                 setGstRates(res.payload.items)
             }
@@ -223,7 +224,7 @@ export default function Index() {
                         <AnimatePresence mode="wait">
                             <motion.img
                                 key={currentImageIndex}
-                                src={Data?.images && Data.images?.length > 0 ? Data?.images[currentImageIndex] : Data.url || "/Images/placeholder.webp"}
+                                src={Data?.images && Data.images?.length > 0 ? Data?.images[currentImageIndex] : Data?.url || "/Images/placeholder.webp"}
                                 alt={Data.name}
                                 className={styles.mainImage}
                                 initial={{ opacity: 0 }}

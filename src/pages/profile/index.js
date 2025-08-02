@@ -41,10 +41,10 @@ const Profile = () => {
             number: updatedData?.number,
             address: updatedData?.address,
         };
-        //////console.log("UpdatedData", updatePayload);
+        ////////console.log("UpdatedData", updatePayload);
 
         dispatch(UpdateUser(updatePayload)).then((res) => {
-            //////console.log("ResponseUpdate", res);
+            ////////console.log("ResponseUpdate", res);
             if (res.payload.status === 200) {
                 setUserData(res.payload.user);
             }
@@ -57,7 +57,7 @@ const Profile = () => {
         try {
             setIsLoading(true);
             const response = await dispatch(GetUser()).unwrap();
-            //////console.log(response);
+            ////////console.log(response);
             if (response.status === 200) {
                 setUserData(response.mainUser);
             }
@@ -69,12 +69,12 @@ const Profile = () => {
     };
 
     const GetOrderDetail = async (userId) => {
-        //////console.log("Call", userId);
+        ////////console.log("Call", userId);
         if (!userId) return;
 
         try {
             const response = await dispatch(GetOrderById(userId)).unwrap();
-            //////console.log(response);
+            ////////console.log(response);
             if (response.status === 200) {
 
                 setOrderData(response.items || []);
@@ -90,7 +90,7 @@ const Profile = () => {
     }, []);
     function calculateGstPrice(type, originalPrice, gstRates = []) {
 
-        console.log("BB", originalPrice, type, gstRates)
+        //console.log("BB", originalPrice, type, gstRates)
         let gstRate = 8; // Default GST
         if (Array.isArray(gstRates) && type) {
             const found = gstRates.find(rate => rate.name === type);
@@ -112,7 +112,7 @@ const Profile = () => {
 
     const GetGstData = () => {
         dispatch(GetGstRates()).then((res) => {
-            //console.log("Res", res)
+            ////console.log("Res", res)
             if (res.payload.status == 200) {
                 setGstRates(res.payload.items)
             }
@@ -132,7 +132,7 @@ const Profile = () => {
         const gstObj = Array.isArray(gstRates) ? gstRates.find(rate => rate.name?.toLowerCase() === gstType) : null;
         const gstPercent = gstObj?.gst || 8;
         const gstIncl = calculateGstPrice(gstType, basePrice, gstRates || []);
-        console.log("In", item)
+        //console.log("In", item)
         return { gstPercent, gstIncl };
     };
     return (

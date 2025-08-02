@@ -54,7 +54,7 @@ export default function index() {
         if (storedProduct) {
             const product = JSON.parse(storedProduct);
             setSelectedProduct(product);
-            //////console.log("Prod", product)
+            ////////console.log("Prod", product)
             if (product.crossPrice != null) {
                 setTotalPrice(product.crossPrice);
             }
@@ -70,14 +70,14 @@ export default function index() {
         setIsLoading(true)
         dispatch(GetLensDeatil(LensName)).then((res) => {
 
-            //////console.log("Res", res)
+            ////////console.log("Res", res)
             if (res.payload.status == 200) {
                 setData(res.payload.lensTypes)
                 setIsLoading(false)
             }
             setIsLoading(false)
         }).catch((error) => {
-            //////console.log("Error", error)
+            ////////console.log("Error", error)
             setIsLoading(false)
         })
     }
@@ -141,7 +141,7 @@ export default function index() {
 
 
     useEffect(() => {
-        //////////console.log("Is", isFile)
+        ////////////console.log("Is", isFile)
     }, [isFile])
 
 
@@ -151,7 +151,7 @@ export default function index() {
             try {
                 setIsLoading(true);
                 const response = await dispatch(GetLensType(type)).unwrap();
-                //////console.log("Response:", response);
+                ////////console.log("Response:", response);
                 if (response.status == 200) {
                     setLensTypeData(response.data);
                     localStorage.setItem('lensTypeData', JSON.stringify(response.data));
@@ -374,7 +374,7 @@ export default function index() {
                 };
 
                 const res = await dispatch(UpdateCart({ cartId, data: responseObject })).unwrap();
-                //////console.log("Update Cart Response:", res);
+                ////////console.log("Update Cart Response:", res);
 
                 if (res.status === 200) {
                     toast.success("Prescription added successfully");
@@ -430,10 +430,10 @@ export default function index() {
                     lensCoating: selectedCoating && selectedCoating._id ? selectedCoating._id : null,
                 };
 
-                //////console.log("ResJson", responseObject)
+                ////////console.log("ResJson", responseObject)
 
                 const res = await dispatch(AddCart(responseObject)).unwrap();
-                //////console.log("CartAdd", res)
+                ////////console.log("CartAdd", res)
                 if (res.status == 200) {
                     toast.success("Product added to cart successfully");
                     localStorage.setItem("cartId", res.cart._id)
@@ -441,7 +441,7 @@ export default function index() {
                     // Update cart flag before proceeding to payment
                     try {
                         await dispatch(UpdateCartFlag(res.cart._id)).unwrap();
-                        //////console.log("Cart flag updated successfully");
+                        ////////console.log("Cart flag updated successfully");
                     } catch (flagError) {
                         console.error("Error updating cart flag:", flagError);
                         // Continue with payment even if flag update fails
@@ -477,8 +477,8 @@ export default function index() {
         }, [selectedProduct, selectedLens, selectedCoating]);
 
         let mainPrice = selectedProduct && selectedProduct.crossPrice
-            ? selectedProduct.crossPrice
-            : selectedProduct.price;
+            ? selectedProduct?.crossPrice
+            : selectedProduct?.price;
         let originalPrice = null;
         if (selectedProduct) {
             const prices = getDisplayPrices(selectedProduct.price, selectedProduct.crossPrice);
@@ -599,7 +599,7 @@ export default function index() {
         };
         const isMobile = useIsMobile();
 
-        //////////console.log("Is", isMobile)
+        ////////////console.log("Is", isMobile)
         const validationSchema = yup.object().shape({
             rightsph: yup.string().required("Right SPH is required"),
             rightcyl: yup.string().required("Right CYL is required"),
@@ -722,9 +722,9 @@ export default function index() {
                 }
 
                 const res = await dispatch(SavePrescription(responseObject)).unwrap();
-                //////console.log("ResSavePrescription", res);
+                ////////console.log("ResSavePrescription", res);
                 if (res.status == 200) {
-                    //////console.log("ResSavePrescription2", res);
+                    ////////console.log("ResSavePrescription2", res);
                     localStorage.setItem("PrescriptionId", res.prescription._id)
 
                     toast.success("Details added successfully.");
@@ -759,13 +759,13 @@ export default function index() {
         };
 
         const handleHiddenButtonClick = () => {
-            // //////////console.log("Hidden button clicked!");
+            // ////////////console.log("Hidden button clicked!");
             // alert("Hidden button was triggered!");
         };
         const handleUpload = (e) => {
             e.preventDefault()
             if (buttonRef.current) {
-                ////////console.log("Triggering hidden button click..."); // Debugging log
+                //////////console.log("Triggering hidden button click..."); // Debugging log
                 buttonRef.current.click();
             } else {
                 console.error("buttonRef is undefined!"); // Debugging log
@@ -773,7 +773,7 @@ export default function index() {
         }
         const HandleSaveFile = (e) => {
             e.preventDefault()
-            //////console.log("Callssss")
+            ////////console.log("Callssss")
             e.preventDefault();
             if (!selectedFile) {
                 setIsLoading(false); // Stop loader before showing alert
@@ -812,9 +812,9 @@ export default function index() {
                     }
                 })
                 .then((res) => {
-                    //////console.log("R", res)
+                    ////////console.log("R", res)
                     if (res && res.payload && res.payload.status == 200) {
-                        //////console.log("PPPPPPP2", res.payload.prescription._id)
+                        ////////console.log("PPPPPPP2", res.payload.prescription._id)
                         localStorage.setItem("PrescriptionId", res.payload.prescription._id)
                         toast.success("Prescription added successfully!");
                         setIsLoading(false);

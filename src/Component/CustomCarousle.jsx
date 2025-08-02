@@ -13,7 +13,7 @@ export default function CustomCarousle() {
     useEffect(() => {
         const GetData = async () => {
             const res = await dispatch(WallPaperList());
-            //////console.log("POster" , res)
+            ////////console.log("POster" , res)
             if (res.payload.status == 200) {
                 setImages(res.payload.items);
             }

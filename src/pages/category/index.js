@@ -26,14 +26,14 @@ export default function CategoryIndexPage() {
         setIsLoading(true)
         dispatch(ProductList()).then((res) => {
 
-            //////console.log("Res", res)
+            ////////console.log("Res", res)
             if (res.payload.status == 200) {
                 setProducts(res.payload.products)
                 setFilteredProducts(res.payload.products)
                 setIsLoading(false)
             }
         }).catch((error) => {
-            //////console.log("Error", error)
+            ////////console.log("Error", error)
             setIsLoading(false)
         })
     }
@@ -70,7 +70,7 @@ export default function CategoryIndexPage() {
             // Filter by collection_type from URL if present
             if (router.query.type) {
                 const urlType = router.query.type.toLowerCase();
-                //console.log("Prduicts", Products, urlType)
+                ////console.log("Prduicts", Products, urlType)
                 filtered = filtered.filter(product =>
                     product.collection_type && product.collection_type.toLowerCase() === urlType
                 );
@@ -151,6 +151,7 @@ export default function CategoryIndexPage() {
                         onFilterChange={handleFilterChange}
                         activeFilters={activeFilters}
                         isSunglasses={false}
+                        setActiveFilters={setActiveFilters}
                         useBoyGirlGender={isHalospecs}
                     />
                     <div className={styles.cardComponent}>
