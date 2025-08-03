@@ -293,7 +293,7 @@ export default function index() {
                                         const lensTypePrice = item.lensType && item.lensType.price ? Number(item.lensType.price) : 0;
                                         const lensCoatingPrice = item.lensCoating && item.lensCoating.price ? Number(item.lensCoating.price) : 0;
                                         const itemQuantity = Number(item.numberOfItems) || 1;
-                                        const itemTotal = (itemPrice + lensTypePrice + lensCoatingPrice) * itemQuantity;
+                                        const itemTotal = (itemPrice) * itemQuantity;
                                         const needsPrescription = !item.isAllDataAdded;
 
                                         return (

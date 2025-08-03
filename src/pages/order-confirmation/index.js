@@ -436,6 +436,8 @@ const OrderConfirmation = () => {
     }
 
     const subtotal = calculateSubtotal();
+    const hasCoating = SummeryData?.some(item => item.coatingPrice && item.coatingPrice > 0);
+
 
     const handlePrint = () => {
         const printWindow = window.open('', '_blank');
@@ -665,7 +667,7 @@ const OrderConfirmation = () => {
                                     <th>Item</th>
                                     <th>Product Price</th>
                                     <th>Lens Price</th>
-                                    <th>Coating Price</th>
+                                   ${hasCoating ? '<th>Coating Price</th>' : ''}
                                       <th>GST</th>
                                     <th>Total</th>
                                   

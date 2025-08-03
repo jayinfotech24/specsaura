@@ -38,6 +38,14 @@ const OrderDetails = () => {
         total: 0
     });
 
+    useEffect(() => {
+        if (!isRazorpayLoaded) {
+            setTimeout(() => {
+                setIsRazorpayLoaded(true)
+            }, 2000)
+        }
+    }, [isRazorpayLoaded])
+
 
     //console.log("Orr", orderData)
 
@@ -195,6 +203,9 @@ const OrderDetails = () => {
     //console.log("Cal", calculateOrderWithGst(orderData.items, GstRates));
     useEffect(() => {
         if (orderData) {
+
+            const data = calculateOrderWithGst(orderData.items, GstRates)
+            console.log("O", data)
             setSummeryData(calculateOrderWithGst(orderData.items, GstRates))
         }
     }, [orderData.items])
@@ -373,9 +384,7 @@ const OrderDetails = () => {
         document.body.appendChild(script);
     };
 
-    if (isLoading) {
-        return <Preloader />;
-    }
+
 
     return (
         <div className={styles.main}>
@@ -571,6 +580,12 @@ const OrderDetails = () => {
                                                 <span>₹{item.lensPrice.toLocaleString('en-IN')}</span>
                                             </div>
                                         )}
+                                        {item.coatingPrice && item.coatingPrice > 0 && (
+                                            <div className={styles.summaryItem}>
+                                                <span>Coating Price</span>
+                                                <span>₹{item.coatingPrice.toLocaleString('en-IN')}</span>
+                                            </div>
+                                        )}
 
                                         {/* Optionally you could add quantity if your data supports it */}
                                         {/* {item.quantity && item.quantity > 1 && (
@@ -592,10 +607,9 @@ const OrderDetails = () => {
                                     <span>Total Amount</span>
                                     <span className={styles.totalAmount}>
                                         ₹
-                                        {SummeryData
-                                            .reduce((acc, item) => acc + (item.totalWithGst || 0) * (item.quantity || 1), 0)
-                                            .toLocaleString('en-IN')}
+                                        {SummeryData.reduce((acc, item) => acc + (item.totalWithGst || 0), 0).toLocaleString('en-IN')}
                                     </span>
+
                                 </div>
                             </div>
                         </div>
@@ -613,9 +627,9 @@ const OrderDetails = () => {
 
                         {!isRazorpayLoaded && (
                             <div className={styles.alert}>
-                                Payment system is not ready. Please check your internet connection and refresh the page.
+                                Payment system is not ready retry.
                                 {/* Optionally, add a retry button */}
-                                <button onClick={reloadRazorpayScript}>Retry</button>
+
                             </div>
                         )}
                         <button

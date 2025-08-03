@@ -470,7 +470,7 @@ export default function index() {
         }
 
         useEffect(() => {
-            let productPrice = selectedProduct ? selectedProduct.price : 0;
+            let productPrice = selectedProduct.crossPrice ? selectedProduct.crossPrice : selectedProduct.price;
             let lensPrice = selectedLens ? selectedLens.price : 0;
             let coatingPrice = selectedCoating ? selectedCoating.price : 0;
             setTotalPrice(productPrice + lensPrice + coatingPrice);
@@ -524,11 +524,11 @@ export default function index() {
                                 <div className={styles.priceItem}>
                                     <span>Base Frame</span>
                                     <span>₹{mainPrice}</span>
-                                    {originalPrice && (
+                                    {/* {originalPrice && (
                                         <span className={styles.crossPrice} style={{ marginLeft: 8, color: '#ff5252', textDecoration: 'line-through', fontWeight: 600, fontSize: '1rem', background: 'rgba(255,82,82,0.08)', padding: '2px 8px', borderRadius: 4 }}>
                                             ₹{originalPrice}
                                         </span>
-                                    )}
+                                    )} */}
                                 </div>
                                 {selectedLens && (
                                     <div className={styles.priceItem}>
@@ -976,7 +976,7 @@ export default function index() {
                         {(IsSingle || IsBifocel || IsProgressive) && <div className={styles.pupilDistance}>
                             <h2>Pupil Distance</h2>
                             <div className={styles.innerPupil}><input checked={IsTwoPds}
-                                onChange={handleCheckboxChange} type="checkbox" /><span><p>two PDs</p></span></div>
+                                onChange={handleCheckboxChange} type="checkbox" /><span><p>Two PDs</p></span></div>
                             {
                                 !IsTwoPds && <select {...register("pd")}>
                                     <option value="" disabled selected>-- Select --</option>

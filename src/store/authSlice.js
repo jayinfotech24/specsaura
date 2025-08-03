@@ -366,8 +366,9 @@ export function getDisplayPrices(price, crossPrice) {
     if (!crossPrice || crossPrice === 0) {
         return { mainPrice: price, originalPrice: null };
     }
-    return { mainPrice: crossPrice, originalPrice: price };
+    return { mainPrice: crossPrice, originalPrice: price }; // ✅
 }
+
 
 // Utility function to calculate price with GST based on type and gstRates from state
 export function calculateGstPrice(type, originalPrice, gstRates = []) {
@@ -408,6 +409,7 @@ export function calculateOrderWithGst(orderItems = [], gstRates = []) {
         const framePrice = item.productID?.crossPrice ?? item.productID?.price ?? 0;
         const lensPrice = item.lensType?.price ?? 0;
         const accessoriesPrice = item.accessoriesPrice ?? 0;
+        const coatingPrice = item.lensCoating?.price ?? 0;
 
         const isSunglasses = item.productID?.category?.description?.toLowerCase() === 'sunglasses';
         const hasLens = !!item.lensType;
@@ -415,24 +417,16 @@ export function calculateOrderWithGst(orderItems = [], gstRates = []) {
         const isPowerSunglass = item.productID?.powerSunglasses || false;
         const isAccessory = item.productID?.isAccessory || false;
 
-        const totalBasePrice = framePrice + lensPrice + accessoriesPrice;
+        const totalBasePrice = framePrice + lensPrice + coatingPrice + accessoriesPrice;
 
-        // Determine GST Type
-        let gstType = 'sunglasses'; // default
-
+        let gstType = 'sunglasses';
         if (isAccessory) {
             gstType = 'accessories';
-        } else if (isPowerSunglass) {
-            gstType = 'sunglasses';
-        } else if (hasAccessories) {
-            gstType = 'accessories';
-        } else if (isSunglasses && lensPrice > 0) {
-            gstType = 'sunglasses';
-        } else if (isSunglasses && lensPrice === 0) {
+        } else if (isPowerSunglass || isSunglasses) {
             gstType = 'sunglasses';
         } else if (!isSunglasses && lensPrice > 0) {
             gstType = 'lens';
-        } else if (!isSunglasses && lensPrice === 0) {
+        } else {
             gstType = 'frame';
         }
 
@@ -447,6 +441,7 @@ export function calculateOrderWithGst(orderItems = [], gstRates = []) {
             isAccessory,
             framePrice,
             lensPrice,
+            coatingPrice,
             accessoriesPrice,
             gstPercent,
             totalBasePrice,
@@ -454,6 +449,7 @@ export function calculateOrderWithGst(orderItems = [], gstRates = []) {
             totalWithGst: Math.round(totalWithGst),
         };
     });
+
 }
 
 

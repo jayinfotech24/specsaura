@@ -20,7 +20,7 @@ export default function CardComponent({ id, src, name, price, crossPrice, discou
                 router.push("/login");
                 return false;
             }
-            
+
             // Validate token through API
             const response = await dispatch(GetUser()).unwrap();
             return response.status === 200;
@@ -45,7 +45,7 @@ export default function CardComponent({ id, src, name, price, crossPrice, discou
         try {
             // First check user authentication
             const isAuthenticated = await checkUserAuth();
-            
+
             if (!isAuthenticated) {
                 return;
             }
@@ -75,7 +75,7 @@ export default function CardComponent({ id, src, name, price, crossPrice, discou
         try {
             // Check user authentication before redirecting
             // const isAuthenticated = await checkUserAuth();
-            
+
             // if (!isAuthenticated) {
             //     return;
             // }
@@ -124,17 +124,18 @@ export default function CardComponent({ id, src, name, price, crossPrice, discou
                 <div className={styles.content}>
                     <h3>{name}</h3>
                     <div className={styles.priceRow}>
-                        <h2>{`₹ ${Math.round(mainPrice ||0 )}`}</h2>
+                        <h2>{`₹ ${Math.round(mainPrice || 0)}`}</h2>
                         {originalPrice != null && (
                             <span className={styles.crossPrice}>₹ {Math.round(originalPrice)}</span>
                         )}
-                        {discount!=0 && (
+                        {discount !== 0 && discount != null && (
                             <span className={styles.discountBadge}>{discount}% OFF</span>
                         )}
                     </div>
+
                 </div>
             </div>
-    
+
         </div>
     );
 }

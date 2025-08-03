@@ -26,7 +26,9 @@ const Profile = () => {
         }
     }, [router]);
 
-
+    useEffect(() => {
+        console.log("Orderdata", orderData);
+    }, [orderData])
     const handleLogout = () => {
         localStorage.removeItem('userToken');
         router.push('/');
@@ -215,6 +217,7 @@ const Profile = () => {
                                                                         <p className={styles.itemName}>{item.product?.name}</p>
                                                                         <p className={styles.itemPrice}>₹{Math.floor(getGstInfo(item, GstRates).gstIncl)}</p>
                                                                         <p className={styles.itemQuantity}>Quantity: {item.quantity}</p>
+
                                                                     </div>
                                                                 </div>
                                                             ))}
