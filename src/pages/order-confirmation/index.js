@@ -115,7 +115,13 @@ const OrderConfirmation = () => {
             return acc + (item.totalWithGst * qty);
         }, 0)
     );
-
+    useEffect(() => {
+        // Add a defensive check: only calculate if we have items AND GST rates.
+        if (orderData.items.length > 0 && GstRates.length > 0) {
+            const summary = calculateOrderWithGst(orderData.items, GstRates);
+            setSummeryData(summary);
+        }
+    }, [orderData, GstRates]);
 
     useEffect(() => {
         if (orderData && orderData.orderId && orderData.items.length > 0) {
