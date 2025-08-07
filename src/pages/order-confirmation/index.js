@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect , useMemo } from 'react';
 import { useRouter } from 'next/router';
 import styles from '../../styles/orderConfirmation.module.css';
 import Header from '../../Component/Header';
@@ -78,6 +78,19 @@ const OrderConfirmation = () => {
     useEffect(() => {
         ////////console.log("ORderData", orderData)
     }, [orderData])
+       useEffect(() => {
+        // We need both the order items and the GST rates to do the calculation.
+        if (orderData.items.length > 0 && GstRates.length > 0) {
+            console.log("CALCULATING: Running calculateOrderWithGst because orderData or GstRates changed.");
+            const summary = calculateOrderWithGst(orderData.items, GstRates);
+            setSummeryData(summary);
+        }
+    }, [orderData.items, GstRates]); 
+
+    const finalTotal = SummeryData.reduce((acc, item) => acc + (item.totalWithGst || 0) * (item.quantity || 1), 0);
+console.log("SSS" , finalTotal)
+    
+    
     // useEffect(() => {
     //     if (amount) {
     //         setOrderData(prev => ({
@@ -109,12 +122,46 @@ const OrderConfirmation = () => {
     };
 
     // Calculate GST-inclusive total
-    const gstTotal = Math.round(
+  const gstTotal = useMemo(() => {
+    // This calculation now only runs when `SummeryData` changes.
+    return Math.round(
         (SummeryData || []).reduce((acc, item) => {
             const qty = item.numberOfItems || item.quantity || 1;
             return acc + (item.totalWithGst * qty);
         }, 0)
     );
+}, [SummeryData]);
+    // Calculate GST-inclusive total
+ const gstTotalOrder = useMemo(() => {
+        return Math.round(
+            (SummeryData || []).reduce((acc, item) => {
+                const qty = item.numberOfItems || item.quantity || 1;
+                // We use item.totalWithGst from SummeryData, which is correct
+                return acc + (item.totalWithGst * qty);
+            }, 0)
+        );
+    }, [SummeryData]); // It correctly depends on SummeryData
+
+
+    // ========================================================================
+    // NEW: USE EFFECT FOR LOGGING DATA
+    // This hook will run whenever the data updates, showing you the flow.
+    // ========================================================================
+    useEffect(() => {
+        console.log('--- DATA STATE HAS CHANGED ---');
+
+        // 1. Log the raw order data from localStorage
+        console.log('Order Data (from localStorage):', orderData);
+
+        // 2. Log the calculated summary data
+        console.log('Calculated Summary Data (with GST values):', SummeryData);
+
+        // 3. Log the final calculated total
+        console.log('Final Memoized Total (gstTotal):', gstTotal);
+
+        console.log('--------------------------------');
+
+    }, [orderData, SummeryData, gstTotal]);
     useEffect(() => {
         // Add a defensive check: only calculate if we have items AND GST rates.
         if (orderData.items.length > 0 && GstRates.length > 0) {
@@ -123,13 +170,328 @@ const OrderConfirmation = () => {
         }
     }, [orderData, GstRates]);
 
+    // useEffect(() => {
+    //     if (orderData && orderData.orderId && orderData.items.length > 0) {
+    //         // Get customer email from orderData or localStorage
+    //         const customerEmail = orderData.items[0]?.productID?.customerEmail || "customer@example.com"; // Replace with actual email logic
+    //         const email = localStorage.getItem("email")
+    //         // Build the HTML template
+    //         const htmlTemplate = `
+    //              <!DOCTYPE html>
+    //         <html>
+    //         <head>
+    //             <title>Order Invoice - ${orderData.orderId}</title>
+    //             <style>
+    //                 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap');
+    //                 body {
+    //                     font-family: 'Poppins', sans-serif;
+    //                     margin: 0;
+    //                     padding: 20px;
+    //                     color: #333;
+    //                 }
+    //                 .invoice {
+    //                     max-width: 800px;
+    //                     margin: 0 auto;
+    //                     padding: 20px;
+    //                     border: 1px solid #ddd;
+    //                 }
+    //                 .header {
+    //                     margin-top: 20px;
+    //                     text-align: center;
+    //                     margin-bottom: 30px;
+    //                     border-bottom: 2px solid #ddd;
+    //                     padding-bottom: 20px;
+    //                     position: relative;
+    //                 }
+    //                 .header img {
+    //                     max-width: 150px;
+    //                     height: auto;
+    //                     margin-bottom: 10px;
+    //                 }
+    //                 .header p {
+    //                     color: #666;
+    //                     margin: 5px 0;
+    //                 }
+    //                 .title {
+    //                     position: absolute;
+    //                     top: 20px;
+    //                     right: 20px;
+    //                     text-align: right;
+    //                     font-size: 14px;
+    //                     color: #333;
+    //                     font-weight: 500;
+    //                 }
+    //                 .orderId {
+    //                     position: absolute;
+    //                     top: 0;
+    //                     right: 0;
+    //                     text-align: right;
+    //                     font-size: 16px;
+    //                     color: #333;
+    //                     font-weight: 500;
+    //                 }
+    //                 .invoiceNumber {
+    //                     position: absolute;
+    //                     top: 0;
+    //                     right: 0;
+    //                     text-align: right;
+    //                     font-size: 14px;
+    //                     color: #666;
+    //                 }
+    //                 .invoiceNumber strong {
+    //                     display: block;
+    //                     color: #333;
+    //                     font-size: 16px;
+    //                 }
+    //                 .details {
+    //                     margin-bottom: 30px;
+    //                 }
+    //                 .details-grid {
+    //                     display: grid;
+    //                     grid-template-columns: repeat(2, 1fr);
+    //                     gap: 20px;
+    //                     margin-bottom: 20px;
+    //                 }
+    //                 .detail-item {
+    //                     margin-bottom: 10px;
+    //                 }
+    //                 .detail-item strong {
+    //                     display: block;
+    //                     color: #666;
+    //                     font-size: 14px;
+    //                 }
+    //                 .items {
+    //                     margin-bottom: 30px;
+    //                     overflow-x: auto;
+    //                 }
+    //                 .items table {
+    //                     width: 100%;
+    //                     border-collapse: collapse;
+    //                     min-width: 300px;
+    //                 }
+    //                 .items th, .items td {
+    //                     padding: 12px;
+    //                     text-align: left;
+    //                     border-bottom: 1px solid #ddd;
+    //                 }
+    //                 .items th {
+    //                     background-color: #f8f9fa;
+    //                     font-weight: 500;
+    //                 }
+    //                 .summary {
+    //                     margin-top: 30px;
+    //                     border-top: 2px solid #ddd;
+    //                     padding-top: 20px;
+    //                 }
+    //                 .summary-item {
+    //                     display: flex;
+    //                     justify-content: space-between;
+    //                     margin-bottom: 10px;
+    //                 }
+    //                 .total {
+    //                     font-weight: 600;
+    //                     font-size: 18px;
+    //                     margin-top: 20px;
+    //                     padding-top: 20px;
+    //                     border-top: 1px solid #ddd;
+    //                 }
+    //                 .footer {
+    //                     text-align: center;
+    //                     margin-top: 40px;
+    //                     color: #666;
+    //                     font-size: 14px;
+    //                 }
+
+    //                 /* Responsive Styles */
+    //                 @media (max-width: 768px) {
+    //                     body {
+    //                         padding: 10px;
+    //                     }
+    //                     .invoice {
+    //                         padding: 15px;
+    //                     }
+    //                     .header {
+    //                         margin-top: 10px;
+    //                         margin-bottom: 20px;
+    //                     }
+    //                     .header img {
+    //                         max-width: 120px;
+    //                     }
+    //                     .title {
+    //                         position: static;
+    //                         text-align: center;
+    //                         margin-bottom: 15px;
+    //                     }
+    //                     .details-grid {
+    //                         grid-template-columns: 1fr;
+    //                         gap: 15px;
+    //                     }
+    //                     .items th, .items td {
+    //                         padding: 8px;
+    //                         font-size: 14px;
+    //                     }
+    //                     .summary-item, .total {
+    //                         font-size: 16px;
+    //                     }
+    //                 }
+
+    //                 @media (max-width: 480px) {
+    //                     body {
+    //                         padding: 5px;
+    //                     }
+    //                     .invoice {
+    //                         padding: 10px;
+    //                     }
+    //                     .header img {
+    //                         max-width: 100px;
+    //                     }
+    //                     .items th, .items td {
+    //                         padding: 6px;
+    //                         font-size: 13px;
+    //                     }
+    //                     .summary-item, .total {
+    //                         font-size: 15px;
+    //                     }
+    //                     .footer {
+    //                         font-size: 12px;
+    //                     }
+    //                 }
+
+    //                 @media print {
+    //                     body {
+    //                         padding: 0;
+    //                     }
+    //                     .invoice {
+    //                         border: none;
+    //                         padding: 0;
+    //                     }
+    //                     .header {
+    //                         margin-top: 0;
+    //                     }
+    //                 }
+    //             </style>
+    //         </head>
+    //         <body>
+    //             <div class="invoice">
+    //                 <div class="header">
+    //                     <img src="https://res.cloudinary.com/dbujlyfyn/image/upload/v1745037884/uploads/mcueefshi08tjnzydxx4.png " alt="SpecsAura Logo" />
+    //                     <p>Your Vision, Our Priority</p>
+    //                 </div>
+
+    //                 <div class="details">
+    //                     <div class="details-grid">
+    //                         <div class="detail-item">
+    //                             <strong>Order Number</strong>
+    //                             ${orderData.orderId}
+    //                         </div>
+    //                         <div class="detail-item">
+    //                             <strong>Date</strong>
+    //                             ${orderData.date}
+    //                         </div>
+
+    //                     </div>
+    //                 </div>
+
+    //                 <div class="items">
+    //                     <table>
+    //                         <thead>
+    //                             <tr>
+    //                                 <th>Item</th>
+    //                                 <th>Product Price</th>
+    //                                 <th>Lens Price</th>
+    //                                 <th>Coating Price</th>
+    //                                 <th>Total</th>
+    //                                 <th>GST %</th>
+    //                                 <th>GST Incl.</th>
+    //                             </tr>
+    //                         </thead>
+    //                         <tbody>
+    //                             ${orderData.items.map(item => {
+    //             const productPrice = item.productID?.crossPrice != null ? item.productID.crossPrice : item.productID?.price || 0;
+    //             const lensTypePrice = item.lensType && item.lensType.price ? Number(item.lensType.price) : 0;
+    //             const lensCoatingPrice = item.lensCoating && item.lensCoating.price ? Number(item.lensCoating.price) : 0;
+    //             const itemTotal = productPrice + lensTypePrice + lensCoatingPrice;
+    //             const gstType = item.productID?.category?.description?.toLowerCase();
+    //             const gstObj = Array.isArray(orderData.gstRates) ? orderData.gstRates.find(rate => rate.name?.toLowerCase() === gstType) : null;
+    //             const gstPercent = gstObj?.gst || 8;
+    //             const gstIncl = calculateGstPrice(gstType, productPrice, orderData.gstRates || []);
+    //             return `
+    //                                 <tr>
+    //                                     <td>${item.productID?.name || 'Product Name'}</td>
+    //                                     <td>₹${productPrice.toLocaleString('en-IN')}</td>
+    //                                     <td>₹${lensTypePrice ? lensTypePrice.toLocaleString('en-IN') : '0'}</td>
+    //                                     <td>₹${lensCoatingPrice ? lensCoatingPrice.toLocaleString('en-IN') : '0'}</td>
+    //                                     <td>₹${itemTotal.toLocaleString('en-IN')}</td>
+    //                                     <td>${gstPercent}%</td>
+    //                                     <td>₹${gstIncl.toLocaleString('en-IN')}</td>
+    //                                 </tr>
+    //                                 `;
+    //         }).join('')}
+    //                         </tbody>
+    //                     </table>
+    //                 </div>
+
+    //                 <div class="summary">
+    //                     <div class="summary-item">
+    //                         <span>Shipping</span>
+    //                         <span>Free</span>
+    //                     </div>
+    //                     <div class="total">
+    //                         <span>Total Amount (incl. GST)</span>
+    //                      <span>₹${finalTotal}</span>
+    //                     </div>
+    //                 </div>
+
+    //                 <div class="footer">
+    //                     <p>Thank you for shopping with us!</p>
+    //                     <p>For any queries, please contact our customer support.</p>
+    //                 </div>
+    //             </div>
+    //             <script>
+    //                 // Convert to PDF and download
+    //                 window.onload = function() {
+    //                     html2pdf().from(document.body).save('Order_${orderData.orderId}.pdf');
+    //                 }
+    //             </script>
+    //             <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    //         </body>
+    //         </html>
+    //         `;
+
+
+    //         const jsonObject = {
+    //             email: email,
+    //             htmlTemplate,
+    //             orderId: orderData.orderId
+    //         }
+
+    //         ////////console.log("Ob", jsonObject)
+    //         dispatch(sendOrder(jsonObject)).then((res) => {
+    //             ////////console.log("Res", res)
+    //             // Optionally show a toast or log success
+    //             ////////console.log('Order confirmation email sent!');
+    //         }).catch((err) => {
+    //             // Optionally handle error
+    //             console.error('Failed to send order email:', err);
+    //         });
+    //         // Call the API
+
+    //     }
+    // }, [orderData]);
     useEffect(() => {
-        if (orderData && orderData.orderId && orderData.items.length > 0) {
-            // Get customer email from orderData or localStorage
-            const customerEmail = orderData.items[0]?.productID?.customerEmail || "customer@example.com"; // Replace with actual email logic
-            const email = localStorage.getItem("email")
-            // Build the HTML template
-            const htmlTemplate = `
+         const email = localStorage.getItem("email")
+    // Wait until both: orderData is available AND SummeryData is calculated
+    if (
+        orderData &&
+        orderData.orderId &&
+        orderData.items.length > 0 &&
+        SummeryData.length > 0
+    ) {
+        const finalTotal = SummeryData.reduce(
+            (acc, item) => acc + (item.totalWithGst || 0) * (item.quantity || 1),
+            0
+        );
+   const htmlTemplate = `
                  <!DOCTYPE html>
             <html>
             <head>
@@ -391,7 +753,7 @@ const OrderConfirmation = () => {
                         </div>
                         <div class="total">
                             <span>Total Amount (incl. GST)</span>
-                            <span>₹${gstTotal.toLocaleString('en-IN')}</span>
+                         <span>₹${finalTotal}</span>
                         </div>
                     </div>
 
@@ -411,26 +773,21 @@ const OrderConfirmation = () => {
             </html>
             `;
 
+        const jsonObject = {
+            email: email,
+            htmlTemplate,
+            orderId: orderData.orderId
+        };
 
-            const jsonObject = {
-                email: email,
-                htmlTemplate,
-                orderId: orderData.orderId
-            }
-
-            ////////console.log("Ob", jsonObject)
-            dispatch(sendOrder(jsonObject)).then((res) => {
-                ////////console.log("Res", res)
-                // Optionally show a toast or log success
-                ////////console.log('Order confirmation email sent!');
-            }).catch((err) => {
-                // Optionally handle error
-                console.error('Failed to send order email:', err);
+        dispatch(sendOrder(jsonObject))
+            .then((res) => {
+                console.log('✅ Order confirmation email sent!');
+            })
+            .catch((err) => {
+                console.error('❌ Failed to send order email:', err);
             });
-            // Call the API
-
-        }
-    }, [orderData]);
+    }
+}, [orderData, SummeryData]);
 
     useEffect(() => {
         //console.log("Cooo", calculateOrderWithGst(orderData.items, GstRates))
