@@ -125,7 +125,7 @@ export default function CardComponent({ id, src, name, price, crossPrice, discou
                     <h3>{name}</h3>
                     <div className={styles.priceRow}>
                         <h2>{`₹ ${Math.round(mainPrice || 0)}`}</h2>
-                        {originalPrice != null && (
+                        {originalPrice != null && originalPrice != mainPrice && (
                             <span className={styles.crossPrice}>₹ {Math.round(originalPrice)}</span>
                         )}
                         {discount !== 0 && discount != null && (

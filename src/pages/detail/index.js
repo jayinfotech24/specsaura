@@ -292,7 +292,7 @@ export default function Index() {
                         <h1>{Data.name}</h1>
                         <div className={styles.priceContainer}>
                             <h2>{`₹ ${Math.round(mainPrice || 0)}`}</h2>
-                            {originalPrice && (
+                            {originalPrice && originalPrice != mainPrice && (
                                 <span className={styles.crossPrice}>₹ {Math.round(originalPrice)}</span>
                             )}
                             {Data.discount != 0 && (
