@@ -1,4 +1,4 @@
-import React, { useState, useEffect , useMemo } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useRouter } from 'next/router';
 import styles from '../../styles/orderConfirmation.module.css';
 import Header from '../../Component/Header';
@@ -78,19 +78,19 @@ const OrderConfirmation = () => {
     useEffect(() => {
         ////////console.log("ORderData", orderData)
     }, [orderData])
-       useEffect(() => {
+    useEffect(() => {
         // We need both the order items and the GST rates to do the calculation.
         if (orderData.items.length > 0 && GstRates.length > 0) {
             console.log("CALCULATING: Running calculateOrderWithGst because orderData or GstRates changed.");
             const summary = calculateOrderWithGst(orderData.items, GstRates);
             setSummeryData(summary);
         }
-    }, [orderData.items, GstRates]); 
+    }, [orderData.items, GstRates]);
 
     const finalTotal = SummeryData.reduce((acc, item) => acc + (item.totalWithGst || 0) * (item.quantity || 1), 0);
-console.log("SSS" , finalTotal)
-    
-    
+    console.log("SSS", finalTotal)
+
+
     // useEffect(() => {
     //     if (amount) {
     //         setOrderData(prev => ({
@@ -122,17 +122,17 @@ console.log("SSS" , finalTotal)
     };
 
     // Calculate GST-inclusive total
-  const gstTotal = useMemo(() => {
-    // This calculation now only runs when `SummeryData` changes.
-    return Math.round(
-        (SummeryData || []).reduce((acc, item) => {
-            const qty = item.numberOfItems || item.quantity || 1;
-            return acc + (item.totalWithGst * qty);
-        }, 0)
-    );
-}, [SummeryData]);
+    const gstTotal = useMemo(() => {
+        // This calculation now only runs when `SummeryData` changes.
+        return Math.round(
+            (SummeryData || []).reduce((acc, item) => {
+                const qty = item.numberOfItems || item.quantity || 1;
+                return acc + (item.totalWithGst * qty);
+            }, 0)
+        );
+    }, [SummeryData]);
     // Calculate GST-inclusive total
- const gstTotalOrder = useMemo(() => {
+    const gstTotalOrder = useMemo(() => {
         return Math.round(
             (SummeryData || []).reduce((acc, item) => {
                 const qty = item.numberOfItems || item.quantity || 1;
@@ -479,19 +479,19 @@ console.log("SSS" , finalTotal)
     //     }
     // }, [orderData]);
     useEffect(() => {
-         const email = localStorage.getItem("email")
-    // Wait until both: orderData is available AND SummeryData is calculated
-    if (
-        orderData &&
-        orderData.orderId &&
-        orderData.items.length > 0 &&
-        SummeryData.length > 0
-    ) {
-        const finalTotal = SummeryData.reduce(
-            (acc, item) => acc + (item.totalWithGst || 0) * (item.quantity || 1),
-            0
-        );
-   const htmlTemplate = `
+        const email = localStorage.getItem("email")
+        // Wait until both: orderData is available AND SummeryData is calculated
+        if (
+            orderData &&
+            orderData.orderId &&
+            orderData.items.length > 0 &&
+            SummeryData.length > 0
+        ) {
+            const finalTotal = SummeryData.reduce(
+                (acc, item) => acc + (item.totalWithGst || 0) * (item.quantity || 1),
+                0
+            );
+            const htmlTemplate = `
                  <!DOCTYPE html>
             <html>
             <head>
@@ -689,10 +689,10 @@ console.log("SSS" , finalTotal)
             <body>
                 <div class="invoice">
                     <div class="header">
-                        <img src="https://res.cloudinary.com/dbujlyfyn/image/upload/v1745037884/uploads/mcueefshi08tjnzydxx4.png " alt="SpecsAura Logo" />
+                        <img src="/Images/logo2 (1).png" alt="SpecsAura Logo" />
                         <p>Your Vision, Our Priority</p>
                     </div>
-
+                    
                     <div class="details">
                         <div class="details-grid">
                             <div class="detail-item">
@@ -703,7 +703,10 @@ console.log("SSS" , finalTotal)
                                 <strong>Date</strong>
                                 ${orderData.date}
                             </div>
-
+                            <div class="detail-item">
+                                <strong>Status</strong>
+                                ${orderData.status}
+                            </div>
                         </div>
                     </div>
 
@@ -714,35 +717,32 @@ console.log("SSS" , finalTotal)
                                     <th>Item</th>
                                     <th>Product Price</th>
                                     <th>Lens Price</th>
-                                    <th>Coating Price</th>
+                                   ${hasCoating ? '<th>Coating Price</th>' : ''}
+                                      <th>GST</th>
                                     <th>Total</th>
-                                    <th>GST %</th>
-                                    <th>GST Incl.</th>
+                                  
                                 </tr>
                             </thead>
                             <tbody>
-                                ${orderData.items.map(item => {
-                const productPrice = item.productID?.crossPrice != null ? item.productID.crossPrice : item.productID?.price || 0;
-                const lensTypePrice = item.lensType && item.lensType.price ? Number(item.lensType.price) : 0;
-                const lensCoatingPrice = item.lensCoating && item.lensCoating.price ? Number(item.lensCoating.price) : 0;
-                const itemTotal = productPrice + lensTypePrice + lensCoatingPrice;
-                const gstType = item.productID?.category?.description?.toLowerCase();
-                const gstObj = Array.isArray(orderData.gstRates) ? orderData.gstRates.find(rate => rate.name?.toLowerCase() === gstType) : null;
-                const gstPercent = gstObj?.gst || 8;
-                const gstIncl = calculateGstPrice(gstType, productPrice, orderData.gstRates || []);
+  ${SummeryData.map(item => {
+                const framePrice = item.framePrice || 0;
+                const lensPrice = item.lensPrice || 0;
+                const gstPercent = item.gstPercent || 0;
+                const totalWithGst = item.totalWithGst || 0;
+                const coatingPrice = item.coatingPrice || 0
                 return `
-                                    <tr>
-                                        <td>${item.productID?.name || 'Product Name'}</td>
-                                        <td>₹${productPrice.toLocaleString('en-IN')}</td>
-                                        <td>₹${lensTypePrice ? lensTypePrice.toLocaleString('en-IN') : '0'}</td>
-                                        <td>₹${lensCoatingPrice ? lensCoatingPrice.toLocaleString('en-IN') : '0'}</td>
-                                        <td>₹${itemTotal.toLocaleString('en-IN')}</td>
-                                        <td>${gstPercent}%</td>
-                                        <td>₹${gstIncl.toLocaleString('en-IN')}</td>
-                                    </tr>
-                                    `;
+      <tr>
+        <td>${item.productName || 'Product Name'}</td>
+        <td>₹${framePrice.toLocaleString('en-IN')}</td>
+        <td>₹${lensPrice.toLocaleString('en-IN')}</td>
+         <td>₹${coatingPrice.toLocaleString('en-IN')}</td>
+        <td>${gstPercent}%</td>
+        <td>₹${totalWithGst.toLocaleString('en-IN')}</td>
+      </tr>
+    `;
             }).join('')}
-                            </tbody>
+</tbody>
+
                         </table>
                     </div>
 
@@ -753,7 +753,7 @@ console.log("SSS" , finalTotal)
                         </div>
                         <div class="total">
                             <span>Total Amount (incl. GST)</span>
-                         <span>₹${finalTotal}</span>
+                            <span>₹${gstTotal.toLocaleString('en-IN')}</span>
                         </div>
                     </div>
 
@@ -773,21 +773,21 @@ console.log("SSS" , finalTotal)
             </html>
             `;
 
-        const jsonObject = {
-            email: email,
-            htmlTemplate,
-            orderId: orderData.orderId
-        };
+            const jsonObject = {
+                email: email,
+                htmlTemplate,
+                orderId: orderData.orderId
+            };
 
-        dispatch(sendOrder(jsonObject))
-            .then((res) => {
-                console.log('✅ Order confirmation email sent!');
-            })
-            .catch((err) => {
-                console.error('❌ Failed to send order email:', err);
-            });
-    }
-}, [orderData, SummeryData]);
+            dispatch(sendOrder(jsonObject))
+                .then((res) => {
+                    console.log('✅ Order confirmation email sent!');
+                })
+                .catch((err) => {
+                    console.error('❌ Failed to send order email:', err);
+                });
+        }
+    }, [orderData, SummeryData]);
 
     useEffect(() => {
         //console.log("Cooo", calculateOrderWithGst(orderData.items, GstRates))
@@ -1042,12 +1042,14 @@ console.log("SSS" , finalTotal)
             const lensPrice = item.lensPrice || 0;
             const gstPercent = item.gstPercent || 0;
             const totalWithGst = item.totalWithGst || 0;
+            const coatingPrice = item.coatingPrice
 
             return `
       <tr>
         <td>${item.productName || 'Product Name'}</td>
         <td>₹${framePrice.toLocaleString('en-IN')}</td>
         <td>₹${lensPrice.toLocaleString('en-IN')}</td>
+           <td>₹${coatingPrice.toLocaleString('en-IN')}</td>
         <td>${gstPercent}%</td>
         <td>₹${totalWithGst.toLocaleString('en-IN')}</td>
       </tr>
