@@ -73,42 +73,45 @@ export default function Index() {
                 return;
             }
 
-            if (isAccessoryCategory(Data)) {
-                const userId = localStorage.getItem("userId");
-                const responseObject = {
-                    userID: userId,
-                    productID: id,
-                    numberOfItems: 1,
-                    prescriptionID: null,
-                    powerSunglasses: powerSunglassesOption == "yes" ? true : false
-                };
-                console.log("Obb", responseObject);
-                const res = await dispatch(AddCart(responseObject)).unwrap();
-                console.log("Res2", res);
-                if (res.status === 200) {
-                    toast.success("Product added to cart successfully");
-                    localStorage.removeItem('selectedProduct');
-                    localStorage.removeItem('specsData');
-                    router.push('/cart');
-                } else if (res.status === 401) {
-                    toast.error("Please login to continue");
-                } else {
-                    toast.error("Failed to add product to cart");
-                }
+
+            const userId = localStorage.getItem("userId");
+            const responseObject = {
+                userID: userId,
+                productID: id,
+                numberOfItems: 1,
+                prescriptionID: null,
+                powerSunglasses: powerSunglassesOption == "yes" ? true : false
+            };
+            console.log("Obb", responseObject);
+            const res = await dispatch(AddCart(responseObject)).unwrap();
+            console.log("Res2", res);
+            if (res.status === 200) {
+                toast.success("Product added to cart successfully");
+                // localStorage.setItem("cartId", res.payload._id); // Store cartId from response
+                localStorage.removeItem('selectedProduct');
+                localStorage.removeItem('specsData');
+                router.push('/cart');
+            } else if (res.status === 401) {
+                toast.error("Please login to continue");
             } else {
-                localStorage.setItem('selectedProduct', JSON.stringify({
-                    id: id,
-                    name: Data.name,
-                    price: Data.crossPrice != null ? Data.crossPrice : Data.price,
-                    image: Data.images?.[0] || Data.url || '/Images/placeholder.webp',
-                    url: Data.url || '/Images/placeholder.webp'
-                }));
-                router.push({
-                    pathname: '/specProgress',
-                    query: { action: 'addToCart' }
-                });
+                toast.error("Failed to add product to cart");
             }
-        } catch (error) {
+        }
+        // else {
+        //     localStorage.setItem('selectedProduct', JSON.stringify({
+        //         id: id,
+        //         name: Data.name,
+        //         price: Data.crossPrice != null ? Data.crossPrice : Data.price,
+        //         image: Data.images?.[0] || Data.url || '/Images/placeholder.webp',
+        //         url: Data.url || '/Images/placeholder.webp'
+        //     }));
+        //     router.push({
+        //         pathname: '/specProgress',
+        //         query: { action: 'addToCart' }
+        //     });
+        // }
+        // } 
+        catch (error) {
             console.error("Error in Add to Cart:", error);
             toast.error("Failed to process your request. Please try again.");
         } finally {

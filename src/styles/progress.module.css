@@ -47,6 +47,8 @@
   font-weight: 700;
   background: var(--primary-gradient);
   -webkit-background-clip: text;
+  background-clip: text;
+  /* Added standard property */
   -webkit-text-fill-color: transparent;
 }
 
@@ -195,6 +197,8 @@
       #5855eb,
       #7a78f0);
   -webkit-background-clip: text;
+  background-clip: text;
+  /* Added standard property */
   -webkit-text-fill-color: transparent;
 }
 
@@ -901,10 +905,6 @@
     margin: auto;
   }
 
-  .thiredMain .thiredInner .thiredCardContainer {
-    /* height: 200px; */
-  }
-
   .thiredMain .thiredInner h1 {
     font-size: 25px;
   }
@@ -1316,6 +1316,8 @@
       #5855eb,
       #7a78f0);
   -webkit-background-clip: text;
+  background-clip: text;
+  /* Added standard property */
   -webkit-text-fill-color: transparent;
 }
 
@@ -1701,6 +1703,8 @@
   font-weight: 700;
   background: linear-gradient(45deg, #5855eb, #7a78f0);
   -webkit-background-clip: text;
+  background-clip: text;
+  /* Added standard property */
   -webkit-text-fill-color: transparent;
 }
 
@@ -1745,13 +1749,16 @@
   box-shadow: 0 4px 18px rgba(88, 85, 235, 0.08);
   display: flex;
   flex-direction: row;
-  align-items: stretch;
+  /* Changed to row */
+  align-items: center;
+  /* Center items vertically */
   cursor: pointer;
   border: 2px solid transparent;
   transition: box-shadow 0.3s, border 0.3s, transform 0.2s;
-  min-height: 180px;
-  display: flex;
-  flex-direction: column;
+  min-height: 120px;
+  /* Adjusted min-height */
+  padding: 15px 22px;
+  /* Adjusted padding */
 }
 
 .lensCard:hover {
@@ -1763,49 +1770,76 @@
 .selectedLens {
   border: 2.5px solid #5855eb !important;
   box-shadow: 0 8px 32px rgba(88, 85, 235, 0.18);
-  display: flex;
-  flex-direction: column;
 }
 
-.lensLeft {
+.lensImageContainer {
+  width: 80px;
+  /* Fixed width for the image container */
+  height: 80px;
+  /* Fixed height for the image container */
   display: flex;
-  align-items: center;
   justify-content: center;
-  width: 90px;
-  background: linear-gradient(135deg, #e4e8eb 0%, #f5f7fa 100%);
-  border-radius: 18px 0 0 18px;
-  font-size: 2.5rem;
+  align-items: center;
+  margin-right: 0;
+  /* Remove margin-right */
+  margin-left: 20px;
+  /* Add margin-left to push it to the right */
+  border-radius: 12px;
+  background-color: #f0f3f7;
+  /* Light background for the image area */
+  flex-shrink: 0;
+  /* Prevent image container from shrinking */
+}
+
+.lensImage {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  /* Ensure the whole image is visible */
+  padding: 5px;
+  /* Add some padding inside the container */
 }
 
 .lensRight {
-  flex: 1 1;
+  flex: 1;
+  /* Allow content to take remaining space */
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  padding: 18px 22px 0px 18px;
+  padding: 0;
+  /* Remove padding here as it's now on .lensCard */
+  text-align: left;
+  /* Ensure text aligns left */
 }
 
 .lensContent h2 {
-  font-size: 1.2rem;
+  font-size: 1.15rem;
+  /* Adjusted font size */
   font-weight: 700;
   color: #5855eb;
-  margin-bottom: 6px;
+  margin-bottom: 4px;
+  /* Adjusted margin */
 }
 
 .lensContent ul {
-  margin: 0 0 8px 0;
-  padding: 0 0 0 18px;
+  margin: 0 0 6px 0;
+  /* Adjusted margin */
+  padding: 0 0 0 16px;
+  /* Adjusted padding */
   color: #444;
-  font-size: 0.98rem;
+  font-size: 0.9rem;
+  /* Adjusted font size */
 }
 
 .lensWarranty {
   display: inline-block;
   background: #eaf0ff;
   color: #5855eb;
-  font-size: 0.85rem;
+  font-size: 0.8rem;
+  /* Adjusted font size */
   border-radius: 8px;
-  padding: 2px 10px;
+  padding: 2px 8px;
+  /* Adjusted padding */
   margin-right: 8px;
   margin-bottom: 4px;
 }
@@ -1821,11 +1855,14 @@
 }
 
 .lensPrice {
-  font-size: 1.3rem;
+  font-size: 1.4rem;
+  /* Adjusted font size */
   font-weight: 700;
   color: #2c3e50;
-  margin-top: 8px;
-  text-align: right;
+  margin-top: 10px;
+  /* Adjusted margin */
+  text-align: left;
+  /* Align price to the left */
 }
 
 .lensButtonContainer {
@@ -1873,8 +1910,12 @@
     min-height: 150px;
   }
 
-  .lensLeft {
+  .lensImageContainer {
+    /* Changed from .lensLeft */
     width: 70px;
+    /* Adjusted size */
+    height: 70px;
+    /* Adjusted size */
     font-size: 2rem;
   }
 }
@@ -1906,19 +1947,37 @@
 
   .lensCard {
     flex-direction: column;
+    /* Revert to column for smaller screens */
     min-height: 120px;
     border-radius: 14px;
+    padding: 10px;
+    /* Adjusted padding */
   }
 
-  .lensLeft {
+  .lensImageContainer {
+    /* Changed from .lensLeft */
     width: 100%;
+    /* Full width for image on small screens */
+    height: 100px;
+    /* Adjusted height */
     border-radius: 14px 14px 0 0;
-    font-size: 1.5rem;
     padding: 10px 0;
+    margin-left: 0;
+    /* Remove margin-left for column layout */
+    margin-bottom: 10px;
+    /* Add margin-bottom for column layout */
+  }
+
+  .lensImage {
+    padding: 0;
+    /* Remove padding for small screens */
   }
 
   .lensRight {
-    padding: 10px 12px 10px 10px;
+    padding: 0;
+    /* No padding here */
+    text-align: center;
+    /* Center text content for column layout */
   }
 
   .lensContent h2 {
@@ -1927,6 +1986,8 @@
 
   .lensPrice {
     font-size: 1.1rem;
+    text-align: center;
+    /* Center price for column layout */
   }
 
   .lensButtonContainer .proceedButton {
@@ -2127,23 +2188,48 @@
   min-width: 220px;
   position: relative;
   outline: none;
+  flex-direction: row-reverse;
+  /* Changed to row-reverse to place image on right */
 }
 
-.coatingCard:hover,
-.coatingCard:focus {
-  border-color: #0070f3;
-  box-shadow: 0 2px 8px rgba(0, 112, 243, 0.08);
+.coatingCard:hover {
+  transform: scale(1.04);
+  box-shadow: 0 8px 24px rgba(88, 85, 235, 0.13);
 }
 
-.selectedCoating {
-  border-color: #0070f3;
-  background: #e6f0fa;
+.coatingImageContainer {
+  width: 60px;
+  /* Adjust size as needed */
+  height: 60px;
+  /* Adjust size as needed */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-right: 0;
+  /* Remove right margin */
+  margin-left: 15px;
+  /* Add left margin to push it to the right */
+  border-radius: 8px;
+  background-color: #eef1f5;
+  /* Light background for the image area */
+  flex-shrink: 0;
+}
+
+.coatingImage {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  /* Ensure the whole image is visible */
+  padding: 5px;
+  /* Optional: small padding inside the container */
 }
 
 .coatingInfo {
   flex: 1;
   display: flex;
   flex-direction: column;
+  text-align: left;
+  /* Ensure text aligns left */
 }
 
 .coatingTitle {

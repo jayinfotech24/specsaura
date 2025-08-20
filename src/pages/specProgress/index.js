@@ -375,8 +375,9 @@ export default function index() {
                     isAllDataAdded: true // Add this flag to indicate prescription is added
                 };
 
+
                 const res = await dispatch(UpdateCart({ cartId, data: responseObject })).unwrap();
-                console.log("Update Cart Response:", res);
+                //////console.log("Update Cart Response:", res);
 
                 if (res.status === 200) {
                     toast.success("Prescription added successfully");
@@ -393,12 +394,13 @@ export default function index() {
                     toast.error("Failed to update cart");
                 }
             } catch (error) {
-                console.log("Error updating cart:", error);
+                console.error("Error updating cart:", error);
                 toast.error("Failed to update cart. Please try again.");
             } finally {
                 setIsLoading(false);
             }
         };
+
 
 
         const HandlePayment = async () => {
@@ -1100,6 +1102,7 @@ export default function index() {
         const [activeTab, setActiveTab] = useState('Bestsellers');
         // Use lensTypeData if available, otherwise fallback to the provided array
         const lensList = Array.isArray(lensTypeData) && lensTypeData.length > 0 ? lensTypeData : Data;
+        console.log("List", lensList)
         return (
             <motion.div
                 className={styles.lensMain}
@@ -1145,6 +1148,9 @@ export default function index() {
                                         ₹{lens.price}
                                     </div>
                                 </div>
+                                <div className={styles.lensImageContainer}>
+                                    {lens.imageURL && <img src={lens.imageURL} alt={lens.name} className={styles.lensImage} />}
+                                </div>
                             </motion.div>
                         ))}
                     </div>
@@ -1172,6 +1178,7 @@ export default function index() {
     const CoatingSelectionPage = () => {
         const lens = selectedLens ? selectedLens : (typeof window !== 'undefined' ? JSON.parse(localStorage.getItem('selectedLens')) : null);
         const coatings = lens && Array.isArray(lens.coatings) ? lens.coatings : [];
+        console.log("Coating", coatings)
         // Sample icons for demo (could be replaced with SVGs or images)
         const icons = ["✨", "🛡️", "🌈", "💧", "🔆", "🦾", "👓"];
         React.useEffect(() => {
@@ -1235,7 +1242,9 @@ export default function index() {
                                 whileTap={{ scale: 0.97 }}
                                 style={{ minWidth: 240, maxWidth: 320, background: selectedCoating && selectedCoating._id === coating._id ? 'linear-gradient(120deg, #e6f0fa 60%, #dbeafe 100%)' : '#fafbfc', border: selectedCoating && selectedCoating._id === coating._id ? '2.5px solid #5855eb' : '2px solid #e0e0e0', position: 'relative', cursor: 'pointer', transition: 'all 0.3s' }}
                             >
-                                <div style={{ fontSize: 32, marginRight: 18, marginBottom: 8, textAlign: 'center' }}>{icons[idx % icons.length]}</div>
+                                <div className={styles.coatingImageContainer}> {/* New image container */}
+                                    {coating.imgUrl && <img src={coating.imgUrl} alt={coating.title} className={styles.coatingImage} />} {/* Use imageURL */}
+                                </div>
                                 <div className={styles.coatingInfo} style={{ flex: 1 }}>
                                     <div className={styles.coatingTitle} style={{ fontSize: '1.08rem', fontWeight: 700 }}>{coating.title}</div>
                                     <div style={{ fontWeight: 700, color: '#5855eb', fontSize: '1.1rem', margin: '4px 0 2px 0' }}>₹{coating.price}</div>

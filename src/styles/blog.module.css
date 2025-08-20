@@ -4,6 +4,22 @@
   padding-top: 50px;
 }
 
+.noBlogFound {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.noBlogFound h2 {
+  color: #000;
+}
+
+.noBlogFound p {
+  color: #000;
+}
+
 /* Hero Section */
 .hero {
   background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('/Images/banner-blog.avif');
