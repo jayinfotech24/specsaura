@@ -6,7 +6,7 @@ import CardComponent from '../../Component/CardComponent'
 import { Validate } from '../../store/commonFunction'
 import { useRouter } from 'next/router'
 import { useDispatch } from 'react-redux'
-import { ProductList } from '../../store/authSlice'
+import { ProductList, isAccessoryCategory } from '../../store/authSlice'
 import Preloader from '../../Component/Animated'
 import FilterSidebar from '../../Component/FilterSidebar'
 
@@ -179,7 +179,7 @@ export default function CategoryPage() {
                         setActiveFilters={setActiveFilters}
                         isSunglasses={router.query.slug === '67ec193b4c7e05897cf5586e'}
                         ClearAllFilters={ClearAllFilters}
-                        isAccessories={router.query.slug === '680fb9063dbd062321772ec6' ? true : false}
+                        isAccessories={isAccessoryCategory({ _id: router.query.slug })}
                     />
                     <div className={styles.cardComponent}>
                         <div className={styles.heading}>
@@ -200,6 +200,8 @@ export default function CategoryPage() {
                                         src={item.url}
                                         name={item.name}
                                         price={item.price}
+                                        crossPrice={item.crossPrice}
+                                        discount={item.discount}
                                         total={item.totalItems}
                                         available={item.availableItems}
                                         images={item.images}

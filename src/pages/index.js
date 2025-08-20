@@ -198,8 +198,8 @@ export default function index() {
                                     id={item._id}
                                     src={item.url}
                                     name={item.name}
-                                    price={mainPrice}
-                                    crossPrice={originalPrice}
+                                    price={item.price}
+                                    crossPrice={item.crossPrice}
                                     discount={item.discount}
                                     total={item.totalItems}
                                     available={item.availableItems}

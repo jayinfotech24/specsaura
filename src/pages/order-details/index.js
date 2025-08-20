@@ -91,8 +91,28 @@ const OrderDetails = () => {
                         total: total
                     });
 
+                } else if (from === "accessoryDirect") {
+                    // CASE 2: Direct accessory purchase
+                    const selectedProduct = JSON.parse(localStorage.getItem('selectedProduct') || '{}');
+                    const powerSunglassesOption = localStorage.getItem('powerSunglassesOption');
+
+                    const basePrice = Number(selectedProduct.crossPrice != null ? selectedProduct.crossPrice : selectedProduct.price) || 0;
+                    const total = basePrice;
+
+                    setOrderData({
+                        items: [
+                            {
+                                productID: {
+                                    ...selectedProduct,
+                                    powerSunglasses: powerSunglassesOption === "yes" ? true : false
+                                }
+                            }
+                        ],
+                        total: total
+                    });
+
                 } else if (from == "buy") {
-                    // CASE 2
+                    // CASE 3: Original "buy" flow (for non-accessories requiring prescription)
                     const cartId = localStorage.getItem("cartId");
                     const specsData = JSON.parse(localStorage.getItem("specsData") || "{}");
                     const productId = localStorage.getItem("productId");
@@ -117,17 +137,17 @@ const OrderDetails = () => {
                                     specs: specsData,
                                     productId: productId,
                                     cartId: cartId,
-                                    prescription: res.carts.prescriptionID._id
+                                    prescription: res.carts.prescriptionID?._id
                                 },
-                                lensType: res.carts.lensType,
-                                lensCoating: res.carts.lensCoating
+                                lensType: res.carts?.lensType,
+                                lensCoating: res.carts?.lensCoating
                             }
                         ],
                         total: total
                     });
 
                 } else {
-                    // CASE 3: fallback
+                    // CASE 4: fallback
                     const specsData = JSON.parse(localStorage.getItem("specsData") || "{}");
                     const productId = localStorage.getItem("productId");
                     const cartId = localStorage.getItem("cartId");
@@ -151,10 +171,10 @@ const OrderDetails = () => {
                                         specs: specsData,
                                         productId: productId,
                                         cartId: cartId,
-                                        prescription: res.carts.prescriptionID._id
+                                        prescription: res.carts.prescriptionID?._id
                                     },
-                                    lensType: res.carts.lensType,
-                                    lensCoating: res.carts.lensCoating
+                                    lensType: res.carts?.lensType,
+                                    lensCoating: res.carts?.lensCoating
                                 }
                             ],
                             total: total

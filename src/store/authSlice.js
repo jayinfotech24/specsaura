@@ -363,6 +363,8 @@ export const GetGstRates = createAsyncThunk(
 
 // Utility function to get display prices for product cards and detail
 export function getDisplayPrices(price, crossPrice) {
+    console.log("Prcc", price, crossPrice)
+
     if (!crossPrice || crossPrice === 0) {
         return { mainPrice: price, originalPrice: null };
     }
@@ -452,7 +454,11 @@ export function calculateOrderWithGst(orderItems = [], gstRates = []) {
 
 }
 
-
+export function isAccessoryCategory(product) {
+    console.log("PP", product)
+    const accessoryCategoryId = '680fb9063dbd062321772ec6';
+    return (product?.isAccessory === true) || (product?.category?._id === accessoryCategoryId);
+}
 
 const counterSlice = createSlice({
     name: "counter",

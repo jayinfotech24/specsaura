@@ -13,17 +13,17 @@ export default function Footer() {
     const handleAddressClick = () => {
         const address = "Shop no 30, Shardhadeep Complex, Near Laxmi Gathiya Rath, Opp. Anant Atila, Shastri nagar cross road, Ahmedabad, Gujarat, Pin code: 380063";
         const encodedAddress = encodeURIComponent(address);
-        window.open(`https://www.google.com/maps/search/?api=1&query=${encodedAddress}`, '_blank');
+        window.open(`https://www.google.com/maps/place/Hope+Optical+%26+Contact+lenses+Clinic/@23.0626912,72.5506353,16.97z/data=!3m1!5s0x395e84a1b3a4dd15:0xc977e4826975ddc9!4m12!1m5!8m4!1e2!2s110362695606775698504!3m1!1e1!3m5!1s0x395e83413e5c56b3:0x6140391068bc3f26!8m2!3d23.0627749!4d72.5506414!16s%2Fg%2F11t0vyrgg4?entry=ttu&g_ep=EgoyMDI1MDgxNy4wIKXMDSoASAFQAw%3D%3D`, '_blank');
     }
 
     const handleGenderClick = (gender) => {
-    const categoryId = router.query.categoryId || "67ec193b4c7e05897cf5586e";
+        const categoryId = router.query.categoryId || "67ec193b4c7e05897cf5586e";
 
-    router.push({
-        pathname: `/category/${categoryId}`,
-        query: { gender }
-    });
-};
+        router.push({
+            pathname: `/category/${categoryId}`,
+            query: { gender }
+        });
+    };
 
 
 

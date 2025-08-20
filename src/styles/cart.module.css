@@ -446,6 +446,17 @@
   gap: 8px;
 }
 
+.noPrescription {
+  font-size: 20px;
+  font-weight: 600;
+  color: #555;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  /* Ensure it takes full height of the cell */
+}
+
 .button:disabled {
   background-color: #cccccc;
   cursor: not-allowed;

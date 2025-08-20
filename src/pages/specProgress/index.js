@@ -349,6 +349,7 @@ export default function index() {
 
     const ThiredPage = () => {
         const handleAddToCart = async () => {
+            console.log("CCCC")
             try {
                 setIsLoading(true);
                 const userId = localStorage.getItem("userId");
@@ -356,11 +357,12 @@ export default function index() {
                 const specsData = JSON.parse(localStorage.getItem('specsData') || '{}');
                 const prescriptionId = localStorage.getItem("PrescriptionId");
                 const cartId = localStorage.getItem("cartId"); // Get cart ID from localStorage
-
-                if (!cartId) {
-                    toast.error("Cart ID not found");
-                    return;
-                }
+                console.log("CCCC2", userId, selectedProduct)
+                // if (!cartId) {
+                //     console.log("CCCC3")
+                //     toast.error("Cart ID not found");
+                //     return;
+                // }
 
                 const responseObject = {
                     userID: userId,
@@ -374,7 +376,7 @@ export default function index() {
                 };
 
                 const res = await dispatch(UpdateCart({ cartId, data: responseObject })).unwrap();
-                ////////console.log("Update Cart Response:", res);
+                console.log("Update Cart Response:", res);
 
                 if (res.status === 200) {
                     toast.success("Prescription added successfully");
@@ -391,7 +393,7 @@ export default function index() {
                     toast.error("Failed to update cart");
                 }
             } catch (error) {
-                console.error("Error updating cart:", error);
+                console.log("Error updating cart:", error);
                 toast.error("Failed to update cart. Please try again.");
             } finally {
                 setIsLoading(false);

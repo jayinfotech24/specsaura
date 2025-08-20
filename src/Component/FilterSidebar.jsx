@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import styles from '../styles/filterSidebar.module.css';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useRouter } from 'next/router';
+import { isAccessoryCategory } from '../store/authSlice';
 
 export const FRAME_SHAPES = Object.freeze([
     "Round",
@@ -29,9 +30,9 @@ export const FRAME_SHAPES = Object.freeze([
 const FilterSidebar = ({ onFilterChange, activeFilters, isSunglasses, setActiveFilters, useBoyGirlGender, isAccessories = false }) => {
     const [expandedSections, setExpandedSections] = useState({});
     const router = useRouter();
-    
+
     let filterCategories = {}
-    if(isAccessories){
+    if (isAccessoryCategory({ _id: router.query.slug })) {
         filterCategories = {
             price: {
                 title: 'Price Wise',
@@ -104,7 +105,7 @@ const FilterSidebar = ({ onFilterChange, activeFilters, isSunglasses, setActiveF
     const handleClearAll = () => {
         // Clear all filters
         setActiveFilters({});
-        
+
         // Optional: remove 'gender' from query params
         if (router.query.gender) {
             const { gender, ...rest } = router.query;
@@ -119,7 +120,7 @@ const FilterSidebar = ({ onFilterChange, activeFilters, isSunglasses, setActiveF
         <div className={styles.sidebar}>
             <div className={styles.sidebarHeader}>
                 <h2>Filters</h2>
-                <button 
+                <button
                     className={styles.clearAll}
                     onClick={handleClearAll}
                 >
@@ -129,7 +130,7 @@ const FilterSidebar = ({ onFilterChange, activeFilters, isSunglasses, setActiveF
 
             {Object.entries(categoriesToRender).map(([category, { title, options }]) => (
                 <div key={category} className={styles.filterSection}>
-                    <div 
+                    <div
                         className={styles.filterHeader}
                         onClick={() => toggleSection(category)}
                     >
@@ -151,10 +152,10 @@ const FilterSidebar = ({ onFilterChange, activeFilters, isSunglasses, setActiveF
                                 transition={{ duration: 0.3 }}
                             >
                                 {options.map((option) => {
-                                    const isChecked = Array.isArray(activeFilters[category]) 
+                                    const isChecked = Array.isArray(activeFilters[category])
                                         ? activeFilters[category].includes(option.toLowerCase())
                                         : false;
-                                    
+
                                     return (
                                         <label key={option} className={styles.filterOption}>
                                             <input

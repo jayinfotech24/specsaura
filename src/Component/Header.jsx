@@ -26,7 +26,7 @@ export default function Header({ isHeaderVisible }) {
                 router.push("/login");
                 return false;
             }
-            
+
             const response = await dispatch(GetUser()).unwrap();
             return response.status === 200;
         } catch (error) {
@@ -154,9 +154,9 @@ export default function Header({ isHeaderVisible }) {
                         </div>
                         <ul className={styles.manuList}>
                             <li onClick={() => { router.push("/") }}>Home</li>
-                            <li onClick={() => { router.push("/category/f") }}>Shop</li>
+                            <li onClick={() => { router.push("/category") }}>Shop</li>
                             {/* <li>Featured</li> <li>Pages</li> */}
-                            <li onClick={()=>router.push("/blog")}>Blogs</li>
+                            <li onClick={() => router.push("/blog")}>Blogs</li>
                         </ul>
                     </motion.div>
                 )}
@@ -173,7 +173,7 @@ export default function Header({ isHeaderVisible }) {
                 <div className={styles.menuitems}>
                     <ul>
                         <li onClick={() => { router.push("/") }}>Home</li>
-                        <li onClick={() => { router.push("/category/f") }}>Shop</li>
+                        <li onClick={() => { router.push("/category") }}>Shop</li>
                         {/* <li>Featured</li> */}
                         <li onClick={() => { router.push("/blog") }}>Blogs</li>
                     </ul>
@@ -230,8 +230,8 @@ export default function Header({ isHeaderVisible }) {
                 {filteredProducts.length > 0 && (
                     <div className={styles.searchResults}>
                         {filteredProducts.map((product) => (
-                            <div 
-                                key={product._id} 
+                            <div
+                                key={product._id}
                                 className={styles.searchResultItem}
                                 onClick={() => {
                                     router.push(`/detail?id=${product._id}`)

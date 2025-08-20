@@ -5,7 +5,7 @@ import Footer from "../../Component/Footer"
 import { handlePayment, IncreasePrice, Validate } from '../../store/commonFunction'
 import { useRouter } from 'next/router'
 import { useDispatch } from 'react-redux'
-import { getCartDetail, getProductDetail, DeleteCart, DeleteFullCart, GetUser } from '../../store/authSlice'
+import { getCartDetail, getProductDetail, DeleteCart, DeleteFullCart, GetUser, isAccessoryCategory } from '../../store/authSlice'
 import Preloader from '../../Component/Animated'
 import AlertModal from '../../Component/AlertModal'
 import { toast } from 'react-hot-toast'
@@ -78,7 +78,7 @@ export default function index() {
 
         const userId = localStorage.getItem("userId");
         dispatch(getCartDetail(userId)).then((res) => {
-            ////////console.log("Res", res)
+            console.log("Res", res)
             setCartData(res.payload.items);
             setIsLoading(false)
         }).catch((error) => {
@@ -103,11 +103,11 @@ export default function index() {
 
     useEffect(() => {
         // Check if any items require prescription
-        const prescriptionNeeded = CartData?.some(item => !item.isAllDataAdded);
+        const prescriptionNeeded = CartData?.some(item => !item.isAllDataAdded && !isAccessoryCategory(item.productID)); // Modified line
         setHasPrescriptionRequired(prescriptionNeeded);
 
         // Get items that need prescription
-        const itemsNeedingPrescription = CartData?.filter(item => !item.isAllDataAdded);
+        const itemsNeedingPrescription = CartData?.filter(item => !item.isAllDataAdded && !isAccessoryCategory(item.productID)); // Modified line
         setPrescriptionItems(itemsNeedingPrescription);
     }, [CartData]);
 
@@ -294,7 +294,7 @@ export default function index() {
                                         const lensCoatingPrice = item.lensCoating && item.lensCoating.price ? Number(item.lensCoating.price) : 0;
                                         const itemQuantity = Number(item.numberOfItems) || 1;
                                         const itemTotal = (itemPrice) * itemQuantity;
-                                        const needsPrescription = !item.isAllDataAdded;
+                                        const needsPrescription = !item.isAllDataAdded && !isAccessoryCategory(item.productID); // Modified line
 
                                         return (
                                             <tr key={item._id}>
@@ -318,7 +318,9 @@ export default function index() {
                                                     </div>
                                                 </td>
                                                 <td data-label="Prescription">
-                                                    {needsPrescription ? (
+                                                    {isAccessoryCategory(item.productID) ? (
+                                                        <span className={styles.noPrescription}>-</span>
+                                                    ) : needsPrescription ? (
                                                         <button
                                                             onClick={() => handlePrescriptionClick(item)}
                                                             className={styles.prescriptionButton}
