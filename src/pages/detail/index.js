@@ -5,7 +5,7 @@ import Footer from "../../Component/Footer";
 import { useRouter } from 'next/router';
 import { handlePayment, IncreasePrice, Validate } from '../../store/commonFunction';
 import { useDispatch } from 'react-redux';
-import { AddCart, getProductDetail } from '../../store/authSlice';
+import { AddCart, getProductDetail, getDisplayPrices, GetGstRates, calculateGstPrice, isAccessoryCategory } from '../../store/authSlice';
 import Preloader from '../../Component/Animated';
 import { ToastContainer, toast } from 'react-toastify';
 import { FaArrowLeft, FaArrowRight, FaShoppingCart, FaShoppingBag, FaExpand } from 'react-icons/fa';
@@ -19,20 +19,27 @@ export default function Index() {
     const [isLoading, setIsLoading] = useState(false);
     const [isFullscreen, setIsFullscreen] = useState(false);
     const dispatch = useDispatch();
+    const [GstRates, setGstRates] = useState([])
+    const [powerSunglassesOption, setPowerSunglassesOption] = useState(null);
 
     const GetProduct = (Id) => {
         setIsLoading(true);
         dispatch(getProductDetail(Id)).then((res) => {
-            console.log("Res", res)
+            console.log("ResProduct", res)
             setData(res.payload.product);
             setIsLoading(false);
         }).catch((error) => {
-            console.log("Error", error);
+            ////////console.log("Error", error);
             setIsLoading(false);
         });
     };
 
 
+
+
+    useEffect(() => {
+        console.log("Data", Data)
+    }, [Data])
     // Check User
     const checkUserAuth = async () => {
         try {
@@ -56,8 +63,6 @@ export default function Index() {
 
 
     const AddInCart = async () => {
-
-
         try {
             setIsLoading(true);
             const isAuthenticated = await checkUserAuth();
@@ -67,21 +72,46 @@ export default function Index() {
                 router.push("/login");
                 return;
             }
-            // Store the selected product in localStorage for the specs progress form
-            localStorage.setItem('selectedProduct', JSON.stringify({
-                id: id,
-                name: Data.name,
-                price: Data.price,
-                image: Data.images?.[0] || Data.url || '/Images/placeholder.webp',
-                url: Data.url || '/Images/placeholder.webp'
-            }));
 
-            // Redirect to specs progress form with a flag indicating it's for adding to cart
-            router.push({
-                pathname: '/specProgress',
-                query: { action: 'addToCart' }
-            });
-        } catch (error) {
+
+            const userId = localStorage.getItem("userId");
+            const responseObject = {
+                userID: userId,
+                productID: id,
+                numberOfItems: 1,
+                prescriptionID: null,
+                powerSunglasses: powerSunglassesOption == "yes" ? true : false
+            };
+            console.log("Obb", responseObject);
+            const res = await dispatch(AddCart(responseObject)).unwrap();
+            console.log("Res2", res);
+            if (res.status === 200) {
+                toast.success("Product added to cart successfully");
+                // localStorage.setItem("cartId", res.payload._id); // Store cartId from response
+                localStorage.removeItem('selectedProduct');
+                localStorage.removeItem('specsData');
+                router.push('/cart');
+            } else if (res.status === 401) {
+                toast.error("Please login to continue");
+            } else {
+                toast.error("Failed to add product to cart");
+            }
+        }
+        // else {
+        //     localStorage.setItem('selectedProduct', JSON.stringify({
+        //         id: id,
+        //         name: Data.name,
+        //         price: Data.crossPrice != null ? Data.crossPrice : Data.price,
+        //         image: Data.images?.[0] || Data.url || '/Images/placeholder.webp',
+        //         url: Data.url || '/Images/placeholder.webp'
+        //     }));
+        //     router.push({
+        //         pathname: '/specProgress',
+        //         query: { action: 'addToCart' }
+        //     });
+        // }
+        // } 
+        catch (error) {
             console.error("Error in Add to Cart:", error);
             toast.error("Failed to process your request. Please try again.");
         } finally {
@@ -92,6 +122,7 @@ export default function Index() {
 
 
     const BuyNow = async () => {
+        //////console.log("Data", Data)
         try {
             const isAuthenticated = await checkUserAuth();
             if (!isAuthenticated) {
@@ -100,15 +131,32 @@ export default function Index() {
                 return;
             }
 
-            localStorage.setItem('selectedProduct', JSON.stringify({
-                id: id,
-                name: Data.name,
-                price: Data.price,
-                image: Data.images?.[0] || Data.url || '/Images/placeholder.webp',
-                url: Data.url || '/Images/placeholder.webp'
-            }));
+            if (isAccessoryCategory(Data)) {
+                localStorage.setItem('selectedProduct', JSON.stringify({
+                    id: id,
+                    name: Data.name,
+                    price: Data.crossPrice != null ? Data.crossPrice : Data.price,
+                    image: Data.images?.[0] || Data.url || '/Images/placeholder.webp',
+                    url: Data.url || '/Images/placeholder.webp',
+                    powerSunglasses: powerSunglassesOption // <-- add value here
+                }));
+                localStorage.setItem('powerSunglassesOption', powerSunglassesOption);
+                localStorage.setItem("productId", id);
+                router.push({ pathname: "/order-details", query: { from: "accessoryDirect" } }); // Modified line
 
-            router.push("/specProgress")
+            } else {
+                localStorage.setItem('selectedProduct', JSON.stringify({
+                    id: id,
+                    name: Data.name,
+                    price: Data.crossPrice != null ? Data.crossPrice : Data.price,
+                    image: Data.images?.[0] || Data.url || '/Images/placeholder.webp',
+                    url: Data.url || '/Images/placeholder.webp',
+                    powerSunglasses: powerSunglassesOption // <-- add value here
+                }));
+                localStorage.setItem('powerSunglassesOption', powerSunglassesOption);
+                localStorage.setItem("productId", id);
+                router.push("/specProgress")
+            }
         } catch (error) {
             console.error("Error in Buy Now:", error);
             toast.error("Something went wrong. Please try again.");
@@ -138,6 +186,33 @@ export default function Index() {
         setIsFullscreen(!isFullscreen);
     };
 
+    const GetGstData = () => {
+        dispatch(GetGstRates()).then((res) => {
+            ////console.log("Res", res)
+            if (res.payload.status == 200) {
+                setGstRates(res.payload.items)
+            }
+        }).catch((err) => {
+            consol.log("Err", err)
+        })
+    }
+
+
+    useEffect(() => {
+        GetGstData()
+    }, [])
+
+    // Small frames: 50-53mm
+    // Medium frames: 54-56mm  
+    // Large frames: 57-60mm
+    // Extra Large: 61mm+
+
+    const { mainPrice, originalPrice } = getDisplayPrices(Data?.price, Data?.crossPrice);
+
+    // Calculate GST-inclusive price
+    const gstType = Data?.category?.description?.toLowerCase();
+    const gstInclusivePrice = calculateGstPrice(gstType, Data?.price || 0, GstRates);
+
     return (
         <div className={styles.main}>
             {isLoading && <Preloader />}
@@ -155,8 +230,8 @@ export default function Index() {
                         <AnimatePresence mode="wait">
                             <motion.img
                                 key={currentImageIndex}
-                                src={Data.images && Data.images.length > 0 ? Data.images[currentImageIndex] : Data.url || "/Images/placeholder.webp"}
-                                alt={Data.name}
+                                src={Data?.images && Data?.images?.length > 0 ? Data?.images[currentImageIndex] : Data?.url || "/Images/placeholder.webp"}
+                                alt={Data?.name}
                                 className={styles.mainImage}
                                 initial={{ opacity: 0 }}
                                 animate={{ opacity: 1 }}
@@ -222,10 +297,21 @@ export default function Index() {
                     <div className={styles.headerContent}>
                         <h1>{Data.name}</h1>
                         <div className={styles.priceContainer}>
-                            <h2>{`${IncreasePrice(Number(Data.price))} ₹`}</h2>
+                            <h2>{`₹ ${Math.round(mainPrice || 0)}`}</h2>
+                            {originalPrice && originalPrice != mainPrice && (
+                                <span className={styles.crossPrice}>₹ {Math.round(originalPrice)}</span>
+                            )}
+
+                            {Data.discount != 0 && Data.discount != null && (
+                                <span className={styles.discountBadge}>{Data.discount}% OFF</span>
+                            )}
                             <span className={styles.stockStatus}>
                                 {Data.availableItems > 0 ? 'In Stock' : 'Out of Stock'}
                             </span>
+                            {/* <div className={styles.gstPrice}>
+                                <span>Price (incl. GST): </span>
+                                <span>₹ {Math.round(gstInclusivePrice)}</span>
+                            </div> */}
                         </div>
                     </div>
 
@@ -233,24 +319,120 @@ export default function Index() {
                         <div className={styles.detailSection}>
                             <h3>Product Details</h3>
                             <div className={styles.detailGrid}>
-                                <div className={styles.detailItem}>
-                                    <span className={styles.label}>Frame Material:</span>
-                                    <span className={styles.value}>{Data.frameMaterial || 'Not specified'}</span>
-                                </div>
-                                <div className={styles.detailItem}>
-                                    <span className={styles.label}>Frame Color:</span>
-                                    <span className={styles.value}>{Data.frameColor || 'Not specified'}</span>
-                                </div>
-                                <div className={styles.detailItem}>
-                                    <span className={styles.label}>Lens Color:</span>
-                                    <span className={styles.value}>{Data.lensColor || 'Not specified'}</span>
-                                </div>
-                                <div className={styles.detailItem}>
-                                    <span className={styles.label}>Gender:</span>
-                                    <span className={styles.value}>{Data.gender || 'Unisex'}</span>
-                                </div>
+                                {Data.brandName && Data.brandName !== 'Not specified' && (
+                                    <div className={styles.detailItem}>
+                                        <span className={styles.label}>Brand:</span>
+                                        <span className={styles.value}>{Data.brandName}</span>
+                                    </div>
+                                )}
+                                {Data.modelNo && Data.modelNo !== 'Not specified' && (
+                                    <div className={styles.detailItem}>
+                                        <span className={styles.label}>Model No:</span>
+                                        <span className={styles.value}>{Data.modelNo}</span>
+                                    </div>
+                                )}
+                                {Data.frameMaterial && Data.frameMaterial !== 'Not specified' && (
+                                    <div className={styles.detailItem}>
+                                        <span className={styles.label}>Frame Material:</span>
+                                        <span className={styles.value}>{Data.frameMaterial}</span>
+                                    </div>
+                                )}
+                                {Data.frameColor && Data.frameColor !== 'Not specified' && (
+                                    <div className={styles.detailItem}>
+                                        <span className={styles.label}>Frame Color:</span>
+                                        <span className={styles.value}>{Data.frameColor}</span>
+                                    </div>
+                                )}
+                                {Data.templeColor && Data.templeColor !== 'Not specified' && (
+                                    <div className={styles.detailItem}>
+                                        <span className={styles.label}>Temple Color:</span>
+                                        <span className={styles.value}>{Data.templeColor}</span>
+                                    </div>
+                                )}
+                                {Data.lensColor && Data.lensColor !== 'Not specified' && (
+                                    <div className={styles.detailItem}>
+                                        <span className={styles.label}>Lens Color:</span>
+                                        <span className={styles.value}>{Data.lensColor}</span>
+                                    </div>
+                                )}
+                                {Data.lens && Data.lens !== 'Not specified' && (
+                                    <div className={styles.detailItem}>
+                                        <span className={styles.label}>Lens Type:</span>
+                                        <span className={styles.value}>{Data.lens}</span>
+                                    </div>
+                                )}
+                                {Data.gender && Data.gender !== 'Unisex' && (
+                                    <div className={styles.detailItem}>
+                                        <span className={styles.label}>Gender:</span>
+                                        <span className={styles.value}>{Data.gender}</span>
+                                    </div>
+                                )}
                             </div>
                         </div>
+
+                        <div className={styles.detailSection}>
+                            <h3>Frame Dimensions</h3>
+                            <div className={styles.detailGrid}>
+                                {Data.frameWidth && Data.frameWidth !== 'Not specified' && (
+                                    <div className={styles.detailItem}>
+                                        <span className={styles.label}>Frame Width:</span>
+                                        <span className={styles.value}>{Data.frameWidth ? `${Data.frameWidth}mm` : ''}</span>
+                                    </div>
+                                )}
+                                {Data.frameHeight && Data.frameHeight !== 'Not specified' && (
+                                    <div className={styles.detailItem}>
+                                        <span className={styles.label}>Frame Height:</span>
+                                        <span className={styles.value}>{Data.frameHeight ? `${Data.frameHeight}mm` : ''}</span>
+                                    </div>
+                                )}
+                                {Data.frameDimention && Data.frameDimention !== 'Not specified' && (
+                                    <div className={styles.detailItem}>
+                                        <span className={styles.label}>Frame Dimensions:</span>
+                                        <span className={styles.value}>{Data.frameDimention}</span>
+                                    </div>
+                                )}
+                                {Data.frameWidth && (
+                                    <div className={styles.detailItem}>
+                                        <span className={styles.label}>Frame Size:</span>
+                                        <span className={styles.value}>
+                                            {Data.frameWidth <= 53 ? 'Small' :
+                                                Data.frameWidth <= 56 ? 'Medium' :
+                                                    Data.frameWidth <= 60 ? 'Large' : 'Extra Large'}
+                                        </span>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+
+                        {/* Power Sunglasses Option */}
+                        {Data.powerSunglasses && (
+                            <div className={styles.powerSunglassesSection}>
+                                <label className={styles.powerSunglassesLabel}>Power Sunglasses:</label>
+                                <div className={styles.radioGroup}>
+                                    <label className={styles.radioLabel}>
+                                        <input
+                                            type="radio"
+                                            name="powerSunglasses"
+                                            value="yes"
+                                            checked={powerSunglassesOption === "yes"}
+                                            onChange={() => setPowerSunglassesOption("yes")}
+                                        />
+                                        Yes
+                                    </label>
+                                    <label className={styles.radioLabel}>
+                                        <input
+                                            type="radio"
+                                            name="powerSunglasses"
+                                            value="no"
+                                            checked={powerSunglassesOption === "no"}
+                                            onChange={() => setPowerSunglassesOption("no")}
+                                        />
+                                        No
+                                    </label>
+                                </div>
+                            </div>
+                        )}
+
 
                         <div className={styles.descriptionSection}>
                             <h3>Description</h3>

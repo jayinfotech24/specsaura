@@ -7,7 +7,8 @@ import { useNavigate } from "react-router-dom";
 const initialState = {
     count: 0,
     loading: false,
-    error: null
+    error: null,
+    gstRates: [] // Add GST rates to state
 };
 
 // Utility function to handle 401 responses
@@ -110,7 +111,7 @@ export const ProductList = createAsyncThunk("api/productList", async (credential
 
 })
 export const AddCart = createAsyncThunk("api/cart", async (credentials, { rejectWithValue }) => {
-    console.log("Credentials", credentials)
+    ////////console.log("Credentials", credentials)
     try {
         const response = await axiosInstance.post(`${Appapis.Basurl}${Appapis.cart}`, credentials)
         return response.data
@@ -139,7 +140,7 @@ export const MakePayment = createAsyncThunk(
             const response = await axiosInstance.post(`${Appapis.Basurl}${Appapis.createPayment}`, credentials);
             return response.data;
         } catch (error) {
-            console.log("Error", error)
+            ////////console.log("Error", error)
             return rejectWithValue(error.response?.data || "Something went wrong");
         }
     }
@@ -147,7 +148,7 @@ export const MakePayment = createAsyncThunk(
 export const VerifyPayment = createAsyncThunk(
     "api/verifyPayment",
     async (credentials, { rejectWithValue }) => {
-        console.log("Inside Verify:", credentials);
+        ////////console.log("Inside Verify:", credentials);
 
         try {
             const response = await axiosInstance.post(
@@ -157,7 +158,7 @@ export const VerifyPayment = createAsyncThunk(
 
             return response.data;
         } catch (error) {
-            console.log("Error", error)
+            ////////console.log("Error", error)
             return rejectWithValue(error.response?.data || "Payment verification failed");
         }
     }
@@ -181,7 +182,7 @@ export const DeleteCart = createAsyncThunk(
             const response = await axiosInstance.delete(`${Appapis.Basurl}${Appapis.deleteCart(id)}`);
             return response.data;
         } catch (error) {
-            console.log("DeleteCartError", error)
+            ////////console.log("DeleteCartError", error)
             return rejectWithValue(error.response?.data || "Something went wrong");
         }
     }
@@ -194,7 +195,7 @@ export const CreateOrder = createAsyncThunk(
             const response = await axiosInstance.post(`${Appapis.Basurl}${Appapis.createOrder}`, credentials);
             return response.data;
         } catch (error) {
-            console.log("CreateOrderError", error)
+            ////////console.log("CreateOrderError", error)
             return rejectWithValue(error.response?.data || "Something went wrong");
         }
     }
@@ -216,7 +217,7 @@ export const GetOrderById = createAsyncThunk(
             const response = await axiosInstance.get(`${Appapis.Basurl}${Appapis.getOrder(id)}`);
             return response.data;
         } catch (error) {
-            console.log("GetOrderErroor", error.message)
+            ////////console.log("GetOrderErroor", error.message)
             return rejectWithValue(error.response?.data || "Something went wrong");
         }
     }
@@ -262,6 +263,18 @@ export const DeleteFullCart = createAsyncThunk(
     }
 );
 
+export const sendOrder = createAsyncThunk(
+    "api/sendOrder",
+    async (credentials, { rejectWithValue }) => {
+        try {
+            const response = await axiosInstance.post(`${Appapis.Basurl}${Appapis.sendorder}`, credentials);
+            return response.data;
+        } catch (error) {
+            ////////console.log("sendOrder", error)
+            return rejectWithValue(error.response?.data || "Something went wrong");
+        }
+    }
+);
 
 export const GetCartMany = createAsyncThunk(
     "api/getCartMany",
@@ -275,7 +288,177 @@ export const GetCartMany = createAsyncThunk(
         }
     }
 );
+export const UpdateCartFlag = createAsyncThunk(
+    "api/updateCartFlag",
+    async (id, { rejectWithValue }) => {
+        try {
+            const response = await axiosInstance.patch(`${Appapis.Basurl}${Appapis.updateCartFlag(id)}`);
+            return response.data;
+        }
+        catch (error) {
+            return rejectWithValue(error.response?.data || "Something went wrong");
+        }
+    }
+);
 
+export const UpdateCart = createAsyncThunk(
+    "api/updateCart",
+    async ({ cartId, data }, { rejectWithValue }) => {
+        try {
+            const response = await axiosInstance.patch(`${Appapis.Basurl}${Appapis.updateCart(cartId)}`, data);
+            return response.data;
+        }
+        catch (error) {
+            return rejectWithValue(error.response?.data || "Something went wrong");
+        }
+    }
+);
+
+
+export const GetLensType = createAsyncThunk(
+    "api/getLensType",
+    async (type, { rejectWithValue }) => {
+        try {
+            const response = await axiosInstance.get(`${Appapis.Basurl}${Appapis.lenseType(type)}`);
+            return response.data;
+        } catch (error) {
+            return rejectWithValue(error.response?.data || "Failed to get lens type data");
+        }
+    }
+);
+export const GetBlog = createAsyncThunk(
+    "api/getBlog",
+    async (credentials, { rejectWithValue }) => {
+        try {
+            const response = await axiosInstance.get(`${Appapis.Basurl}${Appapis.getBlog}`);
+            return response.data;
+        } catch (error) {
+            return rejectWithValue(error.response?.data || "Failed to get blog data");
+        }
+    }
+);
+export const GetLensDeatil = createAsyncThunk(
+    "api/getLensDetail",
+    async (type, { rejectWithValue }) => {
+        try {
+            const response = await axiosInstance.get(`${Appapis.Basurl}${Appapis.lensDetail(type)}`);
+            return response.data;
+        } catch (error) {
+            return rejectWithValue(error.response?.data || "Failed to get lens type data");
+        }
+    }
+);
+
+export const GetGstRates = createAsyncThunk(
+    "api/getGstRates",
+    async (credentials, { rejectWithValue }) => {
+        try {
+            const response = await axiosInstance.get(`${Appapis.Basurl}${Appapis.getRate}`);
+            return response.data;
+        } catch (error) {
+            return rejectWithValue(error.response?.data || "Failed to get lens type data");
+        }
+    }
+);
+
+// Utility function to get display prices for product cards and detail
+export function getDisplayPrices(price, crossPrice) {
+    console.log("Prcc", price, crossPrice)
+
+    if (!crossPrice || crossPrice === 0) {
+        return { mainPrice: price, originalPrice: null };
+    }
+    return { mainPrice: crossPrice, originalPrice: price }; // ✅
+}
+
+
+// Utility function to calculate price with GST based on type and gstRates from state
+export function calculateGstPrice(type, originalPrice, gstRates = []) {
+    let gstRate = 0;
+
+    if (Array.isArray(gstRates) && type) {
+        const found = gstRates.find(rate => rate.name?.toLowerCase() === type.toLowerCase());
+        if (found && found.gst != null) {
+            gstRate = found.gst;
+        }
+    }
+
+    if (!gstRate) {
+        const defaultRates = {
+            frame: 12,
+            lens: 12,
+            sunglasses: 18,
+            accessories: 18,
+            fitting: 18
+        };
+        gstRate = defaultRates[type?.toLowerCase()] || 0;
+    }
+
+    const gstAmount = (originalPrice * gstRate) / 100;
+    return originalPrice + gstAmount;
+}
+
+export function calculateOrderWithGst(orderItems = [], gstRates = []) {
+    console.log("III", gstRates)
+    const getGstPercent = (name) => {
+        const gstObj = gstRates.find(
+            (rate) => rate.name.toLowerCase() === name.toLowerCase() && !rate.isDelete
+        );
+        return gstObj ? gstObj.gst : 18;
+    };
+
+    return orderItems.map((item) => {
+        const framePrice = item.productID?.crossPrice ?? item.productID?.price ?? 0;
+        const lensPrice = item.lensType?.price ?? 0;
+        const accessoriesPrice = item.accessoriesPrice ?? 0;
+        const coatingPrice = item.lensCoating?.price ?? 0;
+
+        const isSunglasses = item.productID?.category?.description?.toLowerCase() === 'sunglasses';
+        const hasLens = !!item.lensType;
+        const hasAccessories = accessoriesPrice > 0;
+        const isPowerSunglass = item.productID?.powerSunglasses || false;
+        const isAccessory = item.productID?.isAccessory || false;
+
+        const totalBasePrice = framePrice + lensPrice + coatingPrice + accessoriesPrice;
+
+        let gstType = 'sunglasses';
+        if (isAccessory) {
+            gstType = 'accessories';
+        } else if (isPowerSunglass || isSunglasses) {
+            gstType = 'sunglasses';
+        } else if (!isSunglasses && lensPrice > 0) {
+            gstType = 'lens';
+        } else {
+            gstType = 'frame';
+        }
+
+        const gstPercent = getGstPercent(gstType);
+        const gstAmount = (totalBasePrice * gstPercent) / 100;
+        const totalWithGst = totalBasePrice + gstAmount;
+
+        return {
+            productName: item.productID?.name || 'Unknown Product',
+            hasLens,
+            isPowerSunglass,
+            isAccessory,
+            framePrice,
+            lensPrice,
+            coatingPrice,
+            accessoriesPrice,
+            gstPercent,
+            totalBasePrice,
+            gstAmount: Math.round(gstAmount),
+            totalWithGst: Math.round(totalWithGst),
+        };
+    });
+
+}
+
+export function isAccessoryCategory(product) {
+    console.log("PP", product)
+    const accessoryCategoryId = '680fb9063dbd062321772ec6';
+    return (product?.isAccessory === true) || (product?.category?._id === accessoryCategoryId);
+}
 
 const counterSlice = createSlice({
     name: "counter",
@@ -459,7 +642,7 @@ const counterSlice = createSlice({
 
             })
             .addCase(DeleteCart.rejected, (state, action) => {
-                console.log("DeleteCart", action)
+                ////////console.log("DeleteCart", action)
                 state.loading = false;
                 state.error = handleUnauthorized(action.payload);
             })
@@ -506,7 +689,7 @@ const counterSlice = createSlice({
 
             })
             .addCase(UpdateUser.rejected, (state, action) => {
-                console.log("UpdateUserError", action)
+                ////////console.log("UpdateUserError", action)
                 state.loading = false;
                 state.error = handleUnauthorized(action.payload);
             })
@@ -541,6 +724,80 @@ const counterSlice = createSlice({
                 state.loading = false;
             })
             .addCase(GetSingleCart.rejected, (state, action) => {
+                state.loading = false;
+                state.error = handleUnauthorized(action.payload);
+            })
+            .addCase(UpdateCartFlag.pending, (state, action) => {
+                state.loading = true
+
+            })
+            .addCase(UpdateCartFlag.fulfilled, (state, action) => {
+                state.loading = false;
+            })
+            .addCase(UpdateCartFlag.rejected, (state, action) => {
+                state.loading = false;
+                state.error = handleUnauthorized(action.payload);
+            })
+            .addCase(UpdateCart.pending, (state, action) => {
+                state.loading = true
+
+            })
+            .addCase(UpdateCart.fulfilled, (state, action) => {
+                state.loading = false;
+            })
+            .addCase(UpdateCart.rejected, (state, action) => {
+                state.loading = false;
+                state.error = handleUnauthorized(action.payload);
+            })
+            .addCase(GetLensType.pending, (state, action) => {
+                state.loading = true
+
+            })
+            .addCase(GetLensType.fulfilled, (state, action) => {
+                state.loading = false;
+            })
+            .addCase(GetLensType.rejected, (state, action) => {
+                state.loading = false;
+                state.error = handleUnauthorized(action.payload);
+            })
+            .addCase(GetBlog.pending, (state, action) => {
+                state.loading = true
+            })
+            .addCase(GetBlog.fulfilled, (state, action) => {
+                state.loading = false;
+            })
+            .addCase(GetBlog.rejected, (state, action) => {
+                state.loading = false;
+                state.error = handleUnauthorized(action.payload);
+            })
+            .addCase(GetLensDeatil.pending, (state, action) => {
+                state.loading = true
+            })
+            .addCase(GetLensDeatil.fulfilled, (state, action) => {
+                state.loading = false;
+            })
+            .addCase(GetLensDeatil.rejected, (state, action) => {
+                state.loading = false;
+                state.error = handleUnauthorized(action.payload);
+            })
+            .addCase(sendOrder.pending, (state, action) => {
+                state.loading = true
+            })
+            .addCase(sendOrder.fulfilled, (state, action) => {
+                state.loading = false;
+            })
+            .addCase(sendOrder.rejected, (state, action) => {
+                state.loading = false;
+                state.error = handleUnauthorized(action.payload);
+            })
+            .addCase(GetGstRates.pending, (state, action) => {
+                state.loading = true
+            })
+            .addCase(GetGstRates.fulfilled, (state, action) => {
+                state.loading = false;
+                state.gstRates = action.payload;
+            })
+            .addCase(GetGstRates.rejected, (state, action) => {
                 state.loading = false;
                 state.error = handleUnauthorized(action.payload);
             })

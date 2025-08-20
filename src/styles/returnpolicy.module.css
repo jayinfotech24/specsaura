@@ -1,0 +1,167 @@
+.main {
+    min-height: 100vh;
+    background: #fff;
+    margin-top: 80px;
+}
+
+.hero {
+    width: 100vw;
+    min-height: 180px;
+    background: url('/Images/banner-refund.jpg') center/cover no-repeat;
+    position: relative;
+    display: flex;
+    align-items: flex-end;
+    margin-bottom: 0;
+}
+
+.hero::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: rgba(20, 20, 20, 0.7);
+    z-index: 1;
+}
+
+.heroContent {
+    width: 100%;
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 40px 0 20px 0;
+    position: relative;
+    z-index: 2;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.title {
+    font-size: 2.5rem;
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+    text-align: left;
+    color: #fff;
+}
+
+.breadcrumb {
+    font-size: 1rem;
+    margin-bottom: 0;
+    text-align: left;
+    color: #fff;
+}
+
+.breadcrumb a {
+    color: #fff;
+    text-decoration: underline;
+}
+
+.inner {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    min-height: 60vh;
+    margin-top: 0;
+    padding-bottom: 40px;
+    font-size: 16px;
+    color: #000000;
+}
+
+.content {
+    background: #fff;
+    color: #000000;
+    border-radius: 10px;
+    box-shadow: 0 4px 32px rgba(0, 0, 0, 0.08);
+    padding: 40px 40px 30px 40px;
+    max-width: 800px;
+    width: 100%;
+    margin: 0 auto;
+    text-align: left;
+}
+
+.content h1,
+.content h2,
+.content h3,
+.content h4 {
+    margin-top: 1.5em;
+    margin-bottom: 0.5em;
+    text-align: left;
+}
+
+.content h1 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-top: 0;
+}
+
+.content h2 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-top: 5px !important;
+    margin-bottom: 5px !important;
+}
+
+.content h3 {
+    font-size: 1rem;
+    font-weight: 600;
+    margin-top: 5px !important;
+    margin-bottom: 5px !important;
+}
+
+.content p {
+    font-size: 1rem;
+    line-height: 1.7;
+    text-align: left;
+    margin-bottom: 0.5em;
+}
+
+.content li {
+    font-size: 1rem;
+    line-height: 20px;
+    text-align: left;
+    margin-bottom: 15px;
+}
+
+.list {
+    list-style: disc inside;
+    padding-left: 1.2em;
+    margin-bottom: 1em;
+}
+
+.email,
+.address {
+    font-weight: 500;
+    background: none;
+    padding: 0;
+    border-radius: 0;
+    margin-top: 0;
+    font-size: 1rem;
+}
+
+@media (max-width: 900px) {
+    .content {
+        padding: 20px 10px;
+    }
+
+    .heroContent {
+        padding: 0 10px 20px 10px;
+    }
+
+    .title {
+        font-size: 2rem;
+    }
+}
+
+@media (max-width: 600px) {
+    .content {
+        padding: 10px 2vw;
+    }
+
+    .heroContent {
+        padding: 0 2vw 20px 2vw;
+    }
+
+    .title {
+        font-size: 1.3rem;
+    }
+}

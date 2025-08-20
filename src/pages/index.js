@@ -16,7 +16,7 @@ import Footer from '../Component/Footer';
 import { useRouter } from 'next/router';
 import Preloader from "../Component/Animated"
 import { useDispatch } from 'react-redux';
-import { CategoryList, ProductList } from '../store/authSlice';
+import { CategoryList, ProductList, getDisplayPrices } from '../store/authSlice';
 import { IncreasePrice } from '../store/commonFunction';
 
 export default function index() {
@@ -28,7 +28,7 @@ export default function index() {
     const [Procucts, setProducts] = useState([])
     const router = useRouter();
     // useEffect(() => {
-    //     ////console.log("Scroll", window.scrollY, carouselRef.current.offsetHeight)
+    //     ////////////console.log("Scroll", window.scrollY, carouselRef.current.offsetHeight)
     // }, [lastScrollY])
     const dispatch = useDispatch();
 
@@ -38,7 +38,7 @@ export default function index() {
 
     const GetCategory = () => {
         dispatch(CategoryList()).then((res) => {
-            //console.log("res", res.payload.items)
+            ////////console.log("res", res.payload.items)
             setCategory(res.payload.items)
 
         })
@@ -53,14 +53,14 @@ export default function index() {
                 setIsLoading(false)
             }
         }).catch((error) => {
-            console.log("Error", error)
+            ////////console.log("Error", error)
             setIsLoading(false)
         })
     }
 
 
     useEffect(() => {
-        console.log("Products", Procucts)
+        ////////console.log("Products", Procucts)
     }, [Procucts])
     useEffect(() => {
         GetCategory()
@@ -94,8 +94,8 @@ export default function index() {
     }, [lastScrollY]);
 
     const handleSlideChange = (eventKey, direction) => {
-        ////console.log("Current Slide Index:", eventKey);
-        ////console.log("Slide Direction:", direction);
+        ////////////console.log("Current Slide Index:", eventKey);
+        ////////////console.log("Slide Direction:", direction);
         setActiveSlide(eventKey)
     };
 
@@ -106,7 +106,19 @@ export default function index() {
     //     return () => clearTimeout(interval);
     // }, [activeSlide])
 
+    const brandMap = [
+        { img: "/Images/brand1.jpg", type: "Ascend Drip" },
+        { img: "/Images/brand2.jpg", type: "Seraphic" },
+        { img: "/Images/brand3.jpg", type: "PriumX" },
+        { img: "/Images/brand4.jpg", type: "halospecs" }
+    ];
 
+    const handleBrandClick = (type) => {
+        router.push({
+            pathname: '/category',
+            query: { type }
+        });
+    };
 
     return (
         <div className={styles.main}>
@@ -131,20 +143,17 @@ export default function index() {
                 </div>
                 <div className={styles.secondComponent}>
                     <div className={styles.logoComponent}>
-                        <div className={styles.imageContainer}>
-                            <img src="/Images/logo1.webp" />
-                        </div>
-                        <div className={styles.imageContainer}>
-                            <img src="/Images/logo2.webp" />
-                        </div>
-                        <div className={styles.imageContainer}>
-                            <img src="/Images/logo3.webp" />
-                        </div>
-                        <div className={styles.imageContainer}>
-                            <img src="/Images/logo4.webp" />
-                        </div>
-                        <div className={styles.imageContainer}>
-                            <img src="/Images/logo5.webp" />
+                        <div className={styles.brandRow}>
+                            {brandMap.map((brand, idx) => (
+                                <div
+                                    key={brand.type}
+                                    className={styles.imageContainer}
+                                    style={{ cursor: 'pointer' }}
+                                    onClick={() => handleBrandClick(brand.type)}
+                                >
+                                    <img src={brand.img} alt={brand.type} />
+                                </div>
+                            ))}
                         </div>
                     </div>
                 </div>
@@ -157,7 +166,7 @@ export default function index() {
                             Category?.map((item) => {
                                 return (
                                     <div className={styles.collectionCards}>
-                                        <div className={styles.imageContainer} onClick={() => router.push("/category/f")}>
+                                        <div className={styles.imageContainer} onClick={() => router.push(`/category/${item._id}`)}>
                                             <img src={item.url} />
                                         </div>
                                         <h2>{item.title}</h2>
@@ -181,23 +190,28 @@ export default function index() {
 
                     </div>
                     <div className={styles.cardInner}>
-                        {Procucts.slice(0, 4).map((item) => (
-                            <CardComponent
-                                key={item._id}
-                                id={item._id}
-                                src={item.url}
-                                name={item.name}
-                                price={IncreasePrice(Number(item.price))}
-                                total={item.totalItems}
-                                available={item.availableItems}
-                                images={item.images}
-                            />
-                        ))}
+                        {Procucts.slice(0, 4).map((item) => {
+                            const { mainPrice, originalPrice } = getDisplayPrices(item.price, item.crossPrice);
+                            return (
+                                <CardComponent
+                                    key={item._id}
+                                    id={item._id}
+                                    src={item.url}
+                                    name={item.name}
+                                    price={item.price}
+                                    crossPrice={item.crossPrice}
+                                    discount={item.discount}
+                                    total={item.totalItems}
+                                    available={item.availableItems}
+                                    images={item.images}
+                                />
+                            );
+                        })}
                     </div>
                     <div className={styles.viewMoreSection}>
                         <button
                             className={styles.viewMoreButton}
-                            onClick={() => router.push('/category/f')}
+                            onClick={() => router.push('/category')}
                         >
                             <span>View All Products</span>
                         </button>

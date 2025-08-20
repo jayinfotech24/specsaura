@@ -5,7 +5,7 @@ import Footer from "../../Component/Footer"
 import { handlePayment, IncreasePrice, Validate } from '../../store/commonFunction'
 import { useRouter } from 'next/router'
 import { useDispatch } from 'react-redux'
-import { getCartDetail, getProductDetail, DeleteCart, DeleteFullCart, GetUser } from '../../store/authSlice'
+import { getCartDetail, getProductDetail, DeleteCart, DeleteFullCart, GetUser, isAccessoryCategory } from '../../store/authSlice'
 import Preloader from '../../Component/Animated'
 import AlertModal from '../../Component/AlertModal'
 import { toast } from 'react-hot-toast'
@@ -24,6 +24,8 @@ export default function index() {
         message: '',
         onConfirm: null
     });
+    const [hasPrescriptionRequired, setHasPrescriptionRequired] = useState(false);
+    const [prescriptionItems, setPrescriptionItems] = useState([]);
 
     useEffect(() => {
 
@@ -40,7 +42,7 @@ export default function index() {
                 }
             }
 
-            console.log("Array", productArray);
+            ////////console.log("Array", productArray);
             setProductDetails(productArray);
             setIsLoading(false)
         };
@@ -80,7 +82,7 @@ export default function index() {
             setCartData(res.payload.items);
             setIsLoading(false)
         }).catch((error) => {
-            console.log("Err", error)
+            ////////console.log("Err", error)
             setIsLoading(false)
         })
     }
@@ -90,12 +92,45 @@ export default function index() {
     }, [])
     const totalAmount = CartData?.reduce((acc, item) => {
         const itemPrice = Number(item.productID.price) || 0;
+        const lensTypePrice = item.lensType && item.lensType.price ? Number(item.lensType.price) : 0;
+        const lensCoatingPrice = item.lensCoating && item.lensCoating.price ? Number(item.lensCoating.price) : 0;
         const itemQuantity = Number(item.numberOfItems) || 1;
-        return acc + (itemPrice * itemQuantity);
+        const itemTotal = (itemPrice + lensTypePrice + lensCoatingPrice) * itemQuantity;
+        return acc + itemTotal;
     }, 0);
 
-    console.log("Total Amount:", totalAmount);
+    ////////console.log("Total Amount:", totalAmount);
 
+    useEffect(() => {
+        // Check if any items require prescription
+        const prescriptionNeeded = CartData?.some(item => !item.isAllDataAdded && !isAccessoryCategory(item.productID)); // Modified line
+        setHasPrescriptionRequired(prescriptionNeeded);
+
+        // Get items that need prescription
+        const itemsNeedingPrescription = CartData?.filter(item => !item.isAllDataAdded && !isAccessoryCategory(item.productID)); // Modified line
+        setPrescriptionItems(itemsNeedingPrescription);
+    }, [CartData]);
+
+    const handlePrescriptionClick = (item) => {
+        // Store the selected product in localStorage for the specs progress form
+        localStorage.setItem('selectedProduct', JSON.stringify({
+            id: item.productID._id,
+            name: item.productID.name,
+            price: item.productID.price,
+            image: item.productID.url || '/Images/placeholder.webp',
+            url: item.productID.url || '/Images/placeholder.webp',
+            crossPrice: item.productID.crossPrice !== undefined ? item.productID.crossPrice : null
+        }));
+
+        // Store cart ID for updating later
+        localStorage.setItem('cartId', item._id);
+
+        // Redirect to specs progress form
+        router.push({
+            pathname: '/specProgress',
+            query: { action: 'addToCart' }
+        });
+    };
 
     const handleDelete = async (id) => {
         setAlertState({
@@ -107,7 +142,7 @@ export default function index() {
                 try {
                     setIsLoading(true);
                     const res = await dispatch(DeleteCart(id)).unwrap();
-                    console.log("Delete successful:", res);
+                    ////////console.log("Delete successful:", res);
 
                     setAlertState(prev => ({
                         ...prev,
@@ -192,16 +227,16 @@ export default function index() {
     const handleClearCart = async () => {
         try {
             const productIds = CartData?.map(item => item._id);
-            console.log("Product IDs", productIds);
+            ////////console.log("Product IDs", productIds);
             const payload = {
                 ids: productIds
             };
             await dispatch(DeleteFullCart(payload)).then((res) => {
-                console.log("Cart cleared successfully", res);
+                ////////console.log("Cart cleared successfully", res);
                 toast.success("Cart cleared successfully");
                 getDeatail(); // Refresh cart data
             }).catch((error) => {
-                console.log("Error clearing cart:", error);
+                ////////console.log("Error clearing cart:", error);
                 toast.error("Failed to clear cart");
             });
         } catch (error) {
@@ -246,15 +281,20 @@ export default function index() {
                                         <td>Product name</td>
                                         <td>Price</td>
                                         <td>Quantity</td>
+                                        <td>Prescription</td>
                                         <td>Buy</td>
                                         <td></td>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     {CartData?.map((item) => {
+                                        ////////console.log("Item", item)
                                         const itemPrice = Number(item.productID.price) || 0;
+                                        const lensTypePrice = item.lensType && item.lensType.price ? Number(item.lensType.price) : 0;
+                                        const lensCoatingPrice = item.lensCoating && item.lensCoating.price ? Number(item.lensCoating.price) : 0;
                                         const itemQuantity = Number(item.numberOfItems) || 1;
-                                        const itemTotal = itemPrice * itemQuantity;
+                                        const itemTotal = (itemPrice) * itemQuantity;
+                                        const needsPrescription = !item.isAllDataAdded && !isAccessoryCategory(item.productID); // Modified line
 
                                         return (
                                             <tr key={item._id}>
@@ -268,19 +308,54 @@ export default function index() {
                                                     </div>
                                                 </td>
                                                 <td data-label="Price">
-                                                    <h2 style={{ fontSize: '14px' }}>{`₹${itemTotal?.toLocaleString('en-IN')}`}</h2>
+                                                    <h2 style={{ fontSize: '14px', color: "#000" }}>
+                                                        {`₹${itemTotal?.toLocaleString('en-IN')}`}
+                                                    </h2>
                                                 </td>
                                                 <td data-label="Quantity">
                                                     <div className={styles.quantity}>
                                                         <h2>{itemQuantity}</h2>
                                                     </div>
                                                 </td>
+                                                <td data-label="Prescription">
+                                                    {isAccessoryCategory(item.productID) ? (
+                                                        <span className={styles.noPrescription}>-</span>
+                                                    ) : needsPrescription ? (
+                                                        <button
+                                                            onClick={() => handlePrescriptionClick(item)}
+                                                            className={styles.prescriptionButton}
+                                                        >
+                                                            Eye Prescription Details
+                                                        </button>
+                                                    ) : (
+                                                        <span className={styles.prescriptionAdded}>
+                                                            ✓ Added
+                                                        </span>
+                                                    )}
+                                                </td>
                                                 <td>
-                                                    <button onClick={() => handkeBuySingle(item._id)} className={styles.buyButton}>Buy Now</button>
+                                                    <button
+                                                        onClick={() => handkeBuySingle(item._id)}
+                                                        className={styles.buyButton}
+                                                        disabled={needsPrescription}
+                                                    >
+                                                        Buy Now
+                                                    </button>
                                                 </td>
                                                 <td>
                                                     <svg style={{ cursor: "pointer" }}
-                                                        onClick={() => handleDelete(item._id)} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#000" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" className={styles.deleteIcon}>
+                                                        onClick={() => handleDelete(item._id)}
+                                                        xmlns="http://www.w3.org/2000/svg"
+                                                        width="24"
+                                                        height="24"
+                                                        viewBox="0 0 24 24"
+                                                        fill="none"
+                                                        stroke="#000"
+                                                        strokeWidth="1.75"
+                                                        strokeLinecap="round"
+                                                        strokeLinejoin="round"
+                                                        className={styles.deleteIcon}
+                                                    >
                                                         <path d="M18 6 6 18" />
                                                         <path d="m6 6 12 12" />
                                                     </svg>
@@ -294,10 +369,19 @@ export default function index() {
                                 <button onClick={handleClearCart} className={styles.clearButton}>
                                     Clear Cart
                                 </button>
-                                <button onClick={handleProceedToCheckout} className={styles.button}>
+                                <button
+                                    onClick={handleProceedToCheckout}
+                                    className={styles.button}
+                                    disabled={hasPrescriptionRequired}
+                                >
                                     {`Pay ₹${totalAmount?.toLocaleString('en-IN')}`}
                                 </button>
                             </div>
+                            {hasPrescriptionRequired && (
+                                <div className={styles.prescriptionWarning}>
+                                    <p>⚠️ Please add prescriptions for all required items before proceeding to checkout.</p>
+                                </div>
+                            )}
                         </>
                     )}
                 </div>

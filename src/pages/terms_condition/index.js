@@ -2,10 +2,20 @@ import styles from "../../styles/terms.module.css"
 import Header from "../../Component/Header"
 import Footer from '../../Component/Footer'
 import React from 'react'
+import Link from 'next/link'
+
 const TermsAndConditions = () => {
     return (
         <div className={styles.main}>
-            <Header isHeaderVisible={true} />
+            <div className={styles.hero}>
+                <Header isHeaderVisible={true} />
+                <div className={styles.heroContent}>
+                    <h1 className={styles.title}>Terms & Conditions</h1>
+                    <div className={styles.breadcrumb}>
+                        <Link href="/">Home</Link> &gt; <span>Terms & Conditions</span>
+                    </div>
+                </div>
+            </div>
             <div className={styles.inner}>
                 <div className={styles.content}>
                     <h1>Terms and Conditions</h1>
@@ -41,7 +51,7 @@ const TermsAndConditions = () => {
                     <h3>5.1 Return Policy</h3>
                     <p>Returns are accepted within 7 days of delivery if the product is defective or incorrect. Prescription glasses cannot be returned unless they are incorrect or damaged upon arrival.</p>
                     <h3>5.2 Refund Policy</h3>
-                    <p>Refunds are issued after product inspection. Refunds may take 7 business days to process.</p>
+                    <p>For our full refund policy, please visit our <Link href="/returnpolicy" className={styles.highlightLink}>Return &amp; Exchange Policy</Link> page.</p>
 
                     <h2>6. Eye Doctor Services</h2>
                     <p>Our eye doctor services are for general guidance and should not be considered a substitute for a full in-person eye exam. We are not responsible for misdiagnosis or incorrect prescriptions due to incomplete or inaccurate information provided by you.</p>

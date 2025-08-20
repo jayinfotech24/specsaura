@@ -29,6 +29,12 @@
   z-index: 1;
 }
 
+.brandRow {
+  display: flex;
+  justify-content: space-between;
+  flex-direction: row;
+}
+
 .inner .posterComponent::before {
   position: absolute;
   top: 0;
@@ -107,9 +113,9 @@
 
 .secondComponent .logoComponent {
   display: flex;
-  justify-content: center;
+  justify-content: space-between;
   align-items: center;
-  width: 100%;
+  width: 60%;
   flex-direction: row;
 }
 
@@ -117,7 +123,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 24%;
+  width: 18%;
 }
 
 .logoComponent .imageContainer img {
@@ -156,7 +162,7 @@
 }
 
 .collection h3 {
-  font-size: 24px;
+  font-size: 30px;
   font-weight: 500;
   line-height: 1.2;
   color: #111;
@@ -218,6 +224,7 @@
   border: 1px solid #e2e2e2;
   background-color: #bfbfbf;
   position: relative;
+  overflow: hidden;
 }
 
 .collectionContent .collectionCards .imageContainer:hover {
@@ -532,7 +539,7 @@
 /* Mobile responsive */
 @media (max-width: 768px) {
   .collection {
-    padding: 20px 50px;
+    padding: 20px 40px;
     gap: 30px;
   }
 
@@ -576,6 +583,14 @@
 
   .cardComponent .heading h1::before {
     top: 40px;
+  }
+
+  .secondComponent .logoComponent .imageContainer {
+    width: 25%;
+  }
+
+  .secondComponent .logoComponent {
+    width: 80%;
   }
 
   .footer {

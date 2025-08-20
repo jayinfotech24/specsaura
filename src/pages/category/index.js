@@ -1,16 +1,16 @@
-import React, { useEffect, useState } from 'react'
-import styles from "../../styles/category.module.css"
-import Footer from '../../Component/Footer'
-import Header from "../../Component/Header"
-import CardComponent from '../../Component/CardComponent'
-import { Validate } from '../../store/commonFunction'
-import { useRouter } from 'next/router'
-import { useDispatch } from 'react-redux'
-import { ProductList, isAccessoryCategory } from '../../store/authSlice'
-import Preloader from '../../Component/Animated'
-import FilterSidebar from '../../Component/FilterSidebar'
+import React, { useEffect, useState } from 'react';
+import styles from "../../styles/category.module.css";
+import Footer from '../../Component/Footer';
+import Header from "../../Component/Header";
+import CardComponent from '../../Component/CardComponent';
+import { Validate } from '../../store/commonFunction';
+import { useRouter } from 'next/router';
+import { useDispatch } from 'react-redux';
+import { ProductList, isAccessoryCategory } from '../../store/authSlice';
+import Preloader from '../../Component/Animated';
+import FilterSidebar from '../../Component/FilterSidebar';
 
-export default function CategoryPage() {
+export default function CategoryIndexPage() {
     const router = useRouter();
     const dispatch = useDispatch();
     const [Products, setProducts] = useState([]);
@@ -25,6 +25,8 @@ export default function CategoryPage() {
     const GetProduct = () => {
         setIsLoading(true)
         dispatch(ProductList()).then((res) => {
+
+            ////////console.log("Res", res)
             if (res.payload.status == 200) {
                 setProducts(res.payload.products)
                 setFilteredProducts(res.payload.products)
@@ -64,56 +66,28 @@ export default function CategoryPage() {
     useEffect(() => {
         if (Products) {
             let filtered = [...Products];
-            ////////console.log("All Products:", Products);
-            ////////console.log("Current Category ID (slug):", router.query.slug);
 
-            // Filter by category ID if slug is present and not empty
-            if (router.query.slug && router.query.slug !== '' && router.query.slug !== undefined) {
-                const categoryFiltered = filtered.filter(product => {
-                    // Ensure product.category exists and has an _id
-                    return product.category && product.category._id == router.query.slug;
-                });
-
-                ////////console.log("Filtered Products by Category:", categoryFiltered);
-
-                // If no products found for the category, show all products
-                if (categoryFiltered.length === 0) {
-                    filtered = []; // Show all products
-                } else {
-                }
+            // Filter by collection_type from URL if present
+            if (router.query.type) {
+                const urlType = router.query.type.toLowerCase();
+                ////console.log("Prduicts", Products, urlType)
+                filtered = filtered.filter(product =>
+                    product.collection_type && product.collection_type.toLowerCase() === urlType
+                );
             }
-
 
             // Apply active filters
             Object.entries(activeFilters).forEach(([category, values]) => {
                 filtered = filtered.filter(product => {
                     switch (category) {
                         case 'shape':
-                            // Filter by frameShape (case-insensitive)
-                            return values.some(
-                                v => product.frameShape && product.frameShape.toLowerCase() === v.toLowerCase()
-                            );
+                            // Add shape filtering logic if needed
+                            return true;
                         case 'material':
                             return values.includes(product.frameMaterial?.toLowerCase());
                         case 'size':
-                            // Frame size filtering based on frameWidth
-                            return values.some(size => {
-                                const frameWidth = product.frameWidth;
-                                if (!frameWidth) return false;
-
-                                switch (size) {
-                                    case 'small':
-                                        return frameWidth >= 50 && frameWidth <= 53;
-                                    case 'medium':
-                                        return frameWidth >= 54 && frameWidth <= 56;
-                                    case 'large':
-                                        return frameWidth >= 57 && frameWidth <= 60;
-                                    case 'extra-large':
-                                        return frameWidth >= 61;
-                                    default:
-                                        return false;
-                                }
-                            });
+                            // Add size filtering logic if needed
+                            return true;
                         case 'price':
                             const [min, max] = values[0].split('-').map(Number);
                             return product.price >= min && product.price <= max;
@@ -129,6 +103,9 @@ export default function CategoryPage() {
                             return values.includes(product.gender?.toLowerCase());
                         case 'lensColor':
                             return values.includes(product.lensColor?.toLowerCase());
+                        case 'collection_type':
+                            // Assuming product.category.title holds the collection type
+                            return values.includes(product.category?.title);
                         default:
                             return true;
                     }
@@ -151,34 +128,31 @@ export default function CategoryPage() {
                 );
             }
 
-            // Sort by updatedAt (latest first)
-            filtered.sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt));
-
             setFilteredProducts(filtered);
         }
     }, [Products, activeFilters, router.query]);
 
+    // Get the type from the URL
+    const type = router.query.type;
 
-    const ClearAllFilters = () => {
-        setActiveFilters({});
-    }
+    // Determine if we should use boy/girl for gender
+    const isHalospecs = type && type.toLowerCase().includes('halospecs');
+
     return (
         <div className={styles.main}>
             <Header isHeaderVisible={true} />
             <div className={styles.inner}>
                 <div className={styles.poster}>
                     <img src="/Images/bg_poster.webp" />
-                    <div className={styles.imageContent}>
-                        <h1>Products</h1>
-                    </div>
+
                 </div>
                 <div className={styles.contentWrapper}>
                     <FilterSidebar
                         onFilterChange={handleFilterChange}
                         activeFilters={activeFilters}
+                        isSunglasses={false}
                         setActiveFilters={setActiveFilters}
-                        isSunglasses={router.query.slug === '67ec193b4c7e05897cf5586e'}
-                        ClearAllFilters={ClearAllFilters}
+                        useBoyGirlGender={isHalospecs}
                         isAccessories={isAccessoryCategory({ _id: router.query.slug })}
                     />
                     <div className={styles.cardComponent}>
@@ -186,7 +160,7 @@ export default function CategoryPage() {
                             {router.query.gender ? (
                                 <h1>{router.query.gender.charAt(0).toUpperCase() + router.query.gender.slice(1)}'s Collection</h1>
                             ) : (
-                                <h1>Category Products</h1>
+                                <h1>All Products</h1>
                             )}
                         </div>
                         <div className={styles.cardInner}>
@@ -217,4 +191,4 @@ export default function CategoryPage() {
             <Footer />
         </div>
     )
-}
+} 

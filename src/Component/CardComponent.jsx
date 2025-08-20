@@ -2,11 +2,11 @@ import React, { useState } from "react";
 import styles from "../styles/CardComponent.module.css";
 import { useRouter } from "next/router";
 import { useDispatch } from "react-redux";
-import { AddCart, GetUser } from "../store/authSlice";
+import { AddCart, GetUser, getDisplayPrices } from "../store/authSlice";
 import { toast } from "react-hot-toast";
 
 
-export default function CardComponent({ id, src, name, price }) {
+export default function CardComponent({ id, src, name, price, crossPrice, discount }) {
     const dispatch = useDispatch();
     const router = useRouter();
     const [isLoading, setIsLoading] = useState(false);
@@ -20,7 +20,7 @@ export default function CardComponent({ id, src, name, price }) {
                 router.push("/login");
                 return false;
             }
-            
+
             // Validate token through API
             const response = await dispatch(GetUser()).unwrap();
             return response.status === 200;
@@ -36,11 +36,16 @@ export default function CardComponent({ id, src, name, price }) {
         }
     };
 
+
+
+
+
+    ////////console.log("CCC" , crossPrice  , price)
     const AddTocart = async () => {
         try {
             // First check user authentication
             const isAuthenticated = await checkUserAuth();
-            
+
             if (!isAuthenticated) {
                 return;
             }
@@ -50,7 +55,8 @@ export default function CardComponent({ id, src, name, price }) {
                 id: id,
                 name: name,
                 price: price,
-                image: src
+                image: src,
+                crossPrice: crossPrice !== undefined ? crossPrice : null
             }));
 
             // Redirect to specs progress form with a flag indicating it's for adding to cart
@@ -69,7 +75,7 @@ export default function CardComponent({ id, src, name, price }) {
         try {
             // Check user authentication before redirecting
             // const isAuthenticated = await checkUserAuth();
-            
+
             // if (!isAuthenticated) {
             //     return;
             // }
@@ -85,6 +91,9 @@ export default function CardComponent({ id, src, name, price }) {
         }
     };
 
+    // Use getDisplayPrices to determine which price to show
+    const { mainPrice, originalPrice } = getDisplayPrices(price, crossPrice);
+    //////console.log("OO" ,  originalPrice)
     return (
         <div className={styles.main} onClick={GetDetail}>
             <div className={styles.inner}>
@@ -114,10 +123,19 @@ export default function CardComponent({ id, src, name, price }) {
 
                 <div className={styles.content}>
                     <h3>{name}</h3>
-                    <h2>{`₹ ${price}`} </h2>
-                    
+                    <div className={styles.priceRow}>
+                        <h2>{`₹ ${Math.round(mainPrice || 0)}`}</h2>
+                        {originalPrice != null && originalPrice != mainPrice && (
+                            <span className={styles.crossPrice}>₹ {Math.round(originalPrice)}</span>
+                        )}
+                        {discount !== 0 && discount != null && (
+                            <span className={styles.discountBadge}>{discount}% OFF</span>
+                        )}
+                    </div>
+
                 </div>
             </div>
+
         </div>
     );
 }

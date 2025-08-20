@@ -116,7 +116,7 @@ const HelpCenter = () => {
                             </div>
                             <div className={styles.contactMethod}>
                                 <h3>Call Us</h3>
-                                <p><a href='tel:+91 1234567890'>+91 1234567890</a></p>
+                                <p><a href='tel:+91 63559 90975'>+91 63559 90975</a></p>
                             </div>
 
                         </div>

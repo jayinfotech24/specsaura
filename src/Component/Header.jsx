@@ -26,7 +26,7 @@ export default function Header({ isHeaderVisible }) {
                 router.push("/login");
                 return false;
             }
-            
+
             const response = await dispatch(GetUser()).unwrap();
             return response.status === 200;
         } catch (error) {
@@ -68,9 +68,25 @@ export default function Header({ isHeaderVisible }) {
 
     useEffect(() => {
         if (searchQuery.trim()) {
-            const filtered = products.filter(product => 
-                product.name.toLowerCase().includes(searchQuery.toLowerCase())
-            )
+            const filtered = products.filter(product => {
+                const q = searchQuery.toLowerCase();
+                return (
+                    (product.name && product.name.toLowerCase().includes(q)) ||
+                    (product.color && product.color.toLowerCase().includes(q)) ||
+                    (product.gender && product.gender.toLowerCase().includes(q)) ||
+                    (product.frameWidth && product.frameWidth.toString().includes(q)) ||
+                    (product.price && product.price.toString().includes(q)) ||
+                    (product.lensColor && product.lensColor.toLowerCase().includes(q)) ||
+                    (product.brandName && product.brandName.toLowerCase().includes(q)) ||
+                    (product.modelNo && product.modelNo.toLowerCase().includes(q)) ||
+                    (product.productID && product.productID.toLowerCase().includes(q)) ||
+                    (product.frameColor && product.frameColor.toLowerCase().includes(q)) ||
+                    (product.templeColor && product.templeColor.toLowerCase().includes(q)) ||
+                    (product.frameMaterial && product.frameMaterial.toLowerCase().includes(q)) ||
+                    (product.lens && product.lens.toLowerCase().includes(q)) ||
+                    (product.warranty && product.warranty.toLowerCase().includes(q))
+                );
+            });
             setFilteredProducts(filtered)
         } else {
             setFilteredProducts([])
@@ -138,9 +154,9 @@ export default function Header({ isHeaderVisible }) {
                         </div>
                         <ul className={styles.manuList}>
                             <li onClick={() => { router.push("/") }}>Home</li>
-                            <li onClick={() => { router.push("/category/f") }}>Shop</li>
+                            <li onClick={() => { router.push("/category") }}>Shop</li>
                             {/* <li>Featured</li> <li>Pages</li> */}
-                            <li>Blogs</li>
+                            <li onClick={() => router.push("/blog")}>Blogs</li>
                         </ul>
                     </motion.div>
                 )}
@@ -157,7 +173,7 @@ export default function Header({ isHeaderVisible }) {
                 <div className={styles.menuitems}>
                     <ul>
                         <li onClick={() => { router.push("/") }}>Home</li>
-                        <li onClick={() => { router.push("/category/f") }}>Shop</li>
+                        <li onClick={() => { router.push("/category") }}>Shop</li>
                         {/* <li>Featured</li> */}
                         <li onClick={() => { router.push("/blog") }}>Blogs</li>
                     </ul>
@@ -214,8 +230,8 @@ export default function Header({ isHeaderVisible }) {
                 {filteredProducts.length > 0 && (
                     <div className={styles.searchResults}>
                         {filteredProducts.map((product) => (
-                            <div 
-                                key={product._id} 
+                            <div
+                                key={product._id}
                                 className={styles.searchResultItem}
                                 onClick={() => {
                                     router.push(`/detail?id=${product._id}`)

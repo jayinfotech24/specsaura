@@ -3,7 +3,7 @@ import { useRouter } from 'next/router';
 import styles from '../../styles/orderDetails.module.css';
 import Header from '../../Component/Header';
 import Footer from '../../Component/Footer';
-import { CreateOrder, getCartDetail, DeleteFullCart, GetOrderById, GetSingleCart, DeleteCart } from '../../store/authSlice';
+import { CreateOrder, getCartDetail, DeleteFullCart, GetOrderById, GetSingleCart, DeleteCart, GetGstRates, calculateGstPrice, calculateOrderWithGst } from '../../store/authSlice';
 import { useDispatch } from 'react-redux';
 import Preloader from '../../Component/Animated';
 import { handlePayment } from '../../store/commonFunction';
@@ -19,7 +19,8 @@ const OrderDetails = () => {
     const [isLoading, setIsLoading] = useState(false);
     const { from } = router.query;
     const [isRazorpayLoaded, setIsRazorpayLoaded] = useState(false);
-
+    const [GstRates, setGstRates] = useState([])
+    const [SummeryData, setSummeryData] = useState([])
     const [formData, setFormData] = useState({
         shippingAddress: {
             fullName: '',
@@ -38,6 +39,33 @@ const OrderDetails = () => {
     });
 
     useEffect(() => {
+        if (!isRazorpayLoaded) {
+            setTimeout(() => {
+                setIsRazorpayLoaded(true)
+            }, 2000)
+        }
+    }, [isRazorpayLoaded])
+
+
+    //console.log("Orr", orderData)
+
+    const GetGstData = () => {
+        dispatch(GetGstRates()).then((res) => {
+            //console.log("Res", res)
+            if (res.payload.status == 200) {
+                setGstRates(res.payload.items)
+            }
+        }).catch((err) => {
+            consol.log("Err", err)
+        })
+    }
+
+
+    useEffect(() => {
+        GetGstData()
+    }, [])
+
+    useEffect(() => {
         const fetchOrderData = async () => {
             setIsLoading(true);
             try {
@@ -46,12 +74,16 @@ const OrderDetails = () => {
                 if (from == "cart") {
                     // CASE 1
                     const response = await dispatch(getCartDetail(userId)).unwrap();
-                    console.log("Cart Response", response);
+                    //console.log("Cart Response", response);
 
                     const total = response.items.reduce((acc, item) => {
-                        const itemPrice = Number(item.productID.price) || 0;
+
+                        ////console.log("Item", item)
+                        const itemPrice = Number(item.productID.crossPrice != null ? item.productID.crossPrice : item.productID.price) || 0;
+                        const lensTypePrice = item.lensType && item.lensType.price ? Number(item.lensType.price) : 0;
+                        const lensCoatingPrice = item.lensCoating && item.lensCoating.price ? Number(item.lensCoating.price) : 0;
                         const itemQuantity = Number(item.numberOfItems) || 1;
-                        return acc + (itemPrice * itemQuantity);
+                        return acc + ((itemPrice + lensTypePrice + lensCoatingPrice) * itemQuantity);
                     }, 0);
 
                     setOrderData({
@@ -59,8 +91,28 @@ const OrderDetails = () => {
                         total: total
                     });
 
+                } else if (from === "accessoryDirect") {
+                    // CASE 2: Direct accessory purchase
+                    const selectedProduct = JSON.parse(localStorage.getItem('selectedProduct') || '{}');
+                    const powerSunglassesOption = localStorage.getItem('powerSunglassesOption');
+
+                    const basePrice = Number(selectedProduct.crossPrice != null ? selectedProduct.crossPrice : selectedProduct.price) || 0;
+                    const total = basePrice;
+
+                    setOrderData({
+                        items: [
+                            {
+                                productID: {
+                                    ...selectedProduct,
+                                    powerSunglasses: powerSunglassesOption === "yes" ? true : false
+                                }
+                            }
+                        ],
+                        total: total
+                    });
+
                 } else if (from == "buy") {
-                    // CASE 2
+                    // CASE 3: Original "buy" flow (for non-accessories requiring prescription)
                     const cartId = localStorage.getItem("cartId");
                     const specsData = JSON.parse(localStorage.getItem("specsData") || "{}");
                     const productId = localStorage.getItem("productId");
@@ -68,11 +120,14 @@ const OrderDetails = () => {
                     if (!cartId) throw new Error("Cart ID missing from localStorage");
 
                     const res = await dispatch(GetSingleCart(cartId)).unwrap();
+                    console.log("Res", res)
                     const selectedProduct = res?.carts?.productID;
 
-                    const basePrice = Number(selectedProduct.price) || 0;
+                    const basePrice = Number(selectedProduct.crossPrice != null ? selectedProduct.crossPrice : selectedProduct.price) || 0;
+                    const lensTypePrice = res.carts.lensType && res.carts.lensType.price ? Number(res.carts.lensType.price) : 0;
+                    const lensCoatingPrice = res.carts.lensCoating && res.carts.lensCoating.price ? Number(res.carts.lensCoating.price) : 0;
                     const additionalCost = Number(specsData.additionalCost) || 0;
-                    const total = basePrice + additionalCost;
+                    const total = basePrice + lensTypePrice + lensCoatingPrice + additionalCost;
 
                     setOrderData({
                         items: [
@@ -82,26 +137,31 @@ const OrderDetails = () => {
                                     specs: specsData,
                                     productId: productId,
                                     cartId: cartId,
-                                    prescription: res.carts.prescriptionID._id
-                                }
+                                    prescription: res.carts.prescriptionID?._id
+                                },
+                                lensType: res.carts?.lensType,
+                                lensCoating: res.carts?.lensCoating
                             }
                         ],
                         total: total
                     });
 
                 } else {
-                    // CASE 3: fallback
+                    // CASE 4: fallback
                     const specsData = JSON.parse(localStorage.getItem("specsData") || "{}");
                     const productId = localStorage.getItem("productId");
                     const cartId = localStorage.getItem("cartId");
 
                     const res = await dispatch(GetSingleCart(cartId)).unwrap();
+                    console.log("Res", res)
                     const selectedProduct = res?.carts?.productID;
 
                     if (selectedProduct && selectedProduct.price) {
-                        const basePrice = Number(selectedProduct.price) || 0;
+                        const basePrice = Number(selectedProduct.crossPrice != null ? selectedProduct.crossPrice : selectedProduct.price) || 0;
+                        const lensTypePrice = res.carts.lensType && res.carts.lensType.price ? Number(res.carts.lensType.price) : 0;
+                        const lensCoatingPrice = res.carts.lensCoating && res.carts.lensCoating.price ? Number(res.carts.lensCoating.price) : 0;
                         const additionalCost = Number(specsData.additionalCost) || 0;
-                        const total = basePrice + additionalCost;
+                        const total = basePrice + lensTypePrice + lensCoatingPrice + additionalCost;
 
                         setOrderData({
                             items: [
@@ -111,8 +171,10 @@ const OrderDetails = () => {
                                         specs: specsData,
                                         productId: productId,
                                         cartId: cartId,
-                                        prescription: res.carts.prescriptionID._id
-                                    }
+                                        prescription: res.carts.prescriptionID?._id
+                                    },
+                                    lensType: res.carts?.lensType,
+                                    lensCoating: res.carts?.lensCoating
                                 }
                             ],
                             total: total
@@ -134,7 +196,7 @@ const OrderDetails = () => {
 
 
     useEffect(() => {
-        console.log("Ord", orderData)
+        ////////console.log("Ord", orderData)
     }, [orderData])
 
 
@@ -157,6 +219,27 @@ const OrderDetails = () => {
         }
     };
 
+
+    //console.log("Cal", calculateOrderWithGst(orderData.items, GstRates));
+    useEffect(() => {
+        if (orderData) {
+
+            const data = calculateOrderWithGst(orderData.items, GstRates)
+            console.log("O", data)
+            setSummeryData(calculateOrderWithGst(orderData.items, GstRates))
+        }
+    }, [orderData.items])
+
+    const getGstTotalAmount = () => {
+        return Math.round(
+            (SummeryData || []).reduce((acc, item) => {
+                const qty = item.numberOfItems || item.quantity || 1;
+                return acc + (item.totalWithGst * qty);
+            }, 0)
+        );
+    };
+
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         setIsLoading(true);
@@ -174,9 +257,9 @@ const OrderDetails = () => {
             }
 
 
-            console.log("Is", isRazorpayLoaded)
-            // Get the total amount from orderData
-            const amount = orderData.total;
+            ////////console.log("Is", isRazorpayLoaded)
+            // Get the GST-inclusive total amount
+            const amount = getGstTotalAmount();
 
             // Create payment order
             const result = await dispatch(MakePayment({ amount })).unwrap();
@@ -203,7 +286,7 @@ const OrderDetails = () => {
 
                     try {
                         const verifyRes = await dispatch(VerifyPayment(payload)).unwrap();
-                        console.log("Verify Response", verifyRes);
+                        ////////console.log("Verify Response", verifyRes);
                         let orderPayload;
                         if (from == "cart") {
                             orderPayload = {
@@ -214,7 +297,7 @@ const OrderDetails = () => {
                                     prescription: prescriptionId || null,
                                     quantity: from === 'cart' ? (item.numberOfItems || 1) : 1
                                 })),
-                                totalAmount: orderData.total,
+                                totalAmount: amount,
                                 status: "Pending",
                                 paymentStatus: "Completed",
                                 paymentMethod: "Online",
@@ -231,7 +314,7 @@ const OrderDetails = () => {
                                     prescription: item.productID.prescription || null,
                                     quantity: from === 'cart' ? (item.numberOfItems || 1) : 1
                                 })),
-                                totalAmount: orderData.total,
+                                totalAmount: amount,
                                 status: "Pending",
                                 paymentStatus: "Completed",
                                 paymentMethod: "Online",
@@ -241,10 +324,12 @@ const OrderDetails = () => {
                         // Create order after successful payment verification
 
 
-                        console.log("Order Payload", orderPayload);
+                        ////////console.log("Order Payload", orderPayload);
                         try {
+
+                            setIsLoading(true)
                             const orderRes = await dispatch(CreateOrder(orderPayload)).unwrap();
-                            console.log("Order created successfully", orderRes);
+                            ////////console.log("Order created successfully", orderRes);
 
                             if (from == "cart") {
                                 const productIds = orderData.items.map(item => item._id);
@@ -252,9 +337,9 @@ const OrderDetails = () => {
                                     ids: productIds
                                 };
                                 await dispatch(DeleteFullCart(cartPayload)).then((res) => {
-                                    console.log("Cart cleared successfully", res);
+                                    ////////console.log("Cart cleared successfully", res);
                                 }).catch((error) => {
-                                    console.log("Error clearing cart:", error);
+                                    ////////console.log("Error clearing cart:", error);
                                 });
 
                                 toast.success("Payment successful!");
@@ -262,19 +347,20 @@ const OrderDetails = () => {
                                 localStorage.removeItem('selectedProduct');
                                 localStorage.removeItem('specsData');
                                 localStorage.setItem("OrderData", JSON.stringify(orderData));
-
+                                setIsLoading(false)
                                 router.push('/order-confirmation');
                             } else {
                                 const cartId = localStorage.getItem("cartId");
                                 const res = await dispatch(DeleteCart(cartId)).unwrap();
 
-                                console.log("Delelele", res)
+                                ////////console.log("Delelele", res)
 
                                 toast.success("Payment successful!");
                                 // Clear localStorage after successful payment
                                 localStorage.removeItem('selectedProduct');
                                 localStorage.removeItem('specsData');
                                 localStorage.setItem("OrderData", JSON.stringify(orderData));
+                                setIsLoading(false)
                                 router.push('/order-confirmation');
                             }
 
@@ -287,11 +373,11 @@ const OrderDetails = () => {
                         toast.error("Payment verification failed. Please contact support.");
                     }
                 },
-                prefill: {
-                    name: "Mihir Yoganandi",
-                    email: "yoganandimihir@gmail.com",
-                    contact: "9313331856",
-                },
+                // prefill: {
+                //     name: "Mihir Yoganandi",
+                //     email: "yoganandimihir@gmail.com",
+                //     contact: "9313331856",
+                // },
                 theme: {
                     color: "#1A73E8",
                 },
@@ -307,26 +393,18 @@ const OrderDetails = () => {
         }
     };
 
-    const handleClearCart = async () => {
-        try {
-            const productIds = orderData.items.map(item => item.productID._id);
-            await dispatch(DeleteFullCart({ ids: productIds })).then((res) => {
-                console.log("Cart cleared successfully", res);
-                toast.success("Cart cleared successfully");
-                router.push('/cart'); // Redirect to cart page after clearing
-            }).catch((error) => {
-                console.log("Error clearing cart:", error);
-                toast.error("Failed to clear cart");
-            });
-        } catch (error) {
-            console.error("Error clearing cart:", error);
-            toast.error("Failed to clear cart");
-        }
+
+
+    const reloadRazorpayScript = () => {
+        setIsRazorpayLoaded(false);
+        const script = document.createElement('script');
+        script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+        script.onload = () => setIsRazorpayLoaded(true);
+        script.onerror = () => setIsRazorpayLoaded(false);
+        document.body.appendChild(script);
     };
 
-    if (isLoading) {
-        return <Preloader />;
-    }
+
 
     return (
         <div className={styles.main}>
@@ -360,17 +438,34 @@ const OrderDetails = () => {
                                 {orderData.items.map((item, index) => (
                                     <div key={index} className={styles.item}>
                                         <img
-                                            src={item.productID?.image || item.productID?.url || '/Images/placeholder.png'}
+                                            src={item.productID?.images && item.productID?.images?.length > 0 ? item.productID?.images[0] : item.productID?.url || '/Images/placeholder.png'}
                                             alt={item.productID?.name || 'Product'}
                                             className={styles.itemImage}
                                         />
                                         <div className={styles.itemDetails}>
                                             <h3>{item.productID?.name || 'Product Name'}</h3>
+                                            {/* GST-inclusive price */}
+                                            <div className={styles.gstPrice}>
+                                                {(() => {
+                                                    const gstType = item.productID?.category?.description?.toLowerCase();
+                                                    const basePrice = item.productID?.crossPrice != null ? item.productID.crossPrice : item.productID?.price;
+                                                    const gstObj = Array.isArray(GstRates) ? GstRates.find(rate => rate.name?.toLowerCase() === gstType) : null;
+                                                    ////console.log("G", GstRates, item)
+                                                    const gstPercent = gstObj?.gst || 8;
+                                                    const gstIncl = calculateGstPrice(gstType, basePrice, GstRates);
+                                                    return (
+                                                        <>
+
+
+                                                        </>
+                                                    );
+                                                })()}
+                                            </div>
                                             {from === 'cart' ? (
                                                 <div className={styles.itemInfo}>
                                                     <span>Quantity: {item.quantity || 1}</span>
                                                     <span className={styles.price}>
-                                                        ₹{(item.productID?.price * (item.quantity || 1)).toLocaleString('en-IN')}
+                                                        ₹{((item.productID?.crossPrice != null ? item.productID.crossPrice : item.productID?.price) * (item.quantity || 1)).toLocaleString('en-IN')}
                                                     </span>
                                                 </div>
                                             ) : (
@@ -382,7 +477,7 @@ const OrderDetails = () => {
                                                         </div>
                                                     )}
                                                     <span className={styles.price}>
-                                                        ₹{item.productID?.price?.toLocaleString('en-IN')}
+                                                        ₹{(item.productID?.crossPrice != null ? item.productID.crossPrice : item.productID?.price)?.toLocaleString('en-IN')}
                                                     </span>
                                                 </div>
                                             )}
@@ -480,26 +575,65 @@ const OrderDetails = () => {
                         <div className={styles.section}>
                             <h2>Order Summary</h2>
                             <div className={styles.summary}>
-                                <div className={styles.summaryItem}>
-                                    <span>Subtotal</span>
-                                    <span>₹{orderData.total.toLocaleString('en-IN')}</span>
-                                </div>
+                                {SummeryData.map((item, index) => (
+                                    <div key={index} className={styles.itemSummary}>
+                                        <div className={styles.summaryItem}>
+                                            <span>{item.productName || 'Product'}</span>
+                                            <span>
+                                                ₹{item.totalWithGst.toLocaleString('en-IN')}
+                                                <span style={{ fontSize: '12px', color: '#888', marginLeft: '4px' }}>
+                                                    (incl. {item.gstPercent}% GST)
+                                                </span>
+                                            </span>
+                                        </div>
+
+                                        {/* Show frame price */}
+                                        <div className={styles.summaryItem}>
+                                            <span>Frame Price</span>
+                                            <span>₹{item.framePrice.toLocaleString('en-IN')}</span>
+                                        </div>
+
+                                        {/* Show lens price only if hasLens is true and lensPrice > 0 */}
+                                        {item.hasLens && item.lensPrice > 0 && (
+                                            <div className={styles.summaryItem}>
+                                                <span>Lens Price</span>
+                                                <span>₹{item.lensPrice.toLocaleString('en-IN')}</span>
+                                            </div>
+                                        )}
+                                        {item.coatingPrice && item.coatingPrice > 0 && (
+                                            <div className={styles.summaryItem}>
+                                                <span>Coating Price</span>
+                                                <span>₹{item.coatingPrice.toLocaleString('en-IN')}</span>
+                                            </div>
+                                        )}
+
+                                        {/* Optionally you could add quantity if your data supports it */}
+                                        {/* {item.quantity && item.quantity > 1 && (
+          <div className={styles.summaryItem}>
+            <span>Quantity: {item.quantity}</span>
+          </div>
+        )} */}
+
+                                        {index < orderData.items.length - 1 && <hr className={styles.summaryDivider} />}
+                                    </div>
+                                ))}
+
                                 <div className={styles.summaryItem}>
                                     <span>Shipping</span>
                                     <span>Free</span>
                                 </div>
-                                {/* <div className={styles.summaryItem}>
-                                    <span>Tax (18%)</span>
-                                    <span>₹{(orderData.totalAmount * 0.18).toLocaleString('en-IN')}</span>
-                                </div> */}
+
                                 <div className={styles.total}>
                                     <span>Total Amount</span>
                                     <span className={styles.totalAmount}>
-                                        ₹{orderData.total.toLocaleString('en-IN')}
+                                        ₹
+                                        {SummeryData.reduce((acc, item) => acc + (item.totalWithGst || 0), 0).toLocaleString('en-IN')}
                                     </span>
+
                                 </div>
                             </div>
                         </div>
+
                     </div>
 
                     <div className={styles.actions}>
@@ -511,10 +645,17 @@ const OrderDetails = () => {
                             Back to Cart
                         </button>
 
+                        {!isRazorpayLoaded && (
+                            <div className={styles.alert}>
+                                Payment system is not ready retry.
+                                {/* Optionally, add a retry button */}
+
+                            </div>
+                        )}
                         <button
                             type="submit"
                             className={styles.payButton}
-                            disabled={isLoading}
+                            disabled={isLoading || !isRazorpayLoaded}
                         >
                             {isLoading ? 'Processing...' : 'Proceed to Payment'}
                         </button>

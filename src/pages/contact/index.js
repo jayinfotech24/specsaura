@@ -57,10 +57,10 @@ export default function index() {
             subject: data.subject,
             message: data.message
         }
-        ////console.log("res", responseObject)
+        ////////////console.log("res", responseObject)
 
         dispatch(Contact(responseObject)).then((response) => {
-            ////console.log("Res", response)
+            ////////////console.log("Res", response)
             if (response.payload.status == 201) {
                 setIsLoading(false)
                 toast.success("Your Message sent successfully")
@@ -68,7 +68,7 @@ export default function index() {
             setIsLoading(false)
         }).catch((error) => {
             setIsLoading(false)
-            ////console.log("error", error)
+            ////////////console.log("error", error)
         })
     }
 
@@ -128,7 +128,7 @@ export default function index() {
                 </div>
                 <div className={styles.right}>
                     <h2>Contact With Us</h2>
-                    <h1>Vision Plus – Lenses & Eye Care</h1>
+                    <h1>Specsaura – Lenses & Eye Care</h1>
 
                     <p>Explore our premium collection of lenses — designed for comfort, clarity, and style. From prescription eyewear to blue-light protection, we offer personalized vision solutions backed by expert support and innovative technology.</p>
                     <div className={styles.contactContainer}>
@@ -139,7 +139,7 @@ export default function index() {
                         <div className={styles.detail}>
                             <h3>Have Any Question?</h3>
 
-                            <h2><a href='tel:+91 97140 37223'> +91 97140 37223</a></h2>
+                            <h2><a href='tel:+91 63559 90975'> +91 63559 90975</a></h2>
                         </div>
                     </div>
                     <div className={styles.contactContainer}>
@@ -164,6 +164,7 @@ export default function index() {
                             <h2>Shop no 30,  Shardhadeep Complex, Near Laxmi Gathiya Rath, Opp. Anant Atila,
                                 Shastri nagar cross road.  Ahmedabad ,
                                 Gujarat.
+                                <span className={styles.pincode}>380063</span>
                             </h2>
                         </div>
                     </div>
