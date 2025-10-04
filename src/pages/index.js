@@ -109,8 +109,8 @@ export default function index() {
     const brandMap = [
         { img: "/Images/brand1.jpg", type: "Ascend Drip" },
         { img: "/Images/brand2.jpg", type: "Seraphic" },
-        { img: "/Images/brand3.jpg", type: "PriumX" },
-        { img: "/Images/brand4.jpg", type: "halospecs" }
+        { img: "/Images/brand3.jpg", type: "Prium X" },
+        { img: "/Images/brand4.jpg", type: "Halospecs" }
     ];
 
     const handleBrandClick = (type) => {
