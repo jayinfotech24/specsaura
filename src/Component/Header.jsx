@@ -68,26 +68,53 @@ export default function Header({ isHeaderVisible }) {
 
     useEffect(() => {
         if (searchQuery.trim()) {
-            const filtered = products.filter(product => {
-                const q = searchQuery.toLowerCase();
-                return (
-                    (product.name && product.name.toLowerCase().includes(q)) ||
-                    (product.color && product.color.toLowerCase().includes(q)) ||
-                    (product.gender && product.gender.toLowerCase().includes(q)) ||
-                    (product.frameWidth && product.frameWidth.toString().includes(q)) ||
-                    (product.price && product.price.toString().includes(q)) ||
-                    (product.lensColor && product.lensColor.toLowerCase().includes(q)) ||
-                    (product.brandName && product.brandName.toLowerCase().includes(q)) ||
-                    (product.modelNo && product.modelNo.toLowerCase().includes(q)) ||
-                    (product.productID && product.productID.toLowerCase().includes(q)) ||
-                    (product.frameColor && product.frameColor.toLowerCase().includes(q)) ||
-                    (product.templeColor && product.templeColor.toLowerCase().includes(q)) ||
-                    (product.frameMaterial && product.frameMaterial.toLowerCase().includes(q)) ||
-                    (product.lens && product.lens.toLowerCase().includes(q)) ||
-                    (product.warranty && product.warranty.toLowerCase().includes(q))
-                );
+            const words = searchQuery.toLowerCase().split(/\s+/).filter(Boolean);
+            
+            const getSearchableText = (product) => {
+                return [
+                    product.name,
+                    product.description,
+                    product.brandName,
+                    product.color,
+                    product.gender,
+                    product.frameWidth?.toString(),
+                    product.price?.toString(),
+                    product.lensColor,
+                    product.modelNo,
+                    product.productID,
+                    product.frameColor,
+                    product.templeColor,
+                    product.frameMaterial,
+                    product.lens,
+                    product.warranty
+                ].filter(Boolean).join(' ').toLowerCase();
+            };
+
+            // Pre-sort by updatedAt date (newest first) to ensure consistent secondary sorting within groups
+            const sortedProducts = [...products].sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt));
+
+            // Group 1: Products containing ALL keywords
+            const allMatch = sortedProducts.filter(product => {
+                const searchableText = getSearchableText(product);
+                return words.every(word => searchableText.includes(word));
             });
-            setFilteredProducts(filtered)
+
+            const seenIds = new Set(allMatch.map(p => p._id));
+            const orderedMatches = [...allMatch];
+
+            // Group 2: Products matching keywords one by one in query order
+            for (const word of words) {
+                const wordMatches = sortedProducts.filter(product => {
+                    if (seenIds.has(product._id)) return false;
+                    const searchableText = getSearchableText(product);
+                    return searchableText.includes(word);
+                });
+
+                wordMatches.forEach(p => seenIds.add(p._id));
+                orderedMatches.push(...wordMatches);
+            }
+
+            setFilteredProducts(orderedMatches);
         } else {
             setFilteredProducts([])
         }
@@ -210,50 +237,52 @@ export default function Header({ isHeaderVisible }) {
                 </div>
             </div>
 
-            <div className={`${styles.searchContainer} ${isSearchOpen ? styles.open : ''}`} ref={searchContainerRef}>
-                <form onSubmit={handleSearch} className={styles.searchForm}>
-                    <input
-                        type="text"
-                        placeholder="Search products..."
-                        value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
-                        className={styles.searchInput}
-                        autoFocus
-                    />
-                    <button type="submit" className={styles.searchButton}>
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-search">
-                            <circle cx="11" cy="11" r="8" />
-                            <path d="m21 21-4.3-4.3" />
-                        </svg>
-                    </button>
-                </form>
-                {filteredProducts.length > 0 && (
-                    <div className={styles.searchResults}>
-                        {filteredProducts.map((product) => (
-                            <div
-                                key={product._id}
-                                className={styles.searchResultItem}
-                                onClick={() => {
-                                    router.push(`/detail?id=${product._id}`)
-                                    setIsSearchOpen(false)
-                                    setSearchQuery('')
-                                }}
-                            >
-                                <img src={product.url} alt={product.name} />
-                                <div className={styles.searchResultInfo}>
-                                    <h4>{product.name}</h4>
-                                    <p>₹{product.price}</p>
+            {isSearchOpen && (
+                <div className={styles.dropdownSearchContainer} ref={searchContainerRef}>
+                    <form onSubmit={handleSearch} className={styles.dropdownSearchForm}>
+                        <input
+                            type="text"
+                            placeholder="Search products..."
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                            className={styles.dropdownSearchInput}
+                            autoFocus
+                        />
+                        <button type="submit" className={styles.dropdownSearchButton}>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-search">
+                                <circle cx="11" cy="11" r="8" />
+                                <path d="m21 21-4.3-4.3" />
+                            </svg>
+                        </button>
+                    </form>
+                    {filteredProducts.length > 0 && (
+                        <div className={styles.dropdownSearchResults}>
+                            {filteredProducts.map((product) => (
+                                <div
+                                    key={product._id}
+                                    className={styles.dropdownSearchResultItem}
+                                    onClick={() => {
+                                        router.push(`/detail?id=${product._id}`)
+                                        setIsSearchOpen(false)
+                                        setSearchQuery('')
+                                    }}
+                                >
+                                    <img src={product.url} alt={product.name} />
+                                    <div className={styles.dropdownSearchResultInfo}>
+                                        <h4>{product.name}</h4>
+                                        <p>₹{product.price}</p>
+                                    </div>
                                 </div>
-                            </div>
-                        ))}
-                    </div>
-                )}
-                {searchQuery && filteredProducts.length === 0 && (
-                    <div className={styles.noResults}>
-                        <p>No products found</p>
-                    </div>
-                )}
-            </div>
+                            ))}
+                        </div>
+                    )}
+                    {searchQuery && filteredProducts.length === 0 && (
+                        <div className={styles.dropdownNoResults}>
+                            <p>No products found</p>
+                        </div>
+                    )}
+                </div>
+            )}
         </div>
     )
 }

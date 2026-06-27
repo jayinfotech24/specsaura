@@ -30,6 +30,11 @@ export const FRAME_SHAPES = Object.freeze([
 const FilterSidebar = ({ onFilterChange, activeFilters, isSunglasses, setActiveFilters, useBoyGirlGender, isAccessories = false }) => {
     const [expandedSections, setExpandedSections] = useState({});
     const router = useRouter();
+    const [sidebarSearch, setSidebarSearch] = useState(router.query.search || '');
+
+    useEffect(() => {
+        setSidebarSearch(router.query.search || '');
+    }, [router.query.search]);
 
     let filterCategories = {}
     if (isAccessoryCategory({ _id: router.query.slug })) {
@@ -102,18 +107,25 @@ const FilterSidebar = ({ onFilterChange, activeFilters, isSunglasses, setActiveF
         onFilterChange(category, value.toLowerCase());
     };
 
+    const handleSearchSubmit = (e) => {
+        e.preventDefault();
+        router.push({
+            pathname: router.pathname,
+            query: { ...router.query, search: sidebarSearch }
+        });
+    };
+
     const handleClearAll = () => {
         // Clear all filters
         setActiveFilters({});
+        setSidebarSearch('');
 
-        // Optional: remove 'gender' from query params
-        if (router.query.gender) {
-            const { gender, ...rest } = router.query;
-            router.replace({
-                pathname: router.pathname,
-                query: rest
-            }, undefined, { shallow: true });
-        }
+        // Remove search and gender queries from parameters
+        const { gender, search, ...rest } = router.query;
+        router.replace({
+            pathname: router.pathname,
+            query: rest
+        }, undefined, { shallow: true });
     };
 
     return (
@@ -126,6 +138,24 @@ const FilterSidebar = ({ onFilterChange, activeFilters, isSunglasses, setActiveF
                 >
                     Clear All
                 </button>
+            </div>
+
+            <div className={styles.searchSection}>
+                <form onSubmit={handleSearchSubmit} className={styles.sidebarSearchForm}>
+                    <input
+                        type="text"
+                        placeholder="Search products..."
+                        value={sidebarSearch}
+                        onChange={(e) => setSidebarSearch(e.target.value)}
+                        className={styles.sidebarSearchInput}
+                    />
+                    <button type="submit" className={styles.sidebarSearchButton}>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-search">
+                            <circle cx="11" cy="11" r="8" />
+                            <path d="m21 21-4.3-4.3" />
+                        </svg>
+                    </button>
+                </form>
             </div>
 
             {Object.entries(categoriesToRender).map(([category, { title, options }]) => (

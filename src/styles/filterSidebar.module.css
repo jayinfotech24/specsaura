@@ -158,6 +158,58 @@
     background: #ccc;
 }
 
+.searchSection {
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.sidebarSearchForm {
+    display: flex;
+    align-items: center;
+    background-color: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 8px 12px;
+    gap: 8px;
+    transition: all 0.3s ease;
+}
+
+.sidebarSearchForm:focus-within {
+    border-color: #fd5b25;
+    background-color: #fff;
+    box-shadow: 0 0 0 3px rgba(253, 91, 37, 0.1);
+}
+
+.sidebarSearchInput {
+    flex: 1;
+    border: none;
+    background: transparent;
+    font-size: 14px;
+    color: #1e293b;
+    outline: none;
+}
+
+.sidebarSearchInput::placeholder {
+    color: #94a3b8;
+}
+
+.sidebarSearchButton {
+    background: none;
+    border: none;
+    padding: 0;
+    color: #64748b;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: color 0.2s ease;
+}
+
+.sidebarSearchButton:hover {
+    color: #fd5b25;
+}
+
 @media (max-width: 992px) {
     .sidebar {
         width: 100%;

@@ -120,12 +120,56 @@ export default function CategoryIndexPage() {
             }
 
             if (router.query.search) {
-                const searchTerm = router.query.search.toLowerCase();
-                filtered = filtered.filter(product =>
-                    product.name?.toLowerCase().includes(searchTerm) ||
-                    product.description?.toLowerCase().includes(searchTerm) ||
-                    product.brandName?.toLowerCase().includes(searchTerm)
-                );
+                const words = router.query.search.toLowerCase().split(/\s+/).filter(Boolean);
+                
+                const getSearchableText = (product) => {
+                    return [
+                        product.name,
+                        product.description,
+                        product.brandName,
+                        product.color,
+                        product.gender,
+                        product.frameWidth?.toString(),
+                        product.price?.toString(),
+                        product.lensColor,
+                        product.modelNo,
+                        product.productID,
+                        product.frameColor,
+                        product.templeColor,
+                        product.frameMaterial,
+                        product.lens,
+                        product.warranty
+                    ].filter(Boolean).join(' ').toLowerCase();
+                };
+
+                // Pre-sort by updatedAt date (newest first) to ensure consistent secondary sorting within groups
+                const sortedFiltered = [...filtered].sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt));
+
+                // Group 1: Products containing ALL keywords
+                const allMatch = sortedFiltered.filter(product => {
+                    const searchableText = getSearchableText(product);
+                    return words.every(word => searchableText.includes(word));
+                });
+
+                const seenIds = new Set(allMatch.map(p => p._id));
+                const orderedMatches = [...allMatch];
+
+                // Group 2: Products matching keywords one by one in query order
+                for (const word of words) {
+                    const wordMatches = sortedFiltered.filter(product => {
+                        if (seenIds.has(product._id)) return false;
+                        const searchableText = getSearchableText(product);
+                        return searchableText.includes(word);
+                    });
+
+                    wordMatches.forEach(p => seenIds.add(p._id));
+                    orderedMatches.push(...wordMatches);
+                }
+
+                filtered = orderedMatches;
+            } else {
+                // Default sorting by updatedAt (latest first)
+                filtered.sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt));
             }
 
             setFilteredProducts(filtered);

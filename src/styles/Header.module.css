@@ -306,179 +306,143 @@
   }
 }
 
-.searchContainer {
-  position: fixed;
-  top: 80px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 100%;
-  max-width: 600px;
+.dropdownSearchContainer {
+  position: absolute;
+  top: 100%;
+  right: 20px;
+  width: 350px;
   background: white;
-  padding: 1.5rem;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  padding: 0.75rem;
+  border-radius: 8px;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  border: 1px solid #e2e8f0;
   z-index: 1000;
-  opacity: 0;
-  visibility: hidden;
-  transition: all 0.3s ease;
-  border-radius: 12px;
-}
-
-.searchContainer.open {
-  opacity: 1;
-  visibility: visible;
-  top: 90px;
-}
-
-.searchForm {
   display: flex;
-  gap: 1rem;
-  margin-bottom: 1rem;
+  flex-direction: column;
+  animation: slideDown 0.2s ease-out;
 }
 
-.searchInput {
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.dropdownSearchForm {
+  display: flex;
+  align-items: center;
+  background: #f1f5f9;
+  border-radius: 6px;
+  padding: 0.4rem 0.75rem;
+  gap: 0.5rem;
+}
+
+.dropdownSearchInput {
   flex: 1;
-  padding: 0.75rem 1rem;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  font-size: 1rem;
-  background: transparent;
-  color: #000;
-}
-
-.searchInput:focus {
-  outline: none;
-  border-color: #4f46e5;
-  box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.1);
-}
-
-.searchButton {
-  padding: 0.75rem 1.5rem;
-  background: #4f46e5;
-  color: white;
   border: none;
-  border-radius: 8px;
+  background: transparent;
+  font-size: 0.95rem;
+  color: #0f172a;
+  outline: none;
+}
+
+.dropdownSearchInput::placeholder {
+  color: #94a3b8;
+}
+
+.dropdownSearchButton {
+  background: none;
+  border: none;
   cursor: pointer;
+  padding: 0.25rem;
+  color: #64748b;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.3s ease;
+  transition: color 0.2s ease;
 }
 
-.searchButton:hover {
-  background: #4338ca;
+.dropdownSearchButton:hover {
+  color: #0f172a;
 }
 
-.searchResults {
-  margin-top: 1rem;
-  max-height: 400px;
+.dropdownSearchResults {
+  margin-top: 0.5rem;
+  max-height: 300px;
   overflow-y: auto;
-  border-top: 1px solid #eee;
+  border-top: 1px solid #f1f5f9;
 }
 
-.searchResultItem {
+.dropdownSearchResultItem {
   display: flex;
   align-items: center;
-  gap: 1rem;
-  padding: 1rem;
-  border-bottom: 1px solid #eee;
+  gap: 0.75rem;
+  padding: 0.6rem 0.5rem;
+  border-bottom: 1px solid #f1f5f9;
   cursor: pointer;
-  transition: background-color 0.2s;
+  transition: background-color 0.2s ease;
 }
 
-.searchResultItem:hover {
-  background-color: #f8f9fa;
+.dropdownSearchResultItem:last-child {
+  border-bottom: none;
 }
 
-.searchResultItem img {
-  width: 50px;
-  height: 50px;
+.dropdownSearchResultItem:hover {
+  background-color: #f8fafc;
+}
+
+.dropdownSearchResultItem img {
+  width: 40px;
+  height: 40px;
   object-fit: cover;
-  border-radius: 8px;
+  border-radius: 6px;
 }
 
-.searchResultInfo {
+.dropdownSearchResultInfo {
   flex: 1;
 }
 
-.searchResultInfo h4 {
+.dropdownSearchResultInfo h4 {
   margin: 0;
-  font-size: 1rem;
-  color: #333;
+  font-size: 0.85rem;
+  color: #1e293b;
+  font-weight: 500;
 }
 
-.searchResultInfo p {
-  margin: 0.25rem 0 0;
-  font-size: 0.9rem;
-  color: #666;
+.dropdownSearchResultInfo p {
+  margin: 0.15rem 0 0;
+  font-size: 0.8rem;
+  color: #64748b;
 }
 
-.noResults {
+.dropdownNoResults {
   text-align: center;
-  padding: 1.5rem;
-  color: #666;
+  padding: 1rem;
+  color: #64748b;
+  font-size: 0.85rem;
 }
 
 @media (max-width: 768px) {
-  .searchContainer {
-    width: 90%;
-    padding: 1rem;
-  }
-
-  .searchForm {
-    gap: 0.75rem;
-  }
-
-  .searchInput {
-    padding: 0.75rem;
-  }
-
-  .searchButton {
-    padding: 0.75rem 1rem;
-  }
-
-  .searchResultItem {
-    padding: 0.75rem;
-  }
-
-  .searchResultItem img {
-    width: 40px;
-    height: 40px;
+  .dropdownSearchContainer {
+    width: 320px;
+    right: 15px;
   }
 }
 
 @media (max-width: 480px) {
-  .searchContainer {
-    top: 70px;
-    padding: 10px;
+  .dropdownSearchContainer {
+    width: calc(100% - 30px);
+    right: 15px;
+    left: 15px;
   }
+}
 
-  .searchInput {
-    padding: 10px 12px;
-    font-size: 13px;
-  }
-
-  .searchButton {
-    padding: 10px;
-    min-width: 40px;
-  }
-
-  .searchResultItem {
-    padding: 10px;
-  }
-
-  .searchResultItem img {
-    width: 35px;
-    height: 35px;
-  }
-
-  .searchResultInfo h4 {
-    font-size: 0.8rem;
-  }
-
-  .searchResultInfo p {
-    font-size: 0.75rem;
-  }
-
+@media (max-width: 480px) {
   .icons ul {
     gap: 12px;
   }
