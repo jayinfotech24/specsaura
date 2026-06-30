@@ -851,7 +851,7 @@ export default function index() {
                     <button className={styles.backButton} onClick={() => Changepage(1)}>
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-left-icon lucide-arrow-left"><path d="m12 19-7-7 7-7" /><path d="M19 12H5" /></svg>
                     </button>
-                    <h1 style={{ fontSize: "15px", color: "#000" }}>Enter Your Prescription Manually</h1>
+                    <h1 style={{ fontSize: "15px", color: "#000", textAlign: "center", width: "100%" }}>Enter Your Prescription Manually</h1>
 
                     <div >
                         <form onSubmit={handleSubmit(SubmitHandler)}>
@@ -980,7 +980,7 @@ export default function index() {
                         {(IsSingle || IsBifocel || IsProgressive) && <div className={styles.pupilDistance}>
                             <h2>Pupil Distance</h2>
                             <div className={styles.innerPupil}><input checked={IsTwoPds}
-                                onChange={handleCheckboxChange} type="checkbox" /><span><p>Two PDs</p></span></div>
+                                onChange={handleCheckboxChange} type="checkbox" /><span><p>Different PDs</p></span></div>
                             {
                                 !IsTwoPds && <select {...register("pd")}>
                                     <option value="" disabled selected>-- Select --</option>
@@ -1062,7 +1062,7 @@ export default function index() {
                             <button className={styles.backButton} onClick={() => Changepage(1)}>
                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-left-icon lucide-arrow-left"><path d="m12 19-7-7 7-7" /><path d="M19 12H5" /></svg>
                             </button>
-                            <h1 style={{ fontSize: "15px" }}>Upload Prescription</h1>
+                            <h1 style={{ fontSize: "15px", textAlign: "center", width: "100%" }}>Upload Prescription</h1>
                             <p>Please upload your prescription as a PNG, JPG or PDF file.</p>
                             <form onSubmit={e => { e.preventDefault(); HandleSaveFile(e) }}>
                                 <div className={styles.buttonWrapper}>
@@ -1129,7 +1129,12 @@ export default function index() {
                             <motion.div
                                 key={lens._id}
                                 className={styles.lensCard + (selectedLens && selectedLens._id === lens._id ? ' ' + styles.selectedLens : '')}
-                                onClick={() => setSelectedLens(lens)}
+                                onClick={() => {
+                                    setSelectedLens(lens);
+                                    setIsLensComplete(true);
+                                    localStorage.setItem('selectedLens', JSON.stringify(lens));
+                                    Changepage(2);
+                                }}
                                 initial={{ opacity: 0, y: 20 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ delay: 0.3 + idx * 0.1 }}
@@ -1213,7 +1218,12 @@ export default function index() {
                         {/* No Coating Option */}
                         <motion.div
                             className={styles.coatingCard + (!selectedCoating ? ' ' + styles.selectedCoating : '')}
-                            onClick={() => setSelectedCoating(null)}
+                            onClick={() => {
+                                setSelectedCoating(null);
+                                localStorage.removeItem('selectedCoating');
+                                setIsCoatingComplete(true);
+                                Changepage(3);
+                            }}
                             initial={{ opacity: 0, scale: 0.95 }}
                             animate={{ opacity: 1, scale: 1 }}
                             transition={{ delay: 0.2, type: 'spring', stiffness: 180 }}
@@ -1234,7 +1244,12 @@ export default function index() {
                             <motion.div
                                 key={coating._id}
                                 className={styles.coatingCard + (selectedCoating && selectedCoating._id === coating._id ? ' ' + styles.selectedCoating : '')}
-                                onClick={() => setSelectedCoating(coating)}
+                                onClick={() => {
+                                    setSelectedCoating(coating);
+                                    localStorage.setItem('selectedCoating', JSON.stringify(coating));
+                                    setIsCoatingComplete(true);
+                                    Changepage(3);
+                                }}
                                 initial={{ opacity: 0, scale: 0.95 }}
                                 animate={{ opacity: 1, scale: 1 }}
                                 transition={{ delay: 0.2 + idx * 0.08, type: 'spring', stiffness: 180 }}

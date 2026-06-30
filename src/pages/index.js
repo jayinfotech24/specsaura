@@ -23,10 +23,46 @@ export default function index() {
     const [isHeaderVisible, setIsHeaderVisible] = useState(false);
     const [lastScrollY, setLastScrollY] = useState(0);
     const carouselRef = useRef(null);
+    const collectionRef = useRef(null);
+    const bestSellersRef = useRef(null);
     const [isLoading, setIsLoading] = useState(false);
     const [Category, setCategory] = useState([])
     const [Procucts, setProducts] = useState([])
     const router = useRouter();
+
+    const [collectionScroll, setCollectionScroll] = useState({ canScrollLeft: false, canScrollRight: true });
+    const [bestSellersScroll, setBestSellersScroll] = useState({ canScrollLeft: false, canScrollRight: true });
+
+    const updateScrollButtons = (ref, setState) => {
+        if (ref.current) {
+            const { scrollLeft, scrollWidth, clientWidth } = ref.current;
+            setState({
+                canScrollLeft: scrollLeft > 5,
+                canScrollRight: scrollLeft + clientWidth < scrollWidth - 5
+            });
+        }
+    };
+
+    const scrollSection = (ref, direction) => {
+        if (ref.current) {
+            const scrollAmount = direction === 'left' ? -240 : 240;
+            ref.current.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+        }
+    };
+
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            updateScrollButtons(collectionRef, setCollectionScroll);
+        }, 500);
+        return () => clearTimeout(timer);
+    }, [Category]);
+
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            updateScrollButtons(bestSellersRef, setBestSellersScroll);
+        }, 500);
+        return () => clearTimeout(timer);
+    }, [Procucts]);
     // useEffect(() => {
     //     ////////////console.log("Scroll", window.scrollY, carouselRef.current.offsetHeight)
     // }, [lastScrollY])
@@ -160,24 +196,39 @@ export default function index() {
                 <div className={styles.collection}>
                     <h3>Our Collection</h3>
 
-                    <div className={styles.collectionContent}>
-
-                        {
-                            Category?.map((item) => {
-                                return (
-                                    <div className={styles.collectionCards}>
-                                        <div className={styles.imageContainer} onClick={() => router.push(`/category/${item._id}`)}>
-                                            <img src={item.url} />
+                    <div className={styles.carouselWrapper}>
+                        {collectionScroll.canScrollLeft && (
+                            <button className={`${styles.navBtn} ${styles.navBtnLeft}`} onClick={() => scrollSection(collectionRef, 'left')} aria-label="Scroll left">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                    <polyline points="15 18 9 12 15 6" />
+                                </svg>
+                            </button>
+                        )}
+                        <div 
+                            className={styles.collectionContent} 
+                            ref={collectionRef}
+                            onScroll={() => updateScrollButtons(collectionRef, setCollectionScroll)}
+                        >
+                            {
+                                Category?.map((item) => {
+                                    return (
+                                        <div key={item._id} className={styles.collectionCards}>
+                                            <div className={styles.imageContainer} onClick={() => router.push(`/category/${item._id}`)}>
+                                                <img src={item.url} alt={item.title} />
+                                            </div>
+                                            <h2>{item.title}</h2>
                                         </div>
-                                        <h2>{item.title}</h2>
-                                    </div>
-                                )
-                            })
-                        }
-
-
-
-
+                                    )
+                                })
+                            }
+                        </div>
+                        {collectionScroll.canScrollRight && (
+                            <button className={`${styles.navBtn} ${styles.navBtnRight}`} onClick={() => scrollSection(collectionRef, 'right')} aria-label="Scroll right">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                    <polyline points="9 18 15 12 9 6" />
+                                </svg>
+                            </button>
+                        )}
                     </div>
 
                 </div>
@@ -189,24 +240,44 @@ export default function index() {
                         <h1>Our Best Sellers</h1>
 
                     </div>
-                    <div className={styles.cardInner}>
-                        {Procucts.slice(0, 4).map((item) => {
-                            const { mainPrice, originalPrice } = getDisplayPrices(item.price, item.crossPrice);
-                            return (
-                                <CardComponent
-                                    key={item._id}
-                                    id={item._id}
-                                    src={item.url}
-                                    name={item.name}
-                                    price={item.price}
-                                    crossPrice={item.crossPrice}
-                                    discount={item.discount}
-                                    total={item.totalItems}
-                                    available={item.availableItems}
-                                    images={item.images}
-                                />
-                            );
-                        })}
+                    <div className={styles.carouselWrapper}>
+                        {bestSellersScroll.canScrollLeft && (
+                            <button className={`${styles.navBtn} ${styles.navBtnLeft}`} onClick={() => scrollSection(bestSellersRef, 'left')} aria-label="Scroll left">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                    <polyline points="15 18 9 12 15 6" />
+                                </svg>
+                            </button>
+                        )}
+                        <div 
+                            className={styles.cardInner} 
+                            ref={bestSellersRef}
+                            onScroll={() => updateScrollButtons(bestSellersRef, setBestSellersScroll)}
+                        >
+                            {Procucts.slice(0, 4).map((item) => {
+                                const { mainPrice, originalPrice } = getDisplayPrices(item.price, item.crossPrice);
+                                return (
+                                    <CardComponent
+                                        key={item._id}
+                                        id={item._id}
+                                        src={item.url}
+                                        name={item.name}
+                                        price={item.price}
+                                        crossPrice={item.crossPrice}
+                                        discount={item.discount}
+                                        total={item.totalItems}
+                                        available={item.availableItems}
+                                        images={item.images}
+                                    />
+                                );
+                            })}
+                        </div>
+                        {bestSellersScroll.canScrollRight && (
+                            <button className={`${styles.navBtn} ${styles.navBtnRight}`} onClick={() => scrollSection(bestSellersRef, 'right')} aria-label="Scroll right">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                    <polyline points="9 18 15 12 9 6" />
+                                </svg>
+                            </button>
+                        )}
                     </div>
                     <div className={styles.viewMoreSection}>
                         <button

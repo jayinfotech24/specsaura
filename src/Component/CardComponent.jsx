@@ -124,12 +124,14 @@ export default function CardComponent({ id, src, name, price, crossPrice, discou
                 <div className={styles.content}>
                     <h3>{name}</h3>
                     <div className={styles.priceRow}>
-                        <h2>{`₹ ${Math.round(mainPrice || 0)}`}</h2>
+                        <h2>{`₹${Math.round(mainPrice || 0)}`}</h2>
                         {originalPrice != null && originalPrice != mainPrice && (
-                            <span className={styles.crossPrice}>₹ {Math.round(originalPrice)}</span>
+                            <span className={styles.crossPrice}>₹{Math.round(originalPrice)}</span>
                         )}
                         {discount !== 0 && discount != null && (
-                            <span className={styles.discountBadge}>{discount}% OFF</span>
+                            <span className={styles.discountBadge}>
+                                {Number(discount) === 50 ? "Buy 1 Get 1" : `${discount}% OFF`}
+                            </span>
                         )}
                     </div>
 

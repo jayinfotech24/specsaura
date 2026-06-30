@@ -297,13 +297,15 @@ export default function Index() {
                     <div className={styles.headerContent}>
                         <h1>{Data.name}</h1>
                         <div className={styles.priceContainer}>
-                            <h2>{`₹ ${Math.round(mainPrice || 0)}`}</h2>
+                            <h2>{`₹${Math.round(mainPrice || 0)}`}</h2>
                             {originalPrice && originalPrice != mainPrice && (
-                                <span className={styles.crossPrice}>₹ {Math.round(originalPrice)}</span>
+                                <span className={styles.crossPrice}>₹{Math.round(originalPrice)}</span>
                             )}
 
                             {Data.discount != 0 && Data.discount != null && (
-                                <span className={styles.discountBadge}>{Data.discount}% OFF</span>
+                                <span className={styles.discountBadge}>
+                                    {Number(Data.discount) === 50 ? "Buy 1 Get 1" : `${Data.discount}% OFF`}
+                                </span>
                             )}
                             <span className={styles.stockStatus}>
                                 {Data.availableItems > 0 ? 'In Stock' : 'Out of Stock'}

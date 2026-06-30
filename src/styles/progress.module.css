@@ -667,8 +667,11 @@
   border-radius: 20px;
   padding: 30px 20px;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-  margin: 20px 10px;
+  margin: 20px auto;
+  width: calc(100% - 160px);
+  max-width: 550px;
   border: 1px solid rgba(0, 0, 0, 0.1);
+  box-sizing: border-box;
 }
 
 .mobileFormContainer .row {
@@ -683,10 +686,10 @@
 }
 
 .mobileFormContainer .columnContainer {
-  display: grid;
-  grid-template-columns: repeat(3,
-      1fr);
+  display: flex;
+  flex-direction: column;
   gap: 15px;
+  width: 100%;
 }
 
 .mobileFormContainer .column {
@@ -981,6 +984,9 @@
 
   .forthMain .forthInner h1 {
     font-size: 20px;
+    padding: 0 80px;
+    text-align: center;
+    box-sizing: border-box;
   }
 
   .forthInner .mobileFormContainer {
@@ -988,8 +994,8 @@
     border-style: solid;
     border-radius: 10px;
     padding: 20px;
-    /* margin: 40px auto 0; */
-    min-width: 100%;
+    margin: 20px auto;
+    width: calc(100% - 120px);
     max-width: 700px;
     border: 1px solid #000;
     display: flex;
@@ -998,6 +1004,7 @@
     justify-content: start;
     align-items: start;
     gap: 10px;
+    box-sizing: border-box;
   }
 
   .forthInner .mobileFormContainer .row {
@@ -1012,9 +1019,10 @@
   .forthInner .mobileFormContainer .row .columnContainer {
     width: 100%;
     display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 10px;
+    flex-direction: column;
+    justify-content: start;
+    align-items: stretch;
+    gap: 15px;
   }
 
   .forthInner .mobileFormContainer .row .columnContainer .column {
@@ -1023,7 +1031,7 @@
     justify-content: start;
     align-items: start;
     gap: 5px;
-    width: 33%;
+    width: 100%;
   }
 
   .forthInner .mobileFormContainer .row .columnContainer .column label {
@@ -1116,6 +1124,17 @@
     justify-content: center;
     align-items: center;
     height: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .forthInner .mobileFormContainer {
+    width: calc(100% - 100px) !important;
+    padding: 15px !important;
+  }
+  .forthMain .forthInner h1 {
+    padding: 0 50px !important;
+    font-size: 16px !important;
   }
 }
 

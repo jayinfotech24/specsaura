@@ -210,15 +210,165 @@
     color: #fd5b25;
 }
 
+.mobileFilterBtn {
+    display: none;
+}
+
+.overlay {
+    display: none;
+}
+
+.closeBtn {
+    display: none;
+}
+
+.sidebarHeaderActions {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+.mobileApplySection {
+    display: none;
+}
+
+.sidebarContent {
+    /* desktop default styles */
+}
+
 @media (max-width: 992px) {
-    .sidebar {
+    .mobileFilterBtn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
         width: 100%;
-        min-width: 100%;
-        position: relative;
+        padding: 12px 20px;
+        background: linear-gradient(90deg, #fd5b25, #ff8c42);
+        color: #fff;
+        border: none;
+        border-radius: 8px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(253, 91, 37, 0.2);
+        margin-bottom: 15px;
+    }
+
+    .mobileFilterBtn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(253, 91, 37, 0.3);
+    }
+
+    .mobileFilterBtn svg {
+        stroke: #fff;
+    }
+
+    .overlay {
+        display: block;
+        position: fixed;
         top: 0;
-        max-height: none;
-        margin-bottom: 30px;
-        border-radius: 10px;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.5);
+        backdrop-filter: blur(4px);
+        z-index: 999;
+    }
+
+    .closeBtn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: none;
+        border: none;
+        color: #666;
+        cursor: pointer;
+        padding: 5px;
+        border-radius: 50%;
+        transition: background-color 0.2s ease, color 0.2s ease;
+    }
+
+    .closeBtn:hover {
+        background-color: #f5f5f5;
+        color: #fd5b25;
+    }
+
+    .sidebar {
+        position: fixed;
+        top: 0 !important;
+        left: -340px;
+        width: 320px;
+        min-width: 320px;
+        height: 100vh;
+        max-height: 100vh;
+        background-color: #fff;
+        padding: 25px 25px 0 25px;
+        border-radius: 0;
+        box-shadow: 5px 0 25px rgba(0, 0, 0, 0.15);
+        z-index: 1000;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        flex-shrink: 0;
+        transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .sidebar.open {
+        left: 0;
+    }
+
+    .sidebarContent {
+        flex: 1;
+        overflow-y: auto;
+        padding-right: 5px;
+        margin-bottom: 10px;
+    }
+
+    /* Custom scrollbar for sidebarContent inside drawer */
+    .sidebarContent::-webkit-scrollbar {
+        width: 6px;
+    }
+
+    .sidebarContent::-webkit-scrollbar-track {
+        background: #f1f1f1;
+        border-radius: 3px;
+    }
+
+    .sidebarContent::-webkit-scrollbar-thumb {
+        background: #ddd;
+        border-radius: 3px;
+    }
+
+    .sidebarContent::-webkit-scrollbar-thumb:hover {
+        background: #ccc;
+    }
+
+    .mobileApplySection {
+        display: block;
+        position: relative;
+        width: 100%;
+        padding: 15px 0 25px 0;
+        background-color: #fff;
+        border-top: 1px solid #f0f0f0;
+        flex-shrink: 0;
+    }
+
+    .applyBtn {
+        width: 100%;
+        padding: 12px;
+        background-color: #fd5b25;
+        color: #fff;
+        border: none;
+        border-radius: 8px;
+        font-size: 15px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background-color 0.2s ease;
+    }
+
+    .applyBtn:hover {
+        background-color: #e04a18;
     }
 
     .filterOptions {
@@ -228,7 +378,22 @@
 
 @media (max-width: 768px) {
     .sidebar {
-        padding: 20px;
+        width: 300px;
+        min-width: 300px;
+        left: -320px;
+        padding: 20px 20px 0 20px;
+    }
+
+    .sidebar.open {
+        left: 0;
+    }
+
+    .sidebarContent {
+        margin-bottom: 5px;
+    }
+
+    .mobileApplySection {
+        padding: 15px 0 20px 0;
     }
 
     .sidebarHeader h2 {

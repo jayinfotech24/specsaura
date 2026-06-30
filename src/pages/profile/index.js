@@ -185,10 +185,10 @@ const Profile = () => {
                                     <h1>My Orders</h1>
                                     <div className={styles.ordersList}>
                                         {orderData && orderData.length > 0 ? (
-                                            orderData.map(order => (
+                                            orderData.map((order, index) => (
                                                 <div key={order._id} className={styles.orderCard}>
                                                     <div className={styles.orderHeader}>
-                                                        <h3>Order #{order._id}</h3>
+                                                        <h3>Order #{orderData.length - index}</h3>
                                                         <span className={`${styles.status} ${styles[order.status?.toLowerCase()]}`}>
                                                             {order.status}
                                                         </span>
