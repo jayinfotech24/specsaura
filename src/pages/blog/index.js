@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import styles from '../../styles/blog.module.css';
 import Header from '../../Component/Header';
 import Footer from '../../Component/Footer';
+import Pagination from '../../Component/Pagination';
 import { FaSearch, FaCalendarAlt, FaUser, FaTag, FaTimes, FaShare, FaBookmark } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { GetBlog } from '../../store/authSlice';
@@ -10,6 +11,8 @@ const Blog = () => {
     const [searchQuery, setSearchQuery] = useState('');
     const [selectedPost, setSelectedPost] = useState(null);
     const [BlogData, setBlogData] = useState([]);
+    const [currentPage, setCurrentPage] = useState(1);
+    const [totalPages, setTotalPages] = useState(1);
     const dispatch = useDispatch();
 
     // Convert API date to readable format
@@ -40,20 +43,29 @@ const Blog = () => {
         document.body.style.overflow = 'auto'; // Restore scrolling
     };
 
-    const BlogDetail = () => {
-        dispatch(GetBlog()).then((res) => {
-            ////////console.log("res", res)
-            if (res.payload.status == 200) {
-                setBlogData(res.payload.items)
+    const BlogDetail = (page = 1) => {
+        dispatch(GetBlog({ page, limit: 10 })).then((res) => {
+            if (res.payload?.status == 200 || res.payload?.items) {
+                setBlogData(res.payload.items || []);
+                setTotalPages(res.payload.totalPages || 1);
+                setCurrentPage(res.payload.page || page);
             }
         }).catch((err) => {
-            ////////console.log("err", err)
-        })
-    }
+            // Error handling
+        });
+    };
+
+    const handlePageChange = (page) => {
+        setCurrentPage(page);
+        BlogDetail(page);
+        if (typeof window !== 'undefined') {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+    };
 
     useEffect(() => {
-        BlogDetail()
-    }, [])
+        BlogDetail(1);
+    }, []);
 
     return (
         <div className={styles.main}>
@@ -112,6 +124,11 @@ const Blog = () => {
                         ))}
                     </div>
                 )}
+                <Pagination
+                    currentPage={currentPage}
+                    totalPages={totalPages}
+                    onPageChange={handlePageChange}
+                />
             </div>
 
             {/* Blog Detail Modal */}

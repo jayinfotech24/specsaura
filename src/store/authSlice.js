@@ -99,16 +99,36 @@ export const WallPaperList = createAsyncThunk("api/wallpaper", async (credential
 
 })
 
-export const ProductList = createAsyncThunk("api/productList", async (credentials, { rejectWithValue }) => {
-
+export const ProductList = createAsyncThunk("api/productList", async (params, { rejectWithValue }) => {
     try {
-        const response = await axiosInstance.get(`${Appapis.Basurl}${Appapis.product}`, credentials)
-        return response.data
+        const queryObj = typeof params === 'object' && params !== null ? { ...params } : {};
+        if (!queryObj.page) queryObj.page = 1;
+        if (!queryObj.limit) queryObj.limit = 10;
+        const response = await axiosInstance.get(`${Appapis.Basurl}${Appapis.product}`, {
+            params: queryObj
+        });
+        return response.data;
     }
     catch (error) {
         return rejectWithValue(error.response?.data || "Something went wrong", error);
     }
+})
 
+export const ProductSearch = createAsyncThunk("api/productSearch", async (params, { rejectWithValue }) => {
+    try {
+        const queryObj = typeof params === 'string' ? { q: params, page: 1, limit: 10 } : (params || {});
+        const response = await axiosInstance.get(`${Appapis.Basurl}${Appapis.productSearch}`, {
+            params: {
+                q: queryObj.q || '',
+                page: queryObj.page || 1,
+                limit: queryObj.limit || 10
+            }
+        });
+        return response.data;
+    }
+    catch (error) {
+        return rejectWithValue(error.response?.data || "Something went wrong", error);
+    }
 })
 export const AddCart = createAsyncThunk("api/cart", async (credentials, { rejectWithValue }) => {
     ////////console.log("Credentials", credentials)
@@ -165,9 +185,14 @@ export const VerifyPayment = createAsyncThunk(
 );
 export const getCartDetail = createAsyncThunk(
     "api/cartdetail",
-    async (id, { rejectWithValue }) => {
+    async (params, { rejectWithValue }) => {
         try {
-            const response = await axiosInstance.get(`${Appapis.Basurl}${Appapis.cartItems(id)}`);
+            const userId = typeof params === 'string' ? params : params?.userId || params?.id;
+            const page = params?.page || 1;
+            const limit = params?.limit || 10;
+            const response = await axiosInstance.get(`${Appapis.Basurl}${Appapis.cartItems(userId)}`, {
+                params: { page, limit }
+            });
             return response.data;
         } catch (error) {
             return rejectWithValue(error.response?.data || "Something went wrong");
@@ -212,12 +237,16 @@ export const GetUser = createAsyncThunk("api/getUser", async (credentials, { rej
 });
 export const GetOrderById = createAsyncThunk(
     "api/getOrder",
-    async (id, { rejectWithValue }) => {
+    async (params, { rejectWithValue }) => {
         try {
-            const response = await axiosInstance.get(`${Appapis.Basurl}${Appapis.getOrder(id)}`);
+            const userId = typeof params === 'string' ? params : params?.userId || params?.id;
+            const page = params?.page || 1;
+            const limit = params?.limit || 10;
+            const response = await axiosInstance.get(`${Appapis.Basurl}${Appapis.getOrder(userId)}`, {
+                params: { page, limit }
+            });
             return response.data;
         } catch (error) {
-            ////////console.log("GetOrderErroor", error.message)
             return rejectWithValue(error.response?.data || "Something went wrong");
         }
     }
@@ -328,12 +357,71 @@ export const GetLensType = createAsyncThunk(
 );
 export const GetBlog = createAsyncThunk(
     "api/getBlog",
-    async (credentials, { rejectWithValue }) => {
+    async (params, { rejectWithValue }) => {
         try {
-            const response = await axiosInstance.get(`${Appapis.Basurl}${Appapis.getBlog}`);
+            const queryObj = typeof params === 'object' && params !== null ? params : {};
+            const response = await axiosInstance.get(`${Appapis.Basurl}${Appapis.getBlog}`, {
+                params: {
+                    page: queryObj.page || 1,
+                    limit: queryObj.limit || 10
+                }
+            });
             return response.data;
         } catch (error) {
             return rejectWithValue(error.response?.data || "Failed to get blog data");
+        }
+    }
+);
+
+export const GetAccessoriesAll = createAsyncThunk(
+    "api/getAccessoriesAll",
+    async (params, { rejectWithValue }) => {
+        try {
+            const queryObj = typeof params === 'object' && params !== null ? params : {};
+            const response = await axiosInstance.get(`${Appapis.Basurl}${Appapis.accessoriesAll}`, {
+                params: {
+                    page: queryObj.page || 1,
+                    limit: queryObj.limit || 10
+                }
+            });
+            return response.data;
+        } catch (error) {
+            return rejectWithValue(error.response?.data || "Something went wrong");
+        }
+    }
+);
+
+export const GetAccessoriesByCategory = createAsyncThunk(
+    "api/getAccessoriesByCategory",
+    async (params, { rejectWithValue }) => {
+        try {
+            const categoryId = typeof params === 'string' ? params : params?.categoryId;
+            const page = params?.page || 1;
+            const limit = params?.limit || 10;
+            const response = await axiosInstance.get(`${Appapis.Basurl}${Appapis.accessoriesByCategory(categoryId)}`, {
+                params: { page, limit }
+            });
+            return response.data;
+        } catch (error) {
+            return rejectWithValue(error.response?.data || "Something went wrong");
+        }
+    }
+);
+
+export const GetAllOrders = createAsyncThunk(
+    "api/getAllOrders",
+    async (params, { rejectWithValue }) => {
+        try {
+            const queryObj = typeof params === 'object' && params !== null ? params : {};
+            const response = await axiosInstance.get(`${Appapis.Basurl}${Appapis.orderAll}`, {
+                params: {
+                    page: queryObj.page || 1,
+                    limit: queryObj.limit || 10
+                }
+            });
+            return response.data;
+        } catch (error) {
+            return rejectWithValue(error.response?.data || "Something went wrong");
         }
     }
 );

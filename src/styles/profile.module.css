@@ -967,3 +967,254 @@
   margin: 0.25rem 0;
   font-size: 0.95rem;
 }
+
+/* Minimal Order Card */
+.minimalOrderCard {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 16px 20px;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.03);
+}
+
+.minimalOrderCard:hover {
+  border-color: #4f46e5;
+  box-shadow: 0 4px 14px rgba(79, 70, 229, 0.12);
+  transform: translateY(-2px);
+}
+
+.minimalOrderHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.orderNumberTitle {
+  font-weight: 700;
+  color: #111827;
+  font-size: 1.05rem;
+}
+
+.orderDateText {
+  color: #6b7280;
+  font-size: 0.875rem;
+}
+
+.minimalItemsRow {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 10px 0;
+  border-top: 1px dashed #e5e7eb;
+  border-bottom: 1px dashed #e5e7eb;
+  margin-bottom: 12px;
+}
+
+.minimalItem {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.smallItemImage {
+  width: 48px;
+  height: 48px;
+  object-fit: contain;
+  border-radius: 8px;
+  background-color: #f9fafb;
+  border: 1px solid #f3f4f6;
+  flex-shrink: 0;
+}
+
+.minimalItemName {
+  font-weight: 500;
+  color: #1f2937;
+  font-size: 0.95rem;
+}
+
+.viewDetailsPrompt {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 6px;
+  color: #4f46e5;
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+/* Modal Popup Styles */
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.65);
+  backdrop-filter: blur(5px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  padding: 20px;
+  animation: fadeIn 0.2s ease-out;
+}
+
+.modalContent {
+  background: #ffffff;
+  border-radius: 16px;
+  max-width: 620px;
+  width: 100%;
+  max-height: 85vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.25);
+  position: relative;
+  animation: scaleUp 0.2s ease-out;
+  padding: 24px;
+}
+
+.modalHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #e5e7eb;
+  padding-bottom: 16px;
+  margin-bottom: 20px;
+}
+
+.modalHeader h2 {
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: #111827;
+  margin: 0;
+}
+
+.closeButton {
+  background: #f3f4f6;
+  border: none;
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  color: #4b5563;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.closeButton:hover {
+  background: #e5e7eb;
+  color: #111827;
+}
+
+.modalBody {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.modalMetaRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  background: #f9fafb;
+  padding: 12px 16px;
+  border-radius: 10px;
+  border: 1px solid #f3f4f6;
+}
+
+.modalMetaRow p {
+  margin: 0;
+  font-size: 0.95rem;
+  color: #374151;
+}
+
+.modalSection {
+  background: #ffffff;
+  border-radius: 10px;
+  padding: 16px;
+  border: 1px solid #e5e7eb;
+}
+
+.modalSection h4 {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #111827;
+  margin: 0 0 10px 0;
+  padding-bottom: 6px;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.modalSection p {
+  margin: 4px 0;
+  color: #4b5563;
+  font-size: 0.925rem;
+}
+
+.modalItemsList {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.modalItemCard {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  padding: 10px;
+  background: #f9fafb;
+  border-radius: 8px;
+  border: 1px solid #f3f4f6;
+}
+
+.modalItemImage {
+  width: 64px;
+  height: 64px;
+  object-fit: contain;
+  border-radius: 8px;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  flex-shrink: 0;
+}
+
+.modalItemInfo {
+  flex: 1;
+}
+
+.modalItemName {
+  font-weight: 600;
+  color: #1f2937;
+  margin: 0 0 4px 0;
+  font-size: 0.95rem;
+}
+
+.modalItemPrice {
+  color: #4f46e5;
+  font-weight: 700;
+  margin: 0 0 2px 0;
+  font-size: 0.95rem;
+}
+
+.modalItemQuantity {
+  color: #6b7280;
+  margin: 0;
+  font-size: 0.85rem;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes scaleUp {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}

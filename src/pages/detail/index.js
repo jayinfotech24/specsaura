@@ -295,6 +295,9 @@ export default function Index() {
                     transition={{ duration: 0.5 }}
                 >
                     <div className={styles.headerContent}>
+                        {Data?.isBestSeller && (
+                            <div className={styles.bestSellerTag}>BEST SELLER</div>
+                        )}
                         <h1>{Data.name}</h1>
                         <div className={styles.priceContainer}>
                             <h2>{`₹${Math.round(mainPrice || 0)}`}</h2>

@@ -10,6 +10,7 @@ const Appapis = {
     ctegory: "/category",
     wallpaper: "/wallpaper",
     product: "/products/all",
+    productSearch: "/products/search",
     cart: "/cart",
     productDetail: (id) => `/product/${id}`,
     createPayment: "/createPaymentOrder",
@@ -29,7 +30,10 @@ const Appapis = {
     getBlog: `/blog`,
     lensDetail: (name) => `/lens/${name}`,
     sendorder: "/order/email",
-    getRate: "/gstrate"
+    getRate: "/gstrate",
+    accessoriesAll: "/accessories/all",
+    accessoriesByCategory: (id) => `/accessories/category/${id}`,
+    orderAll: "/order/all"
 }
 
 export default Appapis

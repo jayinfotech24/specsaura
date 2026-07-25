@@ -82,14 +82,12 @@ export default function index() {
 
     const GetProduct = () => {
         setIsLoading(true)
-        dispatch(ProductList()).then((res) => {
-            console.log("resProduct", res.payload)
-            if (res.payload.status == 200) {
-                setProducts(res.payload.products)
+        dispatch(ProductList({ page: 1, limit: 20 })).then((res) => {
+            if (res.payload?.status == 200 || res.payload?.products) {
+                setProducts(res.payload.products || [])
                 setIsLoading(false)
             }
         }).catch((error) => {
-            ////////console.log("Error", error)
             setIsLoading(false)
         })
     }
@@ -253,23 +251,33 @@ export default function index() {
                             ref={bestSellersRef}
                             onScroll={() => updateScrollButtons(bestSellersRef, setBestSellersScroll)}
                         >
-                            {Procucts.slice(0, 4).map((item) => {
-                                const { mainPrice, originalPrice } = getDisplayPrices(item.price, item.crossPrice);
-                                return (
-                                    <CardComponent
-                                        key={item._id}
-                                        id={item._id}
-                                        src={item.url}
-                                        name={item.name}
-                                        price={item.price}
-                                        crossPrice={item.crossPrice}
-                                        discount={item.discount}
-                                        total={item.totalItems}
-                                        available={item.availableItems}
-                                        images={item.images}
-                                    />
-                                );
-                            })}
+                            {(() => {
+                                const bestSellerItems = Procucts.filter(item => item.isBestSeller === true || item.isBestSeller === "true");
+                                let itemsToDisplay = bestSellerItems;
+                                if (bestSellerItems.length < 5) {
+                                    const otherItems = Procucts.filter(item => !(item.isBestSeller === true || item.isBestSeller === "true"));
+                                    const needed = 5 - bestSellerItems.length;
+                                    itemsToDisplay = [...bestSellerItems, ...otherItems.slice(0, needed)];
+                                }
+                                return itemsToDisplay.map((item) => {
+                                    const { mainPrice, originalPrice } = getDisplayPrices(item.price, item.crossPrice);
+                                    return (
+                                        <CardComponent
+                                            key={item._id}
+                                            id={item._id}
+                                            src={item.url}
+                                            name={item.name}
+                                            price={item.price}
+                                            crossPrice={item.crossPrice}
+                                            discount={item.discount}
+                                            total={item.totalItems}
+                                            available={item.availableItems}
+                                            images={item.images}
+                                            isBestSeller={item.isBestSeller}
+                                        />
+                                    );
+                                });
+                            })()}
                         </div>
                         {bestSellersScroll.canScrollRight && (
                             <button className={`${styles.navBtn} ${styles.navBtnRight}`} onClick={() => scrollSection(bestSellersRef, 'right')} aria-label="Scroll right">

@@ -4,7 +4,7 @@ import Hamburger from 'hamburger-react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { useRouter } from 'next/router'
 import { useDispatch } from 'react-redux'
-import { ProductList, GetUser } from '../store/authSlice'
+import { ProductList, GetUser, ProductSearch } from '../store/authSlice'
 import { toast } from 'react-hot-toast'
 
 export default function Header({ isHeaderVisible }) {
@@ -14,6 +14,7 @@ export default function Header({ isHeaderVisible }) {
     const [searchQuery, setSearchQuery] = useState('')
     const [products, setProducts] = useState([])
     const [filteredProducts, setFilteredProducts] = useState([])
+    const [isSearching, setIsSearching] = useState(false)
     const dispatch = useDispatch()
     const router = useRouter()
     const searchContainerRef = useRef(null);
@@ -53,72 +54,31 @@ export default function Header({ isHeaderVisible }) {
     };
 
     useEffect(() => {
-        const fetchProducts = async () => {
+        if (!searchQuery.trim()) {
+            setFilteredProducts([]);
+            setIsSearching(false);
+            return;
+        }
+
+        setIsSearching(true);
+        const timer = setTimeout(async () => {
             try {
-                const response = await dispatch(ProductList()).unwrap()
-                if (response.status === 200) {
-                    setProducts(response.products)
+                const response = await dispatch(ProductSearch({ q: searchQuery.trim(), page: 1, limit: 10 })).unwrap();
+                if (response.status === 200 || response.products) {
+                    setFilteredProducts(response.products || []);
+                } else {
+                    setFilteredProducts([]);
                 }
             } catch (error) {
-                console.error("Error fetching products:", error)
+                console.error("Error searching products:", error);
+                setFilteredProducts([]);
+            } finally {
+                setIsSearching(false);
             }
-        }
-        fetchProducts()
-    }, [dispatch])
+        }, 250);
 
-    useEffect(() => {
-        if (searchQuery.trim()) {
-            const words = searchQuery.toLowerCase().split(/\s+/).filter(Boolean);
-            
-            const getSearchableText = (product) => {
-                return [
-                    product.name,
-                    product.description,
-                    product.brandName,
-                    product.color,
-                    product.gender,
-                    product.frameWidth?.toString(),
-                    product.price?.toString(),
-                    product.lensColor,
-                    product.modelNo,
-                    product.productID,
-                    product.frameColor,
-                    product.templeColor,
-                    product.frameMaterial,
-                    product.lens,
-                    product.warranty
-                ].filter(Boolean).join(' ').toLowerCase();
-            };
-
-            // Pre-sort by updatedAt date (newest first) to ensure consistent secondary sorting within groups
-            const sortedProducts = [...products].sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt));
-
-            // Group 1: Products containing ALL keywords
-            const allMatch = sortedProducts.filter(product => {
-                const searchableText = getSearchableText(product);
-                return words.every(word => searchableText.includes(word));
-            });
-
-            const seenIds = new Set(allMatch.map(p => p._id));
-            const orderedMatches = [...allMatch];
-
-            // Group 2: Products matching keywords one by one in query order
-            for (const word of words) {
-                const wordMatches = sortedProducts.filter(product => {
-                    if (seenIds.has(product._id)) return false;
-                    const searchableText = getSearchableText(product);
-                    return searchableText.includes(word);
-                });
-
-                wordMatches.forEach(p => seenIds.add(p._id));
-                orderedMatches.push(...wordMatches);
-            }
-
-            setFilteredProducts(orderedMatches);
-        } else {
-            setFilteredProducts([])
-        }
-    }, [searchQuery, products])
+        return () => clearTimeout(timer);
+    }, [searchQuery, dispatch]);
 
     useEffect(() => {
         const handleClickOutside = (event) => {
@@ -255,7 +215,12 @@ export default function Header({ isHeaderVisible }) {
                             </svg>
                         </button>
                     </form>
-                    {filteredProducts.length > 0 && (
+                    {isSearching && (
+                        <div className={styles.dropdownNoResults}>
+                            <p>Searching...</p>
+                        </div>
+                    )}
+                    {!isSearching && filteredProducts.length > 0 && (
                         <div className={styles.dropdownSearchResults}>
                             {filteredProducts.map((product) => (
                                 <div
@@ -276,7 +241,7 @@ export default function Header({ isHeaderVisible }) {
                             ))}
                         </div>
                     )}
-                    {searchQuery && filteredProducts.length === 0 && (
+                    {!isSearching && searchQuery.trim() && filteredProducts.length === 0 && (
                         <div className={styles.dropdownNoResults}>
                             <p>No products found</p>
                         </div>

@@ -9,7 +9,7 @@ import { GetGstRates, GetOrderById } from '../../store/authSlice';
 import { useDispatch } from 'react-redux';
 import { GetUser } from '../../store/authSlice';
 import { UpdateUser } from '../../store/authSlice';
-
+import Pagination from '../../Component/Pagination';
 
 const Profile = () => {
     const router = useRouter();
@@ -18,7 +18,12 @@ const Profile = () => {
     const [userData, setUserData] = useState({});
     const [orderData, setOrderData] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
-    const [GstRates, setGstRates] = useState([])
+    const [GstRates, setGstRates] = useState([]);
+    const [currentOrdersPage, setCurrentOrdersPage] = useState(1);
+    const [totalOrdersPages, setTotalOrdersPages] = useState(1);
+    const [selectedOrder, setSelectedOrder] = useState(null);
+    const [selectedOrderNumber, setSelectedOrderNumber] = useState(null);
+
     useEffect(() => {
         const userToken = localStorage.getItem('userToken');
         if (!userToken) {
@@ -26,9 +31,6 @@ const Profile = () => {
         }
     }, [router]);
 
-    useEffect(() => {
-        console.log("Orderdata", orderData);
-    }, [orderData])
     const handleLogout = () => {
         localStorage.removeItem('userToken');
         router.push('/');
@@ -43,10 +45,8 @@ const Profile = () => {
             number: updatedData?.number,
             address: updatedData?.address,
         };
-        ////////console.log("UpdatedData", updatePayload);
 
         dispatch(UpdateUser(updatePayload)).then((res) => {
-            ////////console.log("ResponseUpdate", res);
             if (res.payload.status === 200) {
                 setUserData(res.payload.user);
             }
@@ -59,7 +59,6 @@ const Profile = () => {
         try {
             setIsLoading(true);
             const response = await dispatch(GetUser()).unwrap();
-            ////////console.log(response);
             if (response.status === 200) {
                 setUserData(response.mainUser);
             }
@@ -70,30 +69,34 @@ const Profile = () => {
         }
     };
 
-    const GetOrderDetail = async (userId) => {
-        ////////console.log("Call", userId);
+    const GetOrderDetail = async (userId, page = 1) => {
         if (!userId) return;
 
         try {
-            const response = await dispatch(GetOrderById(userId)).unwrap();
-            ////////console.log(response);
-            if (response.status === 200) {
-
+            const response = await dispatch(GetOrderById({ userId, page, limit: 10 })).unwrap();
+            if (response.status === 200 || response.items) {
                 setOrderData(response.items || []);
+                setTotalOrdersPages(response.totalPages || 1);
+                setCurrentOrdersPage(response.page || page);
             }
         } catch (error) {
             console.error('Error fetching order details:', error);
         }
     };
 
-    // Fetch user data on component mount
+    const handleOrdersPageChange = (page) => {
+        setCurrentOrdersPage(page);
+        if (userData?._id) {
+            GetOrderDetail(userData._id, page);
+        }
+    };
+
     useEffect(() => {
         GetUserDetails();
     }, []);
-    function calculateGstPrice(type, originalPrice, gstRates = []) {
 
-        //console.log("BB", originalPrice, type, gstRates)
-        let gstRate = 8; // Default GST
+    function calculateGstPrice(type, originalPrice, gstRates = []) {
+        let gstRate = 8;
         if (Array.isArray(gstRates) && type) {
             const found = gstRates.find(rate => rate.name === type);
             if (found && found.gst) {
@@ -104,8 +107,6 @@ const Profile = () => {
         return originalPrice + gstAmount;
     }
 
-
-    // Fetch order data when userData is available
     useEffect(() => {
         if (userData?._id) {
             GetOrderDetail(userData._id);
@@ -114,12 +115,11 @@ const Profile = () => {
 
     const GetGstData = () => {
         dispatch(GetGstRates()).then((res) => {
-            ////console.log("Res", res)
             if (res.payload.status == 200) {
                 setGstRates(res.payload.items)
             }
         }).catch((err) => {
-            consol.log("Err", err)
+            console.log("Err", err)
         })
     }
 
@@ -129,14 +129,13 @@ const Profile = () => {
 
     const getGstInfo = (item, gstRates) => {
         const gstType = item.product?.category?.description?.toLowerCase();
-
         const basePrice = item.product?.crossPrice != null ? item.product.crossPrice : item.product?.price;
         const gstObj = Array.isArray(gstRates) ? gstRates.find(rate => rate.name?.toLowerCase() === gstType) : null;
         const gstPercent = gstObj?.gst || 8;
         const gstIncl = calculateGstPrice(gstType, basePrice, gstRates || []);
-        //console.log("In", item)
         return { gstPercent, gstIncl };
     };
+
     return (
         <div className={styles.main}>
             <Header isHeaderVisible={true} />
@@ -186,46 +185,38 @@ const Profile = () => {
                                     <div className={styles.ordersList}>
                                         {orderData && orderData.length > 0 ? (
                                             orderData.map((order, index) => (
-                                                <div key={order._id} className={styles.orderCard}>
-                                                    <div className={styles.orderHeader}>
-                                                        <h3>Order #{orderData.length - index}</h3>
+                                                <div 
+                                                    key={order._id} 
+                                                    className={styles.minimalOrderCard}
+                                                    onClick={() => {
+                                                        setSelectedOrder(order);
+                                                        setSelectedOrderNumber(orderData.length - index);
+                                                    }}
+                                                >
+                                                    <div className={styles.minimalOrderHeader}>
+                                                        <div>
+                                                            <span className={styles.orderNumberTitle}>Order #{orderData.length - index}</span>
+                                                            <span className={styles.orderDateText}> • {new Date(order.createdAt).toLocaleDateString()}</span>
+                                                        </div>
                                                         <span className={`${styles.status} ${styles[order.status?.toLowerCase()]}`}>
                                                             {order.status}
                                                         </span>
                                                     </div>
-                                                    <div className={styles.orderDetails}>
-                                                        <p>Date: {new Date(order.createdAt).toLocaleDateString()}</p>
-                                                        <p>Total: ₹{order.totalAmount}</p>
-                                                        <div className={styles.shippingInfo}>
-                                                            <h4>Shipping Address:</h4>
-                                                            <p>{order.shippingAddress?.fullName}</p>
-                                                            <p>{order.shippingAddress?.address}</p>
-                                                            <p>{order.shippingAddress?.city}, {order.shippingAddress?.state} - {order.shippingAddress?.zipCode}</p>
-                                                            <p>{order.shippingAddress?.country}</p>
-                                                            <p>Phone: {order.shippingAddress?.phone}</p>
-                                                        </div>
-                                                        <div className={styles.itemsList}>
-                                                            <h4>Items:</h4>
-                                                            {order.items?.map(item => (
-                                                                <div key={item._id} className={styles.orderItem}>
-                                                                    <img
-                                                                        src={item.product?.url}
-                                                                        alt={item.product?.name}
-                                                                        className={styles.itemImage}
-                                                                    />
-                                                                    <div className={styles.itemDetails}>
-                                                                        <p className={styles.itemName}>{item.product?.name}</p>
-                                                                        <p className={styles.itemPrice}>₹{Math.floor(getGstInfo(item, GstRates).gstIncl)}</p>
-                                                                        <p className={styles.itemQuantity}>Quantity: {item.quantity}</p>
-
-                                                                    </div>
-                                                                </div>
-                                                            ))}
-                                                        </div>
-                                                        <div className={styles.paymentInfo}>
-                                                            <p>Payment Method: {order.paymentMethod}</p>
-                                                            <p>Payment Status: {order.paymentStatus}</p>
-                                                        </div>
+                                                    <div className={styles.minimalItemsRow}>
+                                                        {order.items?.map(item => (
+                                                            <div key={item._id} className={styles.minimalItem}>
+                                                                <img
+                                                                    src={item.product?.url || '/Images/placeholder.webp'}
+                                                                    alt={item.product?.name || 'Product'}
+                                                                    className={styles.smallItemImage}
+                                                                />
+                                                                <span className={styles.minimalItemName}>{item.product?.name}</span>
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                    <div className={styles.viewDetailsPrompt}>
+                                                        <span>Click to view details</span>
+                                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
                                                     </div>
                                                 </div>
                                             ))
@@ -233,12 +224,74 @@ const Profile = () => {
                                             <div className={styles.noOrders}>No orders found</div>
                                         )}
                                     </div>
+                                    <Pagination
+                                        currentPage={currentOrdersPage}
+                                        totalPages={totalOrdersPages}
+                                        onPageChange={handleOrdersPageChange}
+                                    />
                                 </div>
                             )}
                         </>
                     )}
                 </div>
             </div>
+
+            {/* Order Details Modal Popup */}
+            {selectedOrder && (
+                <div className={styles.modalOverlay} onClick={() => setSelectedOrder(null)}>
+                    <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
+                        <div className={styles.modalHeader}>
+                            <h2>Order Details #{selectedOrderNumber}</h2>
+                            <button className={styles.closeButton} onClick={() => setSelectedOrder(null)}>✕</button>
+                        </div>
+                        <div className={styles.modalBody}>
+                            <div className={styles.modalMetaRow}>
+                                <p><strong>Date:</strong> {new Date(selectedOrder.createdAt).toLocaleDateString()}</p>
+                                <p><strong>Total:</strong> ₹{selectedOrder.totalAmount}</p>
+                                <span className={`${styles.status} ${styles[selectedOrder.status?.toLowerCase()]}`}>
+                                    {selectedOrder.status}
+                                </span>
+                            </div>
+
+                            <div className={styles.modalSection}>
+                                <h4>Shipping Address</h4>
+                                <p><strong>{selectedOrder.shippingAddress?.fullName}</strong></p>
+                                <p>{selectedOrder.shippingAddress?.address}</p>
+                                <p>{selectedOrder.shippingAddress?.city}, {selectedOrder.shippingAddress?.state} - {selectedOrder.shippingAddress?.zipCode}</p>
+                                <p>{selectedOrder.shippingAddress?.country}</p>
+                                <p>Phone: {selectedOrder.shippingAddress?.phone}</p>
+                            </div>
+
+                            <div className={styles.modalSection}>
+                                <h4>Items ({selectedOrder.items?.length || 0})</h4>
+                                <div className={styles.modalItemsList}>
+                                    {selectedOrder.items?.map(item => (
+                                        <div key={item._id} className={styles.modalItemCard}>
+                                            <img
+                                                src={item.product?.url || '/Images/placeholder.webp'}
+                                                alt={item.product?.name || 'Product'}
+                                                className={styles.modalItemImage}
+                                            />
+                                            <div className={styles.modalItemInfo}>
+                                                <p className={styles.modalItemName}>{item.product?.name}</p>
+                                                <p className={styles.modalItemPrice}>₹{Math.floor(getGstInfo(item, GstRates).gstIncl)}</p>
+                                                <p className={styles.modalItemQuantity}>Quantity: {item.quantity}</p>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+
+                            <div className={styles.modalSection}>
+                                <h4>Payment Information</h4>
+                                <p><strong>Payment Method:</strong> {selectedOrder.paymentMethod}</p>
+                                <p><strong>Payment Status:</strong> {selectedOrder.paymentStatus}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
+
             <Footer />
         </div>
     );

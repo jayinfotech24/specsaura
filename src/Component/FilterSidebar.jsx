@@ -38,6 +38,25 @@ const FilterSidebar = ({ onFilterChange, activeFilters, isSunglasses, setActiveF
     }, [router.query.search]);
 
     useEffect(() => {
+        const timer = setTimeout(() => {
+            if (sidebarSearch !== (router.query.search || '')) {
+                const newQuery = { ...router.query };
+                if (sidebarSearch.trim()) {
+                    newQuery.search = sidebarSearch.trim();
+                } else {
+                    delete newQuery.search;
+                }
+                router.push({
+                    pathname: router.pathname,
+                    query: newQuery
+                });
+            }
+        }, 300);
+
+        return () => clearTimeout(timer);
+    }, [sidebarSearch]);
+
+    useEffect(() => {
         setIsOpen(false);
     }, [router.asPath]);
 
