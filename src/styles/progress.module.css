@@ -45,7 +45,7 @@
   margin-bottom: 40px;
   text-align: center;
   font-weight: 700;
-  background: var(--primary-gradient);
+  background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
   -webkit-background-clip: text;
   background-clip: text;
   /* Added standard property */

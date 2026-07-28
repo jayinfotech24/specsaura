@@ -1,18 +1,85 @@
 @import 'tailwindcss';
 
+/* ============================================
+   SPECSAURA — STATIC COLOR VARIABLES
+   All colors are pinned to light mode values.
+   Dark mode auto-detection is intentionally
+   disabled to ensure consistent display across
+   all platforms and environments.
+   ============================================ */
+
 :root {
+  /* Core Colors */
   --background: #ffffff;
   --foreground: #171717;
+
+  /* Brand Colors */
+  --brand-primary: #2c3e50;
+  --brand-secondary: #3498db;
+  --brand-accent: #e74c3c;
+
+  /* Text Colors */
+  --text-primary: #171717;
+  --text-secondary: #555555;
+  --text-muted: #888888;
+  --text-light: #aaaaaa;
+  --text-white: #ffffff;
+  --text-black: #000000;
+  --text-dark: #333333;
+  --text-medium: #666666;
+
+  /* Background Colors */
+  --bg-white: #ffffff;
+  --bg-light: #f8f9fa;
+  --bg-soft: #f1f5f9;
+  --bg-muted: #ededed;
+  --bg-dark: #0a0a0a;
+  --bg-card: #ffffff;
+
+  /* Border Colors */
+  --border-light: #e2e8f0;
+  --border-medium: #dee2e6;
+  --border-muted: #ededed;
+  --border-soft: #f1f5f9;
+
+  /* Icon / Stroke Colors */
+  --icon-dark: #000000;
+  --icon-medium: #555555;
+  --icon-light: #94a3b8;
+  --icon-muted: #64748b;
+
+  /* Status Colors */
+  --color-success: #28a745;
+  --color-error: #ed0e0e;
+  --color-warning: #ffc107;
+  --color-info: #17a2b8;
+
+  /* Shadow */
+  --shadow-sm: rgba(0, 0, 0, 0.05) 0px 2px 4px;
+  --shadow-md: rgba(0, 0, 0, 0.10) 0px 4px 12px;
+  --shadow-lg: rgba(0, 0, 0, 0.15) 0px 8px 24px;
+
+  /* Gray scale */
+  --gray-50:  #f9fafb;
+  --gray-100: #f3f4f6;
+  --gray-200: #e5e7eb;
+  --gray-300: #d1d5db;
+  --gray-400: #9ca3af;
+  --gray-500: #6b7280;
+  --gray-600: #4b5563;
+  --gray-700: #374151;
+  --gray-800: #1f2937;
+  --gray-900: #111827;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
+/* ============================================
+   BASE STYLES — Always light mode
+   ============================================ */
 
 * {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -21,20 +88,16 @@ html,
 body {
   max-width: 100vw;
   overflow-x: hidden;
+  /* Force light color scheme — prevents browser from applying dark mode */
+  color-scheme: light;
 }
 
 body {
-  color: var(--foreground);
-  background: var(--background);
+  color: #171717;
+  background: #ffffff;
   font-family: 'Lato', serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-}
-
-* {
-  box-sizing: border-box;
-  padding: 0;
-  margin: 0;
 }
 
 h1,
@@ -49,11 +112,9 @@ a {
   text-decoration: none;
 }
 
-@media (prefers-color-scheme: dark) {
-  html {
-    color-scheme: dark;
-  }
-}
+/* ============================================
+   COREUI Carousel Overrides
+   ============================================ */
 
 [data-coreui-theme='dark'] .carousel .carousel-indicators [data-coreui-target],
 [data-coreui-theme='dark'].carousel .carousel-indicators [data-coreui-target] {
@@ -72,8 +133,9 @@ a {
   display: none !important;
 }
 
-/* BouncingLogoLoader.css */
-/* Preloader.css */
+/* ============================================
+   PRELOADER
+   ============================================ */
 
 .preloader {
   position: fixed;
@@ -85,15 +147,9 @@ a {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  background: rgba(255,
-      255,
-      255,
-      0.2);
-  /* Light overlay */
+  background: rgba(255, 255, 255, 0.2);
   backdrop-filter: blur(10px);
-  /* Blur effect */
   z-index: 9999;
-  /* Ensure it's above all content */
 }
 
 .logo {
@@ -109,14 +165,12 @@ a {
 }
 
 @keyframes jump {
-
   0%,
   100% {
     transform: translateY(0);
   }
-
   50% {
-    transform: translateY(-10px);
+    transform: translateY(-20px);
   }
 }
 
@@ -127,17 +181,4 @@ a {
   border-bottom-left-radius: 10px;
   position: relative;
   animation: lineBounce 1s infinite ease-in-out;
-  /* Add line bounce animation */
-}
-
-@keyframes jump {
-
-  0%,
-  100% {
-    transform: translateY(0);
-  }
-
-  50% {
-    transform: translateY(-20px);
-  }
 }

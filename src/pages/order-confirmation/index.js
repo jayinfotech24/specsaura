@@ -577,22 +577,33 @@ const OrderConfirmation = () => {
                     }
                     .items {
                         margin-bottom: 30px;
-                        overflow-x: auto;
+                        width: 100%;
                     }
                     .items table {
                         width: 100%;
                         border-collapse: collapse;
-                        min-width: 300px;
+                        table-layout: fixed;
                     }
                     .items th, .items td {
-                        padding: 12px;
+                        padding: 10px 8px;
                         text-align: left;
                         border-bottom: 1px solid #ddd;
+                        font-size: 13px;
+                        word-wrap: break-word;
+                        overflow-wrap: break-word;
+                        vertical-align: top;
                     }
                     .items th {
                         background-color: #f8f9fa;
-                        font-weight: 500;
+                        font-weight: 600;
+                        font-size: 12px;
                     }
+                    .col-item   { width: 35%; }
+                    .col-price  { width: 16%; }
+                    .col-lens   { width: 14%; }
+                    .col-coat   { width: 14%; }
+                    .col-gst    { width: 8%;  }
+                    .col-total  { width: 13%; }
                     .summary {
                         margin-top: 30px;
                         border-top: 2px solid #ddd;
@@ -712,15 +723,22 @@ const OrderConfirmation = () => {
 
                     <div class="items">
                         <table>
+                            <colgroup>
+                                <col class="col-item" />
+                                <col class="col-price" />
+                                <col class="col-lens" />
+                                ${hasCoating ? '<col class="col-coat" />' : ''}
+                                <col class="col-gst" />
+                                <col class="col-total" />
+                            </colgroup>
                             <thead>
                                 <tr>
-                                    <th>Item</th>
-                                    <th>Product Price</th>
-                                    <th>Lens Price</th>
-                                   ${hasCoating ? '<th>Coating Price</th>' : ''}
-                                      <th>GST</th>
-                                    <th>Total</th>
-                                  
+                                    <th class="col-item">Item</th>
+                                    <th class="col-price">Product Price</th>
+                                    <th class="col-lens">Lens Price</th>
+                                   ${hasCoating ? '<th class="col-coat">Coating</th>' : ''}
+                                    <th class="col-gst">GST</th>
+                                    <th class="col-total">Total</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -732,12 +750,12 @@ const OrderConfirmation = () => {
                 const coatingPrice = item.coatingPrice || 0
                 return `
       <tr>
-        <td>${item.productName || 'Product Name'}</td>
-        <td>₹${framePrice.toLocaleString('en-IN')}</td>
-        <td>₹${lensPrice.toLocaleString('en-IN')}</td>
-         <td>₹${coatingPrice.toLocaleString('en-IN')}</td>
-        <td>${gstPercent}%</td>
-        <td>₹${totalWithGst.toLocaleString('en-IN')}</td>
+        <td class="col-item">${item.productName || 'Product Name'}</td>
+        <td class="col-price">&#8377;${framePrice.toLocaleString('en-IN')}</td>
+        <td class="col-lens">&#8377;${lensPrice.toLocaleString('en-IN')}</td>
+        ${hasCoating ? `<td class="col-coat">&#8377;${coatingPrice.toLocaleString('en-IN')}</td>` : ''}
+        <td class="col-gst">${gstPercent}%</td>
+        <td class="col-total">&#8377;${totalWithGst.toLocaleString('en-IN')}</td>
       </tr>
     `;
             }).join('')}
@@ -890,22 +908,33 @@ const OrderConfirmation = () => {
                     }
                     .items {
                         margin-bottom: 30px;
-                        overflow-x: auto;
+                        width: 100%;
                     }
                     .items table {
                         width: 100%;
                         border-collapse: collapse;
-                        min-width: 300px;
+                        table-layout: fixed;
                     }
                     .items th, .items td {
-                        padding: 12px;
+                        padding: 10px 8px;
                         text-align: left;
                         border-bottom: 1px solid #ddd;
+                        font-size: 13px;
+                        word-wrap: break-word;
+                        overflow-wrap: break-word;
+                        vertical-align: top;
                     }
                     .items th {
                         background-color: #f8f9fa;
-                        font-weight: 500;
+                        font-weight: 600;
+                        font-size: 12px;
                     }
+                    .col-item   { width: 35%; }
+                    .col-price  { width: 16%; }
+                    .col-lens   { width: 14%; }
+                    .col-coat   { width: 14%; }
+                    .col-gst    { width: 8%;  }
+                    .col-total  { width: 13%; }
                     .summary {
                         margin-top: 30px;
                         border-top: 2px solid #ddd;
@@ -1025,15 +1054,22 @@ const OrderConfirmation = () => {
 
                     <div class="items">
                         <table>
+                            <colgroup>
+                                <col class="col-item" />
+                                <col class="col-price" />
+                                <col class="col-lens" />
+                                ${hasCoating ? '<col class="col-coat" />' : ''}
+                                <col class="col-gst" />
+                                <col class="col-total" />
+                            </colgroup>
                             <thead>
                                 <tr>
-                                    <th>Item</th>
-                                    <th>Product Price</th>
-                                    <th>Lens Price</th>
-                                   ${hasCoating ? '<th>Coating Price</th>' : ''}
-                                      <th>GST</th>
-                                    <th>Total</th>
-                                  
+                                    <th class="col-item">Item</th>
+                                    <th class="col-price">Product Price</th>
+                                    <th class="col-lens">Lens Price</th>
+                                   ${hasCoating ? '<th class="col-coat">Coating</th>' : ''}
+                                    <th class="col-gst">GST</th>
+                                    <th class="col-total">Total</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -1042,16 +1078,16 @@ const OrderConfirmation = () => {
             const lensPrice = item.lensPrice || 0;
             const gstPercent = item.gstPercent || 0;
             const totalWithGst = item.totalWithGst || 0;
-            const coatingPrice = item.coatingPrice
+            const coatingPrice = item.coatingPrice || 0;
 
             return `
       <tr>
-        <td>${item.productName || 'Product Name'}</td>
-        <td>₹${framePrice.toLocaleString('en-IN')}</td>
-        <td>₹${lensPrice.toLocaleString('en-IN')}</td>
-           <td>₹${coatingPrice.toLocaleString('en-IN')}</td>
-        <td>${gstPercent}%</td>
-        <td>₹${totalWithGst.toLocaleString('en-IN')}</td>
+        <td class="col-item">${item.productName || 'Product Name'}</td>
+        <td class="col-price">&#8377;${framePrice.toLocaleString('en-IN')}</td>
+        <td class="col-lens">&#8377;${lensPrice.toLocaleString('en-IN')}</td>
+        ${hasCoating ? `<td class="col-coat">&#8377;${coatingPrice.toLocaleString('en-IN')}</td>` : ''}
+        <td class="col-gst">${gstPercent}%</td>
+        <td class="col-total">&#8377;${totalWithGst.toLocaleString('en-IN')}</td>
       </tr>
     `;
         }).join('')}
