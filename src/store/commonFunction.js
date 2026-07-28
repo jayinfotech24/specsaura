@@ -30,7 +30,18 @@ export const setOriginalPrice = (price, percent) => {
 export const handlePayment = async (dispatch, amount) => {
     ////////console.log("Payment amount:", amount);
 
-    if (!process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID) {
+    let razorpayKey = process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID;
+    if (!razorpayKey) {
+        try {
+            const response = await fetch("/api/razorpay-key");
+            const data = await response.json();
+            razorpayKey = data?.key;
+        } catch (err) {
+            console.error("Failed to fetch Razorpay key dynamically", err);
+        }
+    }
+
+    if (!razorpayKey) {
         console.error("Razorpay key is not configured");
         toast.error("Payment configuration error. Please try again later.");
         return;
@@ -68,7 +79,7 @@ export const handlePayment = async (dispatch, amount) => {
 
         return new Promise((resolve, reject) => {
             const options = {
-                key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
+                key: razorpayKey,
                 amount: amountInPaise,
                 currency: "INR",
                 name: "Specsaura",

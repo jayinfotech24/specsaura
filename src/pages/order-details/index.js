@@ -268,9 +268,25 @@ const OrderDetails = () => {
                 throw new Error("Invalid payment order response");
             }
 
+            let razorpayKey = process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID;
+            if (!razorpayKey) {
+                try {
+                    const response = await fetch("/api/razorpay-key");
+                    const data = await response.json();
+                    razorpayKey = data?.key;
+                } catch (err) {
+                    console.error("Failed to fetch Razorpay key dynamically", err);
+                }
+            }
+
+            if (!razorpayKey) {
+                toast.error("Payment configuration error. Please contact support.");
+                return;
+            }
+
             // Initialize Razorpay
             const options = {
-                key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
+                key: razorpayKey,
                 amount: amount * 100, // Convert to paise
                 currency: "INR",
                 name: "Specsaura",
