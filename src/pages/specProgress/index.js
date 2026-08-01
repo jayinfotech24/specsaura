@@ -584,7 +584,7 @@ export default function index() {
         const [FileUrl, setFileUrl] = useState(null)
 
         const axisValues = Array.from({ length: 181 }, (_, i) => i.toString());
-        const pdValues = Array.from({ length: (79 - 35) * 2 + 1 }, (_, i) => (35 + i * 0.5).toFixed(1));
+        const pdValues = Array.from({ length: (75 - 28) * 2 + 1 }, (_, i) => (28 + i * 0.5).toFixed(1));
         const powers = Array.from(
             { length: ((3.00 - 0.75) / 0.25 + 1) },
             (_, i) => `+${(0.75 + i * 0.25).toFixed(2)}`
